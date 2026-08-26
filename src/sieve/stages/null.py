@@ -76,6 +76,7 @@ class NullModel:
     statistic: str
     n_draws: int
     n_control: int
+    reduce: str = "mean"        # how n observations became the statistic's input
 
     def moments(self, n: np.ndarray | Sequence[int]) -> tuple[np.ndarray, np.ndarray]:
         """Null mean and sd at arbitrary counts, log-interpolated within the grid.
@@ -103,8 +104,8 @@ class NullModel:
     def summary(self) -> str:
         lo, hi = self.counts[0], self.counts[-1]
         return (
-            f"null[{self.statistic}] from {self.n_control:,} control observations, "
-            f"{self.n_draws:,} draws per point, n grid {lo}-{hi}: "
+            f"null[{self.statistic}, reduce={self.reduce}] from {self.n_control:,} "
+            f"control observations, {self.n_draws:,} draws per point, n grid {lo}-{hi}: "
             f"bias {self.mean[0]:.4g} at n={lo} -> {self.mean[-1]:.4g} at n={hi}"
         )
 
@@ -122,6 +123,7 @@ def fit_null(
     statistic: Statistic,
     observed_counts: np.ndarray | Sequence[int],
     *,
+    reduce: str = "mean",
     n_draws: int = 4000,
     quantiles: Sequence[float] = (0.95, 0.99),
     grid: Sequence[int] | None = None,
@@ -137,12 +139,32 @@ def fit_null(
         effect. Real controls beat a parametric null: they inherit the screen's own
         correlation structure, which is exactly what inflates a top-k statistic.
     statistic:
-        Applied to a ``(draws, n_features)`` block of resampled *entity means* and must
-        return one value per row. Use the SAME function the screen scores with.
+        Applied to a ``(draws, m)`` block and must return one value per row. Use the
+        SAME function the screen scores with.
     observed_counts:
         Observation counts of the real entities. The grid is built to span them, so no
         entity is ever calibrated against a null fitted for a different size.
+    reduce:
+        **How the n observations become the statistic's input.** This is not a detail;
+        getting it wrong produces confident nonsense, and the two real adapters in this
+        library need different answers:
+
+        ``"mean"`` (default) — average the n observations into one feature vector, then
+        apply the statistic across features. This is the screening case: an entity's
+        score is a statistic over its *aggregate profile* (top-3 of 12 signature means,
+        top-k of per-line effects). More observations make the profile less noisy, so
+        the bias falls with n.
+
+        ``"raw"`` — apply the statistic directly to the n observations, no averaging.
+        This is the selection case: best-of-N, pass@k, max-over-runs. More observations
+        mean more chances to draw a high value, so the bias RISES with n — the opposite
+        direction. Requires single-feature control.
+
+        Choosing ``"mean"`` for a best-of-N leaderboard divides by a null sd fitted for
+        the wrong sampling model and inflates every z. The library refuses to guess.
     """
+    if reduce not in ("mean", "raw"):
+        raise ValueError(f"reduce must be 'mean' or 'raw', got {reduce!r}")
     control = np.asarray(control, dtype=float)
     if control.ndim != 2:
         raise ValueError("control must be 2-D (observations x features)")
@@ -166,6 +188,12 @@ def fit_null(
             "would be calibrated against the wrong null."
         )
 
+    if reduce == "raw" and control.shape[1] != 1:
+        raise ValueError(
+            f"reduce='raw' applies the statistic directly to the n observations, so "
+            f"control must be single-feature; got {control.shape[1]} features."
+        )
+
     rng = np.random.default_rng(seed)
     means, sds, qs = [], [], []
     for m in counts:
@@ -174,7 +202,9 @@ def fit_null(
         while done < n_draws:              # chunked: a 4000 x 4000 x features draw is not free
             take = min(block, n_draws - done)
             idx = rng.integers(0, len(control), size=(take, int(m)))
-            vals[done:done + take] = statistic(control[idx].mean(axis=1))
+            drawn = control[idx]                       # (take, m, features)
+            block_in = drawn.mean(axis=1) if reduce == "mean" else drawn[:, :, 0]
+            vals[done:done + take] = statistic(block_in)
             done += take
         means.append(vals.mean())
         sds.append(vals.std(ddof=1))
@@ -193,6 +223,7 @@ def fit_null(
         statistic=getattr(statistic, "__name__", "statistic"),
         n_draws=n_draws,
         n_control=len(control),
+        reduce=reduce,
     )
 
 
