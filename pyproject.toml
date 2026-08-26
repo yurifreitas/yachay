@@ -1,0 +1,29 @@
+[project]
+name = "sieve"
+version = "0.1.0"
+description = "Turn a large, noisy, confounded screen into a defensible shortlist for expensive validation."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "pandas>=2.0"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7"]
+parquet = ["pyarrow>=14"]
+
+[project.scripts]
+sieve = "sieve.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
