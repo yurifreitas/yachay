@@ -83,13 +83,15 @@ log()
 log("=" * 74)
 log("STAGE 1 - null calibration")
 log("=" * 74)
-control = mat.gene_block(nonessential)
-log("control pool: %d complete cell-line rows over %d nonessential genes"
-    % (control.shape[0], control.shape[1]))
+control = mat.control_pool(nonessential)
+log("control pool: %s individual (cell line, gene) values from %d nonessential genes"
+    % (format(control.shape[0], ","), len(nonessential)))
 log("(these genes are KNOWN to do nothing when knocked out - a real null, not a")
 log(" parametric one, so it inherits the screen's own correlation structure)")
 
-null = sv.fit_null(control, stat, observed_counts=genes["n"].to_numpy(), n_draws=N_DRAWS)
+# reduce="raw": a gene's score is top-k applied directly to its per-line values.
+null = sv.fit_null(control, stat, observed_counts=genes["n"].to_numpy(),
+                   reduce="raw", n_draws=N_DRAWS)
 log()
 log(null.summary())
 log()
@@ -163,6 +165,32 @@ log()
 
 genes.sort_values("z", ascending=False).to_csv(os.path.join(OUT, "depmap_genes.csv"), index=False)
 null.to_frame().to_csv(os.path.join(OUT, "depmap_null.csv"), index=False)
+
+# The manifest is how this run appears in the explorer. An adapter that does not write
+# one simply does not show up, rather than rendering half a page.
+import json
+
+with open(os.path.join(OUT, "depmap.manifest.json"), "w", encoding="utf-8") as fh:
+    json.dump({
+        "id": "depmap",
+        "title": "DepMap CRISPR — selective dependency",
+        "subtitle": ("%d cell lines x %d genes. Score = mean of the top %d most-dependent "
+                     "lines per gene, a max-order statistic." % (mat.shape[0], mat.shape[1], K)),
+        "statistic": "top%d_mean" % K,
+        "reduce": "raw",
+        "entities": "depmap_genes.csv",
+        "null": "depmap_null.csv",
+        "headline": {
+            "genes_scored": int(len(genes)),
+            "cell_lines": int(mat.shape[0]),
+            "control_genes": int(len(nonessential)),
+            "pan_essential_in_raw_top10": float(frac_ess),
+            "count_spearman_raw": round(before, 4),
+            "count_spearman_calibrated": round(after, 4),
+            "nonessential_mean_z": round(float(genes[genes.is_nonessential_control]["z"].mean()), 3),
+            "common_essential_mean_z": round(float(genes[genes.is_common_essential]["z"].mean()), 3),
+        },
+    }, fh, indent=2)
 
 # ===========================================================================
 lines = [

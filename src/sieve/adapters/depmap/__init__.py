@@ -75,13 +75,25 @@ class DepMap:
     def shape(self) -> tuple[int, int]:
         return self.values.shape
 
-    def gene_block(self, genes: list[str]) -> np.ndarray:
-        """Rows = observations for those genes, NaNs dropped. Used as the control pool."""
+    def control_pool(self, genes: list[str]) -> np.ndarray:
+        """Pooled individual (cell line, gene) values for a set of null genes.
+
+        Shape ``(N, 1)`` — single-feature, for ``reduce="raw"``.
+
+        Getting this wrong is the easiest mistake in the library, and it was made here
+        first. A gene's score is ``top_k`` applied DIRECTLY to its own per-line values;
+        there is no averaging step. So the null must resample individual line values,
+        not average across lines. Averaging first gives a null whose sd collapses toward
+        zero (the mean of 400 lines barely moves), which divides every z by almost
+        nothing and produces confident nonsense — z around +750 in the first run here.
+
+        See ``fit_null(reduce=...)``.
+        """
         idx = [self.genes.get_loc(g) for g in genes if g in self.genes]
         if not idx:
             raise KeyError("none of the requested genes are in the matrix")
-        block = self.values[:, idx]
-        return block[np.isfinite(block).all(axis=1)]
+        vals = self.values[:, idx].ravel()
+        return vals[np.isfinite(vals)].reshape(-1, 1)
 
 
 def load_matrix(
