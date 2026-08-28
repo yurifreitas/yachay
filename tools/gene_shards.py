@@ -60,14 +60,19 @@ def main() -> int:
         print("out/gene_index.json absent — run tools/gene_index.py first")
         return 1
 
-    index = json.loads(index_path.read_text(encoding="utf-8"))
-    world = (
-        json.loads(world_path.read_text(encoding="utf-8"))
-        if world_path.exists()
-        else {"genes": {}, "scope": {}, "generated": "", "premise": ""}
-    )
+    geo_path = OUT / "gene_geometry.json"
 
-    symbols = sorted(set(index["genes"]) | set(world["genes"]))
+    def _load(path, label):
+        if path.exists():
+            return json.loads(path.read_text(encoding="utf-8"))
+        print(f"  ({label} absent — shards will omit it)")
+        return {"genes": {}, "scope": {}, "generated": "", "premise": "", "caution": ""}
+
+    index = json.loads(index_path.read_text(encoding="utf-8"))
+    world = _load(world_path, "gene_world.json")
+    geo = _load(geo_path, "gene_geometry.json")
+
+    symbols = sorted(set(index["genes"]) | set(world["genes"]) | set(geo["genes"]))
 
     if DEST.exists():
         # Rebuilt from scratch: a stale shard from a previous run is a gene whose record
@@ -83,13 +88,16 @@ def main() -> int:
         w = world["genes"].get(sym)
         if w:
             rec["world"] = w
+        g = geo["genes"].get(sym)
+        if g:
+            rec["geo"] = g
         buckets.setdefault(shard_of(sym), {})[sym] = rec
 
         # The search payload: how many of the six layers say anything. One integer per gene,
         # so a 18,000-symbol search index stays under a megabyte.
         layers = sum([
             "dep" in rec, bool(rec.get("cancer")), bool(rec.get("genotype")),
-            "net" in rec, bool(rec.get("dis")), bool(w),
+            "net" in rec, bool(rec.get("dis")), bool(w), bool(g),
         ])
         thin[sym] = layers
 
@@ -100,9 +108,11 @@ def main() -> int:
     (DEST / "idx.json").write_text(json.dumps({
         "generated": "tools/gene_shards.py",
         "shards": SHARDS,
-        "scope": {**index.get("scope", {}), "world": world.get("scope", {})},
+        "scope": {**index.get("scope", {}), "world": world.get("scope", {}),
+                  "geo": geo.get("scope", {})},
         "premise": index.get("premise", ""),
         "worldPremise": world.get("premise", ""),
+        "geoCaution": geo.get("caution", ""),
         "genes": thin,
     }, separators=(",", ":")), encoding="utf-8")
 

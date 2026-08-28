@@ -11,6 +11,8 @@ import { layersFor, searchGenes, type GeneSearchIndex, type GeneRecord,
 import { shardOf } from "./shard";
 import { WORLD } from "../../i18n/world";
 import { ConstraintPanel, ExpressionPanel, Form, VariantsPanel } from "./WorldPanels";
+import { Needle, Pathways, Routes } from "./GeometryPanels";
+import { GEO } from "../../i18n/geometry";
 import css from "./GenePage.module.css";
 
 /** ONE GENE, EVERY LAYER — the view this site was missing.
@@ -35,6 +37,7 @@ const GROUPS: NavGroupDef[] = [
      weigh a dependency score, and the screen results are meaningless without it. The order
      is: what it is, what breaking it costs, what our screen found, what it is linked to. */
   { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
+  { id: "shape", label: GEO.gShape, question: GEO.qShape },
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
   { id: "context", label: GENE.gContext, question: GENE.qContext },
   { id: "clinic", label: GENE.gClinic, question: GENE.qClinic },
@@ -45,6 +48,9 @@ const SECTIONS: NavSectionDef[] = [
   { id: "constraint", label: WORLD.sConstraint, group: "world" },
   { id: "expression", label: WORLD.sExpression, group: "world" },
   { id: "variants", label: WORLD.sVariants, group: "world" },
+  { id: "needle", label: GEO.sNeedle, group: "shape" },
+  { id: "routes", label: GEO.sRoutes, group: "shape" },
+  { id: "pathways", label: GEO.sPathways, group: "shape" },
   { id: "dependency", label: GENE.sDependency, group: "screen" },
   { id: "cancer", label: GENE.sCancer, group: "screen" },
   { id: "genotype", label: GENE.sGenotype, group: "screen" },
@@ -145,8 +151,8 @@ export default function GenePage() {
                       <span className={css.sym}>{s}</span>
                       {/* How many layers speak about this gene, before it is opened. A
                           result list that does not say this makes every row look equal. */}
-                      <span className={css.layers} aria-label={`${has} of 6 layers`}>
-                        {[0, 1, 2, 3, 4, 5].map((i) => (
+                      <span className={css.layers} aria-label={`${has} of 7 layers`}>
+                        {[0, 1, 2, 3, 4, 5, 6].map((i) => (
                           <i key={i} className={i < has ? css.pipOn : css.pip} />
                         ))}
                       </span>
@@ -169,11 +175,15 @@ export default function GenePage() {
               {layers.map((l) => (
                 <li key={l.id} className={l.present ? css.layerOn : css.layerOff}>
                   <span className={css.layerName}>
-                    {l.id === "world" ? t(WORLD.layerWorld) : t(GENE.layer[l.id as never])}
+                    {l.id === "world" ? t(WORLD.layerWorld)
+                      : l.id === "geo" ? t(GEO.layerGeo)
+                      : t(GENE.layer[l.id as never])}
                   </span>
                   <span className={css.layerDetail}>
                     {fill(t(l.id === "world"
                               ? (l.present ? WORLD.layerWorldHas : WORLD.layerWorldNone)
+                              : l.id === "geo"
+                              ? (l.present ? GEO.layerGeoHas : GEO.layerGeoNone)
                               : (l.present ? GENE.layerHas[l.id] : GENE.layerNone[l.id])),
                           Object.fromEntries(Object.entries(l.vars)
                             .map(([k, v]) => [k, fmtInt(v)])))}
@@ -195,6 +205,9 @@ export default function GenePage() {
               {section === "constraint" && <ConstraintPanel world={rec?.world} scope={data.scope} />}
               {section === "expression" && <ExpressionPanel world={rec?.world} scope={data.scope} />}
               {section === "variants" && <VariantsPanel world={rec?.world} scope={data.scope} />}
+              {section === "needle" && <Needle geo={rec?.geo} />}
+              {section === "routes" && <Routes geo={rec?.geo} />}
+              {section === "pathways" && <Pathways geo={rec?.geo} />}
               {section === "dependency" && <Dependency rec={rec} scope={data.scope} />}
               {section === "cancer" && <Cancer rec={rec} scope={data.scope} />}
               {section === "genotype" && <Genotype rec={rec} scope={data.scope} />}

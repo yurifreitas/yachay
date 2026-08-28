@@ -54,6 +54,8 @@ export type GeneRecord = {
   /** What the public catalogues hold — see worldModel.ts. Folded in by gene_shards.py so a
    *  gene is one fetch and not two. */
   world?: import("./worldModel").WorldRecord;
+  /** Where the variants fall along the molecule — see GeometryPanels.tsx. */
+  geo?: import("./GeometryPanels").GeoRecord;
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;
@@ -74,6 +76,7 @@ export type GeneSearchIndex = {
   shards: number;
   premise: string;
   worldPremise: string;
+  geoCaution: string;
   scope: {
     dependency: { genes: number; source?: string };
     cancer: { levels: string[]; subgroups: number };
@@ -81,6 +84,7 @@ export type GeneSearchIndex = {
     network: { nodes: number; modularity?: number };
     disease: { pairs: number; genes: number; unnamed?: number };
     genes: number;
+    geo?: { genes: number; withPositions?: number; withPathways?: number };
     world?: {
       protein?: { proteins: number };
       constraint?: { genes: number };
@@ -105,7 +109,7 @@ export type GeneShard = Record<string, GeneRecord>;
  *  "measured in 1,178 cell lines" under a Portuguese heading. Formatting belongs where the
  *  language is known; this returns the numbers and lets the component say them. */
 export type LayerState = {
-  id: "dependency" | "cancer" | "genotype" | "network" | "disease" | "world";
+  id: "dependency" | "cancer" | "genotype" | "network" | "disease" | "world" | "geo";
   present: boolean;
   /** The numbers the sentence needs, whichever language it ends up in. */
   vars: Record<string, number>;
@@ -125,6 +129,8 @@ export function layersFor(rec: GeneRecord | undefined, scope: GeneSearchIndex["s
               scope: scope.network.nodes } },
     { id: "disease", present: !!r.dis?.length,
       vars: { n: r.disTotal ?? 0, scope: scope.disease.genes } },
+    { id: "geo", present: !!r.geo?.hist,
+      vars: { n: r.geo?.placed ?? 0, scope: 0 } },
     { id: "world", present: !!r.world,
       vars: { n: r.world
         ? [r.world.prot, r.world.con, r.world.exp, r.world.clin].filter(Boolean).length

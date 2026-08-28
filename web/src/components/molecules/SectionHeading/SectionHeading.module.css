@@ -2,7 +2,7 @@
    peripheral vision and a panel that begins with a chart begins with no context at all. */
 .head {
   display: flex; flex-direction: column; gap: var(--sp-2);
-  padding-bottom: var(--sp-4);
+  padding-bottom: var(--sp-6);
   border-bottom: var(--r-hairline);
 }
 .crumbs {
