@@ -1,5 +1,5 @@
-data/
-out/
+/data/
+/out/
 __pycache__/
 *.py[cod]
 .venv/
@@ -7,4 +7,41 @@ __pycache__/
 .pytest_cache/
 web/node_modules/
 web/dist/
-web/src/data/generated/
+
+# THE GENERATED WEB DATA IS TRACKED, and it is the only generated thing that is.
+#
+# `data/` and `out/` stay ignored: they are hundreds of megabytes and some of the sources
+# (Orphanet CC BY-ND, the Human Protein Atlas CC BY-SA) are not ours to redistribute. But
+# that means no CI runner can rebuild the site's numbers from a clone, and a published
+# explorer with no data is not a publication. So the converted JSON under web/ is committed
+# — 4.5 MB, the artefacts themselves — and the deploy workflow says plainly that it is
+# publishing them rather than reproducing them.
+#
+# The ignore rules above are ANCHORED (`/data/`, not `data/`) for that reason: unanchored,
+# they matched web/src/data and web/public/data as well, and no negation can un-ignore a
+# file inside an ignored directory.
+
+# LaTeX build artefacts (generated/numbers.tex IS tracked - it is the audit trail)
+paper/build/
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Ingested public catalogues: large, versioned by their publishers, and some are
+# not redistributable (Orphanet CC BY-ND, HPA CC BY-SA). Fetch with tools/ingest.py.
+/data/ontology/
+
+# Assistant working directories. Session state, skill caches and scratch files: local to
+# one machine and one person, and not part of the method this repository publishes.
+.claude/
+.claude*/
+**/.claude/
+CLAUDE.md
