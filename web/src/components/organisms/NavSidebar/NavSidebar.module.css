@@ -117,30 +117,88 @@
   outline: 2px solid var(--r-brand-hi); outline-offset: 2px;
 }
 
-/* ---------- narrow: the rail becomes a strip ---------- */
-/* Below 1100px there is not enough width for a 264px rail and a chart, so the tree lies
-   down: the views scroll horizontally at the top and the page's own groups and sections go
-   with them. Nothing is removed — a reader on a laptop reaches the same forty panels. */
+/* ---------- the mobile bar and drawer ---------- */
+/* Hidden on desktop: the rail is always there, and a second way in would be noise. */
+.bar { display: none; }
+.find { display: none; }
+.scrim { display: none; }
+
 @media (max-width: 1099px) {
+  /* THE RAIL IS A DRAWER, NOT A STRIP.
+     Laid down as rows it was five views, then four questions, then up to sixteen panels — a
+     full screen of navigation before a reader reached one number, on every visit. */
   .rail {
-    position: static; width: auto; height: auto;
-    flex-direction: column; gap: var(--sp-4);
-    border-right: 0; border-bottom: var(--r-hairline);
-    padding: var(--sp-4) var(--sp-4) var(--sp-3);
+    position: fixed; inset: 0 auto 0 0; z-index: 45;
+    width: min(320px, 86vw); height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 220ms var(--r-ease);
+    border-right: var(--r-hairline);
+    box-shadow: var(--r-shadow);
+    padding: var(--sp-6) var(--sp-4) var(--sp-12);
   }
-  .tree { gap: var(--sp-4); }
-  .family { flex-direction: row; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
-  .familyLabel { padding: 0; }
-  .view { width: auto; }
-  .blurb { display: none; }
-  /* Each level takes its own line rather than sitting as one item inside the view row —
-     otherwise a nineteen-section group is squeezed into whatever space the view labels
-     left over. */
-  .groups, .sections {
-    flex-direction: row; flex-wrap: wrap; flex-basis: 100%;
-    border-left: 0; padding-left: 0; margin-left: 0;
+  .railOpen { composes: rail; transform: none; }
+
+  .scrim {
+    display: block; position: fixed; inset: 0; z-index: 44;
+    background: oklch(0% 0 0 / 0.5);
   }
-  .question { display: none; }
+
+  .bar {
+    display: flex; align-items: center; gap: var(--sp-3);
+    position: sticky; top: 0; z-index: 40;
+    height: 56px; padding: 0 var(--sp-3);
+    background: color-mix(in srgb, var(--r-surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: var(--r-hairline);
+  }
+  .burger {
+    flex: none; width: 44px; height: 44px;
+    display: grid; place-items: center;
+    border: 0; background: transparent; cursor: pointer; border-radius: var(--r-radius-sm);
+  }
+  .burger:active { background: var(--r-surface-2); }
+
+  .find {
+    flex: none; width: 44px; height: 44px;
+    display: grid; place-items: center;
+    border: 0; background: transparent; cursor: pointer; border-radius: var(--r-radius-sm);
+    color: var(--r-text-2);
+  }
+  .find:active { background: var(--r-surface-2); }
+  /* Three rules from one element: the box is the middle bar and the pseudo-elements are the
+     outer two. Fewer nodes than three spans, and it scales with the token. */
+  .burgerIcon, .burgerIcon::before, .burgerIcon::after {
+    content: ""; display: block;
+    width: 18px; height: 2px; border-radius: 2px; background: var(--r-text);
+  }
+  .burgerIcon { position: relative; }
+  .burgerIcon::before { position: absolute; top: -6px; }
+  .burgerIcon::after { position: absolute; top: 6px; }
+
+  /* WHERE YOU ARE, not only a way to leave. A bare hamburger makes the reader open the
+     drawer to find out which page they are already on. */
+  .barWhere { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+  .barView {
+    font-size: 13px; font-weight: 600; color: var(--r-text);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .barSection {
+    font-size: 11px; color: var(--r-text-3);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* The language switch lives in the bar on mobile; inside the drawer it would be said
+     twice, and the one in the bar is the one a thumb can reach. */
+  .rail .brand > :last-child { display: none; }
+
+  /* Touch targets. 44px is the floor, and a nav row under it is a row people miss. */
+  .view, .viewOn { padding: var(--sp-3); min-height: 44px; }
+  .group, .groupOn { min-height: 44px; }
+  .section, .sectionOn { min-height: 40px; }
+}
+
+@media (max-width: 1099px) and (prefers-reduced-motion: reduce) {
+  .rail { transition: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

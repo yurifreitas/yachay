@@ -292,7 +292,7 @@ function Cancer({ rec, scope }: PanelProps) {
   return (
     <div className={css.block}>
       <p className={css.sub}>{t(GENE.cancerLede)}</p>
-      <table className={css.table}>
+      <div className={css.tableWrap}><table className={css.table}>
         <thead>
           <tr>
             <th>{t(GENE.cSubgroup)}</th><th>{t(GENE.cLevel)}</th>
@@ -312,7 +312,7 @@ function Cancer({ rec, scope }: PanelProps) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
       {(rec?.cancerTotal ?? 0) > hits.length && (
         <p className={css.foot}>
           {t(GENE.cTruncated)} {rec?.cancerTotal}.
@@ -335,7 +335,7 @@ function Genotype({ rec, scope }: PanelProps) {
   return (
     <div className={css.block}>
       <p className={css.sub}>{t(GENE.genotypeLede)}</p>
-      <table className={css.table}>
+      <div className={css.tableWrap}><table className={css.table}>
         <thead>
           <tr>
             <th>{t(GENE.gMutated)}</th>
@@ -354,7 +354,7 @@ function Genotype({ rec, scope }: PanelProps) {
             </tr>
           ))}
         </tbody>
-      </table>
+      </table></div>
     </div>
   );
 }

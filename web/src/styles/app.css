@@ -7,7 +7,12 @@
 .app { min-height: 100vh; display: flex; align-items: flex-start; }
 .column { flex: 1; min-width: 0; display: flex; flex-direction: column; min-height: 100vh; }
 
-@media (max-width: 1099px) { .app { display: block; } }
+@media (max-width: 1099px) {
+  /* The rail is a fixed drawer below this width, so the shell is one column and the content
+     starts at the top rather than under a reserved 264px gutter. */
+  .app { display: block; }
+  .column { min-height: auto; }
+}
 
 /* A keyboard reader should not walk forty rail buttons to reach a chart. */
 .skip {

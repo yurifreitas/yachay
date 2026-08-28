@@ -30,6 +30,7 @@ export const S = {
   skip: bi("Skip to content", "Pular para o conteúdo"),
   loading: bi("Loading view", "Carregando a visão"),
   language: bi("Language", "Idioma"),
+  findGene: bi("Find a gene", "Procurar um gene"),
 
   footer: bi(
     "Adapter-driven: every number and document comes from a manifest written by an analysis "

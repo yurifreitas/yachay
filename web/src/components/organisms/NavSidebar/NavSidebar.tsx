@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavTree } from "../../../lib/nav";
 import { useT } from "../../../i18n";
 import { S } from "../../../i18n/strings";
@@ -26,14 +26,90 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
   const tree = useNavTree();
   const t = useT();
 
+  /* ON A PHONE THE RAIL WAS A WALL.
+   *
+   *  Below 1100px the rail laid itself down as rows of chips: five views, then four
+   *  questions, then up to sixteen panels — a full screen of navigation before a reader
+   *  reached one number. On a 430px phone that is three swipes of chrome to get to the
+   *  content, every time.
+   *
+   *  So on small screens it becomes a drawer: a 56px bar saying where you are, and the same
+   *  three-level tree behind a button. Nothing is removed — the tree a phone gets is the
+   *  tree a desktop gets, which is the whole reason it was worth building once. */
+  const [open, setOpen] = useState(false);
+
+  // Escape closes, and the body does not scroll behind an open drawer — a drawer whose
+  // backdrop scrolls is a drawer people close by accident.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  const here = views.find((v) => v.id === activeView);
+  const section = tree?.sections.find((x) => x.id === tree.section);
+
   return (
-    <aside className={css.rail}>
+    <>
+      {/* The mobile bar. Sticky, 56px, and it says WHERE YOU ARE rather than only offering
+          a menu — a bare hamburger makes the reader open the drawer to find that out. */}
+      <div className={css.bar}>
+        <button type="button" className={css.burger} onClick={() => setOpen(true)}
+                aria-expanded={open} aria-label={t(S.navLabel)}>
+          <span className={css.burgerIcon} aria-hidden="true" />
+        </button>
+        <span className={css.barWhere}>
+          <span className={css.barView}>{here ? t(here.label) : "yachay"}</span>
+          {section && <span className={css.barSection}>{t(section.label)}</span>}
+        </span>
+        <button
+          type="button"
+          className={css.find}
+          aria-label={t(S.findGene)}
+          onClick={() => window.dispatchEvent(new CustomEvent("yachay:find-gene"))}
+        >
+          {/* A magnifier drawn rather than imported: one circle and one line is less code
+              than an icon dependency, and it inherits the token colour. */}
+          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <line x1="13" y1="13" x2="17" y2="17" stroke="currentColor" strokeWidth="1.8"
+                  strokeLinecap="round" />
+          </svg>
+        </button>
+        <LangSwitch />
+      </div>
+
+      {open && (
+        <div className={css.scrim} onPointerDown={() => setOpen(false)} role="presentation" />
+      )}
+
+      <aside className={open ? css.railOpen : css.rail}>
       <div className={css.brand}>
         <span className={css.mark} aria-hidden="true" />
         <div>
           <h1>yachay</h1>
           <p>{t(S.tagline)}</p>
         </div>
+        <button
+          type="button"
+          className={css.find}
+          aria-label={t(S.findGene)}
+          onClick={() => window.dispatchEvent(new CustomEvent("yachay:find-gene"))}
+        >
+          {/* A magnifier drawn rather than imported: one circle and one line is less code
+              than an icon dependency, and it inherits the token colour. */}
+          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+            <circle cx="9" cy="9" r="5.5" fill="none" stroke="currentColor" strokeWidth="1.8" />
+            <line x1="13" y1="13" x2="17" y2="17" stroke="currentColor" strokeWidth="1.8"
+                  strokeLinecap="round" />
+          </svg>
+        </button>
         <LangSwitch />
       </div>
 
@@ -52,7 +128,7 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                       type="button"
                       className={on ? css.viewOn : css.view}
                       aria-current={on ? "page" : undefined}
-                      onClick={() => onView(v.id)}
+                      onClick={() => { onView(v.id); setOpen(false); }}
                     >
                       {t(v.label)}
                       {/* The blurb prints only under the open view. Under all of them it is
@@ -92,7 +168,7 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                                         aria-selected={s.id === tree.section}
                                         className={s.id === tree.section
                                           ? css.sectionOn : css.section}
-                                        onClick={() => tree.onSection(s.id)}
+                                        onClick={() => { tree.onSection(s.id); setOpen(false); }}
                                       >
                                         <span>{t(s.label)}</span>
                                         {s.badge && <span className={css.badge}>{s.badge}</span>}
@@ -113,6 +189,7 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
           );
         })}
       </nav>
-    </aside>
+      </aside>
+    </>
   );
 }

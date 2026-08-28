@@ -58,8 +58,16 @@ export function CommandPalette({ onPick }: { onPick: (symbol: string) => void })
         setOpen(true);
       }
     };
+    /* A KEYBOARD SHORTCUT IS NOT A WAY IN ON A PHONE. The mobile bar dispatches this event
+       from its search button, so the same palette serves both without the bar needing a
+       reference to this component or the state being lifted into the shell. */
+    const openEvent = () => { setArmed(true); setOpen(true); };
     window.addEventListener("keydown", on);
-    return () => window.removeEventListener("keydown", on);
+    window.addEventListener("yachay:find-gene", openEvent);
+    return () => {
+      window.removeEventListener("keydown", on);
+      window.removeEventListener("yachay:find-gene", openEvent);
+    };
   }, []);
 
   useEffect(() => {
