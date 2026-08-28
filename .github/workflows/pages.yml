@@ -1,0 +1,78 @@
+# Publish the explorer to GitHub Pages.
+#
+# WHAT THIS BUILD CANNOT DO, AND WHY THAT IS THE POINT. The analysis stages are not run here.
+# They read catalogues that are 400 MB compressed, some of which (Orphanet CC BY-ND, the Human
+# Protein Atlas CC BY-SA) this repository is not free to redistribute, so `data/` and `out/`
+# are gitignored and no CI runner can reproduce them from a clone. What CI has is the
+# generated JSON committed under `web/public/data` and `web/src/data/generated`.
+#
+# So the deploy is honest about what it is: a publication of artefacts an analyst produced on
+# a machine that had the data, not a claim that the pipeline ran in CI. Regenerating them is
+# `python tools/ingest.py && python tasks.py build && cd web && npm run data`, on a machine
+# with the catalogues.
+#
+# The `npm run build` step still runs the gates — contrast, palette and the viz arithmetic
+# checks — so a figure whose maths broke cannot reach the site even though its data cannot be
+# rebuilt here.
+
+name: Deploy explorer to Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - ".github/workflows/pages.yml"
+  # So a publish can be forced without a code change — e.g. after regenerated data lands.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time; a queued run supersedes a waiting one but never cancels a run that is
+# already publishing, which would leave the site half-written.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          # 22 for `--experimental-strip-types`, which is how scripts/check-viz.mjs tests the
+          # exact TypeScript modules the app imports rather than a re-implementation.
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - run: npm ci
+
+      # `npm run build` is `check && data && tsc -b && vite build`. The data step is a no-op
+      # when out/ is absent — it emits the committed fallbacks — but the check step is not,
+      # and that is the gate worth having in CI.
+      - run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
