@@ -94,7 +94,7 @@
 .how { margin: 0; max-width: 95ch; font-size: 14px; line-height: 1.7; color: var(--r-text-2); }
 .how strong { color: var(--r-text); }
 .provenance {
-  margin: 0; max-width: 95ch; padding: var(--sp-5);
+  margin: 0; max-width: 95ch; padding: var(--sp-6);
   font-size: 13px; line-height: 1.7; color: var(--r-text-3);
   background: var(--r-surface-2); border-radius: var(--r-radius);
 }

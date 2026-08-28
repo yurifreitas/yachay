@@ -36,7 +36,10 @@ select, input[type="search"] {
    against the rail's border. */
 main { flex: 1; width: 100%; margin: 0; padding: 48px 56px 128px; }
 @media (min-width: 2000px) { main { padding: 56px 80px 128px; } }
-@media (max-width: 1099px) { main { padding: 32px 24px 96px; } }
+@media (max-width: 1099px) { main { padding: 40px 24px 96px; } }
+/* On a phone the sticky bar is 56px of chrome; the content needs to start clear of it, and
+   20px of side margin is what keeps a 375px column from touching both edges. */
+@media (max-width: 620px) { main { padding: 32px 20px 80px; } }
 
 footer {
   border-top: 1px solid var(--border); padding: 18px 24px;
@@ -271,7 +274,7 @@ table.data td.num, table.data th:not(:first-child) { text-align: right; }
 }
 .pipe-stats > div {
   display: grid; gap: 2px; padding: 18px 20px;
-  border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface-1);
 }
 .pipe-k {
   font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted);
@@ -289,7 +292,7 @@ table.data td.num, table.data th:not(:first-child) { text-align: right; }
 .pipe-stage {
   display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 14px;
   padding: 18px 20px; border: 1px solid var(--border); border-radius: 12px;
-  background: var(--surface);
+  background: var(--surface-1);
 }
 .pipe-stage.stale { border-color: var(--neg, #d4635f); }
 .pipe-n { font-size: 13px; color: var(--text-muted); }
@@ -336,7 +339,7 @@ table.data td.num, table.data th:not(:first-child) { text-align: right; }
 .eco-stats { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .eco-stat {
   display: grid; gap: 2px; padding: 18px 20px;
-  border: 1px solid var(--border); border-radius: 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 12px; background: var(--surface-1);
 }
 .eco-stat.hot { border-color: var(--neg, #d4635f); }
 .eco-k { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); }
@@ -359,7 +362,7 @@ table.data td.num, table.data th:not(:first-child) { text-align: right; }
 .eco-row, .eco-r {
   display: grid; gap: 6px; align-content: start;
   padding: 16px 18px; border: 1px solid var(--border); border-radius: 12px;
-  background: var(--surface);
+  background: var(--surface-1);
 }
 .eco-row[data-status="installed, unused"] { border-color: color-mix(in oklch, var(--neg, #d4635f) 55%, transparent); }
 .eco-row[data-status="in use"] { border-color: color-mix(in oklch, var(--pos, #3fae7a) 45%, transparent); }

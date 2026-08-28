@@ -4,6 +4,9 @@
    The scale is the house one: 96px between the page's major movements, 32px inside a block,
    and nothing in between invented for the occasion. */
 .page { display: flex; flex-direction: column; gap: var(--sp-24); color: var(--r-text); }
+/* 96px between movements is right on a monitor and is most of a phone screen. Two thirds of
+   it still separates the arguments without making the reader scroll through nothing. */
+@media (max-width: 620px) { .page { gap: var(--sp-16); } }
 
 /* ---------------------------------------------------------------------- hero */
 .hero {
@@ -70,6 +73,12 @@
 /* The symbol is the page's subject and was 24px from a row of small cards, which made it
    read as a caption for them. */
 .chosen { display: flex; flex-direction: column; gap: var(--sp-8); }
+@media (max-width: 620px) {
+  /* Stacked, the cards are a tall column; the symbol needs to sit clear of it or it reads
+     as the first card's heading. */
+  .chosen { gap: var(--sp-6); }
+  .symbol { font-size: 30px; }
+}
 .symbol {
   margin: 0; font-family: var(--mono); font-size: 34px; font-weight: 600;
   letter-spacing: -0.01em; color: var(--r-text);
@@ -88,11 +97,17 @@
 }
 @media (max-width: 1500px) { .layerBar { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 1000px) { .layerBar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 620px)  { .layerBar { grid-template-columns: 1fr; } }
+@media (max-width: 620px) {
+  .layerBar { grid-template-columns: 1fr; gap: var(--sp-4); }
+  /* THE MIN-HEIGHT EXISTS TO ALIGN CARDS ACROSS A ROW. In one column there is no row to
+     align to, so it only leaves each card half empty — which reads as a loading state, not
+     as space. The card sizes to its sentence and the air goes between the cards instead. */
+  .layerOn, .layerOff { min-height: 0; padding: var(--sp-6); }
+}
 .layerOn, .layerOff {
   display: flex; flex-direction: column; gap: var(--sp-2);
   min-height: 92px;
-  padding: var(--sp-5) var(--sp-5) var(--sp-5) var(--sp-4);
+  padding: var(--sp-6) var(--sp-6) var(--sp-6) var(--sp-4);
   border-radius: var(--r-radius-sm);
   border-left: 3px solid;
 }
@@ -112,6 +127,7 @@
 
 /* --------------------------------------------------------------------- panels */
 .block { display: flex; flex-direction: column; gap: var(--sp-8); }
+@media (max-width: 620px) { .block { gap: var(--sp-6); } }
 .sub { margin: 0; max-width: 82ch; font-size: 13.5px; line-height: 1.6; color: var(--r-text-2); }
 
 /* EACH CELL CARRIES ITS OWN BORDER. The previous version drew one hairline grid — a border
@@ -124,6 +140,7 @@
   display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: var(--sp-3);
 }
+@media (max-width: 620px) { .facts { gap: var(--sp-3); } .fact { padding: var(--sp-6); } }
 
 .fact {
   display: flex; flex-direction: column; gap: var(--sp-2);
@@ -144,7 +161,7 @@
 .factS { font-size: 11.5px; line-height: 1.55; color: var(--r-text-3); }
 
 .note {
-  margin: 0; max-width: 82ch; padding: var(--sp-4) var(--sp-5);
+  margin: 0; max-width: 82ch; padding: var(--sp-4) var(--sp-6);
   font-size: 13px; line-height: 1.6;
   border-left: 3px solid; border-radius: 0 var(--r-radius-sm) var(--r-radius-sm) 0;
   background: var(--r-surface-2);

@@ -132,7 +132,7 @@
 .regHypothesis { color: var(--cap-molecule); }
 .claimBody {
   display: grid; gap: var(--sp-3);
-  padding: var(--sp-6); padding-top: var(--sp-5);
+  padding: var(--sp-6); padding-top: var(--sp-6);
   border-top: var(--r-hairline);
 }
 .statement { margin: 0; max-width: 88ch; font-size: 15px; line-height: 1.7; color: var(--r-text); }

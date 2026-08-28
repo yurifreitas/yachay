@@ -39,7 +39,7 @@
 }
 
 .premise {
-  margin: 0; max-width: 82ch; padding-left: var(--sp-5);
+  margin: 0; max-width: 82ch; padding-left: var(--sp-6);
   border-left: 2px solid var(--r-border-hi);
   font-size: 13.5px; line-height: 1.7; color: var(--r-text-2);
 }

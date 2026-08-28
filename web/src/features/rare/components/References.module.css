@@ -139,7 +139,7 @@
 .cards { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); }
 .card {
   display: grid; gap: var(--sp-2); align-content: start;
-  padding: var(--sp-5); background: var(--r-surface);
+  padding: var(--sp-6); background: var(--r-surface);
   border: var(--r-hairline); border-radius: var(--r-radius);
   border-left: 3px solid var(--r-border-hi);
 }
