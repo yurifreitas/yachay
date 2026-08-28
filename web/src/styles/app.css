@@ -26,8 +26,12 @@ select, input[type="search"] {
 /* Full-bleed. This is a dashboard, not an article: the content is charts and tables that
    get better with width, and a centred 1280px column on a wide monitor is two thirds
    empty margin. Prose inside still holds its own measure, per block. */
-main { flex: 1; width: 100%; margin: 0; padding: 32px 40px 96px; }
-@media (min-width: 2000px) { main { padding: 40px 64px 96px; } }
+/* The content column's own margins. 40px was set when the pages were narrow tables; with
+   a 264px rail beside it and figures that run the full width, the text now starts hard
+   against the rail's border. */
+main { flex: 1; width: 100%; margin: 0; padding: 48px 56px 128px; }
+@media (min-width: 2000px) { main { padding: 56px 80px 128px; } }
+@media (max-width: 1099px) { main { padding: 32px 24px 96px; } }
 
 footer {
   border-top: 1px solid var(--border); padding: 18px 24px;

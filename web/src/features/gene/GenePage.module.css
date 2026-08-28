@@ -7,20 +7,29 @@
 
 /* ---------------------------------------------------------------------- hero */
 .hero {
-  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
   gap: var(--sp-16) var(--sp-24); align-items: start;
 }
-@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+@media (max-width: 1100px) { .hero { grid-template-columns: 1fr; gap: var(--sp-12); } }
 
 .eyebrow {
   margin: 0 0 var(--sp-3); font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--r-text-3);
 }
-.title { margin: 0 0 var(--sp-5); font-size: 30px; line-height: 1.15; letter-spacing: -0.02em; }
-.lede { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.65; color: var(--r-text-2); }
+/* The lede was sitting 20px under a 30px headline, which reads as one block of text with a
+   bold first line rather than as a title and its explanation. */
+.title { margin: 0 0 var(--sp-6); font-size: 30px; line-height: 1.2; letter-spacing: -0.02em; }
+.lede { margin: 0; max-width: 62ch; font-size: 14.5px; line-height: 1.7; color: var(--r-text-2); }
 
 /* --------------------------------------------------------------------- search */
-.search { position: relative; display: flex; flex-direction: column; gap: var(--sp-2); }
+/* A CARD, NOT THREE FLOATING ELEMENTS. A label, a field and a count with nothing holding
+   them together read as debris in the corner of the hero; the box says "this is the way in",
+   which for most readers of this page it is. */
+.search {
+  position: relative; display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
 .searchLabel {
   font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
   color: var(--r-text-3);
@@ -35,14 +44,14 @@
 .searchNote { margin: 0; font-size: 11.5px; color: var(--r-text-3); }
 
 .results {
-  list-style: none; margin: 0; padding: var(--sp-1);
+  list-style: none; margin: 0; padding: var(--sp-2);
   max-height: 320px; overflow-y: auto;
   background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-sm);
   box-shadow: var(--r-shadow);
 }
 .result, .resultOn {
   display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
-  width: 100%; padding: var(--sp-2) var(--sp-3);
+  width: 100%; padding: var(--sp-3) var(--sp-4);
   border: 0; background: transparent; cursor: pointer; font: inherit; text-align: left;
   border-radius: var(--r-radius-sm);
 }
@@ -58,43 +67,69 @@
 .pipOn { background: var(--r-brand); }
 
 /* --------------------------------------------------------------------- chosen */
-.chosen { display: flex; flex-direction: column; gap: var(--sp-6); }
+/* The symbol is the page's subject and was 24px from a row of small cards, which made it
+   read as a caption for them. */
+.chosen { display: flex; flex-direction: column; gap: var(--sp-8); }
 .symbol {
   margin: 0; font-family: var(--mono); font-size: 34px; font-weight: 600;
   letter-spacing: -0.01em; color: var(--r-text);
 }
+/* SEVEN CARDS DO NOT FIT ON ONE ROW, and forcing them there was the worst thing on this
+   page. At 190px each sentence — "tested against 121 genotype contrasts, selected in none" —
+   wrapped to four lines and spilled past a card that had no visible box to spill out of.
+   At 260px the row breaks to four and three, every sentence fits in two lines, and the
+   cards align because they share a min-height instead of each finding its own. */
+/* FOUR COLUMNS, NOT auto-fit. There are exactly seven layers, and auto-fit packed six onto
+   one row and left the seventh alone — a widowed card reads as a mistake, and no amount of
+   spacing fixes it. Four and three is a shape someone chose. */
 .layerBar {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--sp-3);
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-4);
 }
+@media (max-width: 1500px) { .layerBar { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .layerBar { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 620px)  { .layerBar { grid-template-columns: 1fr; } }
 .layerOn, .layerOff {
-  display: flex; flex-direction: column; gap: 2px;
-  padding: var(--sp-4) var(--sp-5);
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  min-height: 92px;
+  padding: var(--sp-5) var(--sp-5) var(--sp-5) var(--sp-4);
   border-radius: var(--r-radius-sm);
   border-left: 3px solid;
 }
 /* An absent layer is drawn, not hidden: "tested and not found" must not look like "never
    asked", and a missing card says nothing at all. */
 .layerOn { background: var(--r-surface-2); border-left-color: var(--r-brand); }
-.layerOff { background: transparent; border-left-color: var(--r-border); }
+/* The absent card keeps a box. Transparent, it looked like text that had escaped the card
+   above it — which made the absences look like a rendering bug rather than a measurement. */
+.layerOff {
+  background: transparent;
+  border-left-color: var(--r-border-hi);
+  box-shadow: inset 0 0 0 1px var(--r-border);
+}
 .layerName { font-size: 12px; font-weight: 600; color: var(--r-text); }
 .layerOff .layerName { color: var(--r-text-3); }
-.layerDetail { font-size: 11.5px; line-height: 1.45; color: var(--r-text-3); }
+.layerDetail { font-size: 12px; line-height: 1.55; color: var(--r-text-3); }
 
 /* --------------------------------------------------------------------- panels */
 .block { display: flex; flex-direction: column; gap: var(--sp-8); }
 .sub { margin: 0; max-width: 82ch; font-size: 13.5px; line-height: 1.6; color: var(--r-text-2); }
 
+/* EACH CELL CARRIES ITS OWN BORDER. The previous version drew one hairline grid — a border
+   colour behind a 1px gap — which is elegant while the grid is full and wrong the moment it
+   is not: four facts in three columns left the second row as a bare grey rectangle two cells
+   wide, which reads as a broken panel rather than as a short last row.
+   Panels here hold one fact or six, so the count cannot be fixed; only the shape of the
+   failure can be. */
 .facts {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px;
-  background: var(--r-border); border: 1px solid var(--r-border);
-  border-radius: var(--r-radius); overflow: hidden;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--sp-3);
 }
+
 .fact {
-  display: flex; flex-direction: column; gap: var(--sp-1);
+  display: flex; flex-direction: column; gap: var(--sp-2);
   /* Card padding at 24/28px, not 16/20. A number that touches its own border reads as
      cramped no matter how good the typography above it is. */
-  padding: var(--sp-6) var(--sp-6); background: var(--r-surface);
+  padding: var(--sp-6) var(--sp-6) var(--sp-6); background: var(--r-surface);
 }
 .factK {
   font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
@@ -106,7 +141,7 @@
 }
 .fact[data-tone="good"] .factV { color: var(--known); }
 .fact[data-tone="warn"] .factV { color: var(--unknown); }
-.factS { font-size: 11.5px; line-height: 1.45; color: var(--r-text-3); }
+.factS { font-size: 11.5px; line-height: 1.55; color: var(--r-text-3); }
 
 .note {
   margin: 0; max-width: 82ch; padding: var(--sp-4) var(--sp-5);
@@ -132,7 +167,7 @@
 .level { font-size: 11.5px; color: var(--r-text-3); }
 
 /* -------------------------------------------------------------------- disease */
-.assoc { display: flex; flex-direction: column; gap: var(--sp-2); }
+.assoc { display: flex; flex-direction: column; gap: var(--sp-3); }
 .assocName {
   display: flex; align-items: baseline; gap: var(--sp-3); margin: 0;
   font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--r-text);
@@ -140,11 +175,12 @@
 .assocCount { font-size: 11px; font-weight: 400; color: var(--r-text-3); }
 .diseaseList {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-1);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 0 var(--sp-8);
 }
 .diseaseList li {
-  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3);
-  padding: var(--sp-2) 0; border-bottom: var(--r-hairline);
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4);
+  padding: var(--sp-3) 0; border-bottom: var(--r-hairline);
 }
 .diseaseName { font-size: 13px; color: var(--r-text); }
 .diseaseId { font-family: var(--mono); font-size: 11px; color: var(--r-text-3); flex: none; }
@@ -154,11 +190,11 @@
 .emptyLede { margin: 0; max-width: 68ch; font-size: 14px; color: var(--r-text-2); }
 .seeds {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--sp-3);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--sp-4);
 }
 .seed {
   display: flex; flex-direction: column; gap: var(--sp-2); width: 100%; text-align: left;
-  padding: var(--sp-5); cursor: pointer; font: inherit;
+  padding: var(--sp-6); cursor: pointer; font: inherit;
   background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
   transition: border-color 140ms var(--r-ease), background 140ms var(--r-ease);
 }
@@ -199,7 +235,7 @@
 }
 
 /* ------------------------------------------------------ world: expression */
-.cells { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.cells { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
 .cells li {
   display: grid; grid-template-columns: minmax(140px, 220px) 1fr 64px;
   align-items: center; gap: var(--sp-3);
@@ -220,8 +256,10 @@
   border-radius: var(--r-radius-sm); background: var(--r-surface-2);
 }
 .stack > span { display: block; height: 100%; }
+/* THE SAME FOUR HUES AS THE NEEDLE PLOT, because it is the same data one panel later. Two
+   encodings of one classification is how a reader concludes they are two classifications. */
 .segPath { background: var(--critical); }
-.segVus { background: var(--unknown); }
+.segVus { background: var(--partial); }
 .segConf { background: var(--warning); }
 .segBenign { background: var(--known); }
 .segOther { background: var(--absent); }
@@ -239,8 +277,8 @@
 
 /* ------------------------------------------------------ geometry: clustering */
 .cluster {
-  display: flex; flex-direction: column; gap: var(--sp-4);
-  padding: var(--sp-8);
+  display: flex; flex-direction: column; gap: var(--sp-6);
+  padding: var(--sp-8) var(--sp-8) var(--sp-12);
   background: var(--r-surface-2); border-radius: var(--r-radius);
 }
 .clusterTitle { margin: 0; font-size: 15px; font-weight: 600; color: var(--r-text); }
@@ -253,7 +291,7 @@
 }
 /* Measured against expected, on one baseline. The comparison IS the argument, and stating
    it in prose only would ask the reader to hold two percentages in their head. */
-.clusterBars { display: grid; gap: var(--sp-2); max-width: 520px; }
+.clusterBars { display: grid; gap: var(--sp-3); max-width: 520px; }
 .clusterRow { display: grid; grid-template-columns: 48px 1fr; align-items: center; gap: var(--sp-3); }
 .clusterLabel {
   font-size: 12px; color: var(--r-text-2); text-align: right;
@@ -274,11 +312,12 @@
 /* ------------------------------------------------------ geometry: pathways */
 .pathways {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-1);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 0 var(--sp-8);
 }
 .pathways li {
-  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3);
-  padding: var(--sp-2) 0; border-bottom: var(--r-hairline);
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4);
+  padding: var(--sp-3) 0; border-bottom: var(--r-hairline);
 }
 .pathName { font-size: 13px; color: var(--r-text); }
 .pathId { font-family: var(--mono); font-size: 10.5px; color: var(--r-text-3); flex: none; }
