@@ -1,0 +1,37 @@
+\section{Introduction}
+\label{sec:intro}
+
+% Rule: every claim about prior work carries what OUR measurement does to it.
+% The long form of this section is docs/lineage.md; do not restate it, cite it.
+
+\todo[inline]{Draft. The argument: (i) the problem class; (ii) the aggregate is a selection
+operator; (iii) the bias is known in every field under a different name; (iv) what is new
+here is the empirical, per-entity, count-indexed form.}
+
+\subsection{The problem class}
+\label{sec:problem}
+
+Many candidate entities. Each carries a noisy aggregate score estimated from a varying number
+of observations. Confounds correlate with that score. A downstream validation is expensive and
+can test only a handful.
+
+\subsection{The same bias, once per field}
+\label{sec:names}
+
+The mechanism is textbook order statistics. It is rediscovered under a local name in each
+field it damages: the winner's curse in genetics, the deflated Sharpe ratio in
+finance~\cite{bailey2014deflated}, regression to the mean in clinical trials, and
+scan-statistic inflation in change-point detection~\cite{darling1956limit}.
+
+\subsection{What is new}
+\label{sec:contribution}
+
+Three things, stated so they can be disputed:
+\begin{enumerate}
+  \item The bias is estimated \emph{empirically}, from the screen's own controls, so it
+        inherits the real correlation structure instead of assuming independence.
+  \item It is indexed \emph{per entity by observation count}, which is the form that breaks
+        comparability --- not per discovery, which is the usual framing.
+  \item The direction of the bias with $\nobs$ is not assumed. It rises for some statistics
+        and falls for others; see \cref{sec:direction}.
+\end{enumerate}

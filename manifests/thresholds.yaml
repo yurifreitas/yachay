@@ -1,0 +1,231 @@
+# =====================================================================
+# THRESHOLD MANIFEST — ADR 0006
+# =====================================================================
+# Practice transferred from F:\CODE\climate (manifests/feature_blocks.yaml).
+#
+# Every threshold this project acts on, with the ONE field that matters:
+# whether the data it governs had already been seen when the number was
+# chosen. A threshold picked blind and a threshold calibrated to a plot
+# you have already looked at are different objects, and only the first is
+# a design choice.
+#
+# APPEND-ONLY. A revised threshold gets a new entry with a version bump
+# and a reason; the old entry stays. Editing a frozen row in place
+# destroys the only thing this file is for.
+#
+# THREE KINDS, because the first two were not enough — the test below
+# rejected the NF2 gate, which is neither derived nor read off the data:
+#   mechanistic   follows from how the thing works; survives a new dataset
+#   empirical     read off THIS data; does not survive a new dataset
+#   conventional  fixed by fiat or by an external convention, chosen blind.
+#                 Arbitrary, but arbitrary BEFORE looking, which is the only
+#                 kind of arbitrary that can be defended.
+# =====================================================================
+
+version: 1
+frozen_at: 2026-08-28
+frozen_by: "ADR 0006"
+
+thresholds:
+
+  # ---- sieve.stages.target ------------------------------------------
+  # ALL FOUR ARE HONESTLY MARKED target_contact: true. They were chosen
+  # on 2026-08-28, after tools/patient_variants.py had printed the
+  # allelic spectrum and tools/clinvar_evidence.py the VUS distribution.
+  # Relabelling them would make this manifest a fiction on its first day.
+  - id: RECURRENT_ALLELE_PATIENTS
+    module: sieve.stages.target
+    value: 10
+    fixed_at: 2026-08-28
+    target_contact: true
+    pre_registered: false
+    justification: empirical
+    reason: >-
+      Chosen after seeing that NF1 has an allele carried by 107 patients and
+      STXBP1's most recurrent reaches 19. A mechanistic version would derive it
+      from the cost of developing one allele-specific edit against the number of
+      patients it serves, and does not exist.
+
+  - id: PRIVATE_SPECTRUM
+    module: sieve.stages.target
+    value: 0.80
+    fixed_at: 2026-08-28
+    target_contact: true
+    pre_registered: false
+    justification: empirical
+    reason: >-
+      Set just above STXBP1's measured 0.81 private share, which is the
+      definition of calibrating to a value already seen.
+
+  - id: UNINTERPRETABLE_VUS
+    module: sieve.stages.target
+    value: 0.60
+    fixed_at: 2026-08-28
+    target_contact: true
+    pre_registered: false
+    justification: mechanistic
+    reason: >-
+      Above one half, a new patient's variant in that gene is MORE LIKELY THAN
+      NOT to be uninterpretable. The 0.5 boundary is mechanistic; the margin to
+      0.60 is not, and is the part that would move.
+
+  - id: PAN_ESSENTIAL_LINES
+    module: sieve.stages.target
+    value: 0.90
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      The DepMap common-essential convention, adopted from the field rather than
+      read off our data. In practice the stage prefers the measured
+      `is_common_essential` flag over this threshold.
+
+  # ---- sieve.stages.power -------------------------------------------
+  - id: COHEN_LARGE
+    module: tools/dossier.py
+    value: 0.8
+    fixed_at: 2026-08-27
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      Cohen's published convention for a large effect. External, dated long
+      before this project, and not tuned here.
+
+  # ---- tools/genotype_phenotype.py -----------------------------------
+  - id: MIN_PER_GROUP
+    module: tools/genotype_phenotype.py
+    value: 10
+    fixed_at: 2026-08-28
+    target_contact: true
+    pre_registered: false
+    justification: empirical
+    reason: >-
+      Chosen after counting that 34 genes clear ten patients per group. Stage 2
+      says a 10-vs-10 comparison detects almost nothing, so this is a floor on
+      what is worth testing rather than on what is adequate.
+
+  # ---- tools/twin_propagation.py -------------------------------------
+  - id: STRING_SCORE_FLOOR
+    module: tools/twin_propagation.py
+    value: 700
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      STRING's own published "high confidence" cut. External, adopted before any
+      propagation was run, and not moved after seeing which genes came back.
+
+  - id: RESTART_ALPHA
+    module: tools/twin_propagation.py
+    value: 0.7
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      The value the network-propagation literature settled on. The result is
+      known to be insensitive across 0.5-0.9, which is why it can be fixed
+      blind rather than tuned.
+
+  # ---- the NF2 positive control (pre-dates this manifest) -------------
+  - id: HIPPO_RANK_GATE
+    module: analyses/nf2_subgroup.py
+    value: 0.25
+    fixed_at: 2026-08-26
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      ADR 0003 records it as "chosen before the result was seen but otherwise
+      arbitrary", and warns it must never be moved to let a result through. It
+      fired immediately and no shortlist was printed. That is the pattern this
+      manifest exists to make ordinary.
+
+# ---------------------------------------------------------------------
+# THE HONEST SUMMARY, and it is the reason to keep this file:
+#   pre-registered: 3     calibrated to seen data: 4
+# And the three kinds: 1 mechanistic, 3 empirical, 3 conventional.
+# Four of the seven thresholds this project acts on were chosen after
+# looking. None of them was labelled as such until today.
+# ---------------------------------------------------------------------
+
+  # ---- tools/cancer_subgroups.py ------------------------------------
+  # Both were fixed while writing the file, BEFORE its first run, and
+  # neither has been moved since. The first run's output was wrong twice
+  # over (a truncate-then-filter bug, then an inverted sign) and both
+  # repairs were to the code, not to these numbers — which is the
+  # distinction this manifest exists to keep visible.
+  - id: MIN_LINES
+    module: tools/cancer_subgroups.py
+    value: 8
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      The smallest subgroup admitted to a contrast, and the minimum finite
+      count per gene on either side. Arbitrary, but chosen before any
+      subgroup result existed. It is deliberately permissive: excluding
+      small cancers would have been the easy way to make the output look
+      uniformly powered, and Stage 2 reporting them as underpowered is more
+      informative than dropping them.
+
+  - id: DEPENDENCY_FLOOR
+    module: tools/cancer_subgroups.py
+    value: 0.5
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      DepMap's own published cut for calling a line dependent on a gene,
+      taken from the external convention rather than fitted here. It carries
+      the Stage 0 gate: a hit must be an actual dependency and not merely
+      more dependent than a comparison set that is itself dependent.
+
+  # ---- tools/cancer_genotype.py -------------------------------------
+  # Fixed while writing the file, before its first run. The run then
+  # overturned part of the DESIGN — half the control set turned out to
+  # be inconstructible on a damaging-mutation matrix — without any of
+  # these numbers moving, which is the distinction being tracked.
+  - id: MIN_MUTANT
+    module: tools/cancer_genotype.py
+    value: 15
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      Smallest genotype arm admitted to a contrast. Deliberately equal in
+      spirit to MIN_LINES in cancer_subgroups.py: the two analyses must
+      not disagree about how small is too small.
+
+  - id: MIN_PER_STRATUM
+    module: tools/cancer_genotype.py
+    value: 3
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      Below three per arm a stratum's variance estimate is noise, so its
+      inverse-variance weight would be arbitrary — and the weights are the
+      entire point of stratifying. Follows from the pooling formula rather
+      than from the data.
+
+  - id: BURDEN_PROXY_D
+    module: tools/cancer_genotype.py
+    value: 0.8
+    fixed_at: 2026-08-28
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      Cohen's large effect, applied to the separation between a driver's two
+      arms on log mutational burden. Above it the genotype is substantially
+      restating "this line is hypermutated" and is FLAGGED, never dropped —
+      because for a mismatch-repair gene that separation is the mechanism,
+      not an artefact.

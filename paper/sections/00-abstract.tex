@@ -1,0 +1,16 @@
+% ABSTRACT - the four moves: problem, what is wrong, what we did, what it changed.
+Screening pipelines rank candidate entities by an aggregate score estimated from a varying
+number of noisy observations. Most screening aggregates are not means but \emph{selection}
+operators --- maxima, top-$k$ means, quantiles, enrichment scores --- and every such operator
+is positively biased, with the bias growing as the estimate gets noisier. Where observation
+counts vary across entities, the score is therefore not comparable across entities, and its
+ranking is partly a ranking of who was measured least. We present \texttt{sieve}, which
+corrects this empirically: resample observations known to carry no effect, apply the
+\emph{same} statistic, and standardise by observation count. In a perturbation screen, the
+correction showed that the celebrated training maximum of \ObesityTrainingMax{} was measured
+on a single observation, where pure noise averages \ObesityNullMeanAtOne{}; dissolved a
+reported viability confound of \ObesityConfoundRaw{} to \ObesityConfoundCal{}; and moved the
+most important entity in the screen from rank \ObesityRankBefore{} to rank
+\ObesityRankAfter{}. At scale on DepMap (\DepmapCellLines{} cell lines $\times$
+\DepmapGenesScored{} genes), it exposes that \DepmapPanEssentialInRawTop10{} of the raw top
+ten are known pan-essential genes. We state two measured anomalies that remain unexplained.

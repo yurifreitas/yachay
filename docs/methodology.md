@@ -1,9 +1,16 @@
 # The methodology
 
 Ten stages. Each one exists because skipping it cost something real, and each entry
-below names what it cost. The worked example is `docs/case-studies/obesity.md` — a
-public competition where the method was developed, and where every number quoted here
-was measured.
+below names what it cost. The worked example is the obesity screen — a public
+competition where the method was developed, and where every number quoted here was
+measured. Its numbers and their genealogy are in [`lineage.md`](lineage.md);
+⚠️ a dedicated case-study document was cited here for months and **was never written**,
+which `tools/status.py` found by resolving the link.
+
+Where the work actually stands — which stages are stale, which data is ingested and unread,
+which thresholds were calibrated rather than pre-registered — is in
+[`status.md`](status.md), which is **generated**: it is recomputed from the repository on
+every run of the submission gate rather than maintained by hand.
 
 The stages are ordered by dependency, not by importance. Running them out of order is
 how most of the failures below happened.

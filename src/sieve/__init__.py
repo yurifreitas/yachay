@@ -29,6 +29,16 @@ Stage 1 is why this library exists separately from its predecessor. See stages/n
 
 from .contracts import Column, ContractError, Schema, entity_scores
 from .stages.null import NullModel, calibrate, fit_null, top_k_mean
+from .stages.power import (
+    Detectable,
+    PowerError,
+    min_detectable_effect,
+    min_detectable_proportion_difference,
+    required_n,
+    underpowered,
+
+)
+from .stages.target import Assessment, Evidence, Gate, Strategy, assess, shortlist
 
 __version__ = "0.1.0"
 
@@ -41,4 +51,11 @@ __all__ = [
     "calibrate",
     "fit_null",
     "top_k_mean",
+    # Stage 2 - Power
+    "Detectable",
+    "PowerError",
+    "min_detectable_effect",
+    "min_detectable_proportion_difference",
+    "required_n",
+    "underpowered",
 ]

@@ -4,7 +4,10 @@ version = "0.1.0"
 description = "Turn a large, noisy, confounded screen into a defensible shortlist for expensive validation."
 readme = "README.md"
 requires-python = ">=3.10"
-dependencies = ["numpy>=1.24", "pandas>=2.0"]
+# scipy and statsmodels became real dependencies with tools/multiplicity.py. They were on the
+# machine long before that and the project hand-rolled its statistics anyway, which for a
+# library about statistical care was the wrong kind of self-reliance.
+dependencies = ["numpy>=1.24", "pandas>=2.0", "scipy>=1.11", "statsmodels>=0.14"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]

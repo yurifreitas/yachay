@@ -39,6 +39,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable, Sequence
 
+import warnings
+
 import numpy as np
 import pandas as pd
 
@@ -129,6 +131,7 @@ def fit_null(
     grid: Sequence[int] | None = None,
     seed: int = 0,
     block: int = 512,
+    blocks: np.ndarray | Sequence | None = None,
 ) -> NullModel:
     """Estimate the null distribution of `statistic` as a function of observation count.
 
@@ -162,6 +165,24 @@ def fit_null(
 
         Choosing ``"mean"`` for a best-of-N leaderboard divides by a null sd fitted for
         the wrong sampling model and inflates every z. The library refuses to guess.
+    blocks:
+        **The unit the null draw is shaped like.** One label per control row, naming the
+        entity that row came from — the gene, the LD block, the batch, the cell line.
+
+        Without it, rows are drawn i.i.d. from the whole pool, and the resulting null
+        describes a *synthetic entity assembled from many real ones*. It therefore has
+        the pool's within-entity spread but none of the variance BETWEEN entities, so its
+        sd is too small and every z is too large.
+
+        This is not hypothetical. On DepMap the pooled control sd was 0.1604 against a
+        within-gene sd of 0.1092, folding a between-gene sd of 0.1131 into the wrong
+        place; control genes known to do nothing calibrated to a mean z of **-4.09**
+        instead of ~0, and the null's mean rose 1.95x too steeply with n, over-correcting
+        high-n entities. Passing gene labels here puts the same controls at **+0.017**.
+
+        Pass it whenever the control rows are not exchangeable — which is almost always.
+        Requires at least 20 distinct blocks, because between-block variance cannot be
+        estimated from fewer.
     """
     if reduce not in ("mean", "raw"):
         raise ValueError(f"reduce must be 'mean' or 'raw', got {reduce!r}")
@@ -188,11 +209,39 @@ def fit_null(
             "would be calibrated against the wrong null."
         )
 
+    if blocks is None and len(control) > 5000:
+        warnings.warn(
+            "fit_null called on %d pooled control rows with no `blocks` argument. If those "
+            "rows come from more than one entity, the null models a synthetic entity and "
+            "its sd will be too small. Pass blocks= with one label per row." % len(control),
+            UserWarning,
+            stacklevel=2,
+        )
+
     if reduce == "raw" and control.shape[1] != 1:
         raise ValueError(
             f"reduce='raw' applies the statistic directly to the n observations, so "
             f"control must be single-feature; got {control.shape[1]} features."
         )
+
+    # Blocks: draw an ENTITY first, then its observations. See the `blocks` docstring.
+    block_index: list[np.ndarray] | None = None
+    if blocks is not None:
+        blocks_arr = np.asarray(blocks)
+        if len(blocks_arr) != len(control):
+            raise ValueError(
+                f"blocks has {len(blocks_arr)} labels for {len(control)} control rows; "
+                "one label per row is required."
+            )
+        _, inverse = np.unique(blocks_arr, return_inverse=True)
+        n_blocks = int(inverse.max()) + 1
+        block_index = [np.flatnonzero(inverse == b) for b in range(n_blocks)]
+        block_index = [ix for ix in block_index if len(ix)]
+        if len(block_index) < 20:
+            raise ValueError(
+                f"only {len(block_index)} usable blocks: too few to estimate between-block "
+                "variance, which is the whole reason to pass `blocks`."
+            )
 
     rng = np.random.default_rng(seed)
     means, sds, qs = [], [], []
@@ -201,7 +250,17 @@ def fit_null(
         done = 0
         while done < n_draws:              # chunked: a 4000 x 4000 x features draw is not free
             take = min(block, n_draws - done)
-            idx = rng.integers(0, len(control), size=(take, int(m)))
+            if block_index is None:
+                idx = rng.integers(0, len(control), size=(take, int(m)))
+            else:
+                # One block per draw, then m observations from within that block: the
+                # draw is now shaped like an ENTITY, so between-block variance lands in
+                # the null's spread instead of being flattened out of it.
+                chosen = rng.integers(0, len(block_index), size=take)
+                idx = np.empty((take, int(m)), dtype=np.intp)
+                for row, b in enumerate(chosen):
+                    pool = block_index[b]
+                    idx[row] = pool[rng.integers(0, len(pool), size=int(m))]
             drawn = control[idx]                       # (take, m, features)
             block_in = drawn.mean(axis=1) if reduce == "mean" else drawn[:, :, 0]
             vals[done:done + take] = statistic(block_in)

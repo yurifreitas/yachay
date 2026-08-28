@@ -1,0 +1,422 @@
+% ---------------------------------------------------------------------------
+% refs.bib - the canonical bibliography for this repository.
+%
+% CONVENTIONS, enforced by the sieve-paper skill:
+%
+%  1. Every entry carries an `annotation` field naming THE CLAIM IN THIS REPOSITORY
+%     it supports. An entry with no stated purpose is decoration and gets deleted.
+%  2. Every entry carries a `verified` field:
+%       verified = {yes, <date>}   -- metadata checked against the source
+%       verified = {no}            -- from working knowledge; DOI/year/venue UNCHECKED
+%     Nothing marked `no` may appear in a submitted manuscript.
+%  3. Keys are lowercase author + year + first significant title word.
+%  4. This file is the single source of truth for citations. CITATION.cff describes
+%     how to cite THE SOFTWARE and mirrors the annotations; it does not compete.
+% ---------------------------------------------------------------------------
+
+% =========================================================================
+% The mechanism: why a selected maximum is biased
+% =========================================================================
+
+@book{david2003order,
+  author      = {David, Herbert A. and Nagaraja, Haikady N.},
+  title       = {Order Statistics},
+  edition     = {3},
+  publisher   = {Wiley},
+  series      = {Wiley Series in Probability and Statistics},
+  year        = {2003},
+  doi         = {10.1002/0471722162},
+  annotation  = {The mechanism underneath every Stage 1 claim: E[max of n draws] grows
+                 with n. We measure this empirically from the screen's own controls
+                 rather than assuming a distributional form. Cited in sec:names.},
+  verified    = {no}
+}
+
+@book{coles2001introduction,
+  author      = {Coles, Stuart},
+  title       = {An Introduction to Statistical Modeling of Extreme Values},
+  publisher   = {Springer},
+  year        = {2001},
+  doi         = {10.1007/978-1-4471-3675-0},
+  annotation  = {Extreme value theory as the asymptotic account. Cited to mark its
+                 LIMIT: screens live at n = 1 to 20, where the limit theorems do not
+                 apply and the empirical null does. Supports sec:contribution item 1.},
+  verified    = {no}
+}
+
+@article{darling1956limit,
+  author      = {Darling, Donald A. and Erd{\H{o}}s, Paul},
+  title       = {A limit theorem for the maximum of normalized sums of independent
+                 random variables},
+  journal     = {Duke Mathematical Journal},
+  volume      = {23},
+  number      = {1},
+  pages       = {143--155},
+  year        = {1956},
+  doi         = {10.1215/S0012-7094-56-02313-4},
+  annotation  = {The change-point form of the same bias, and the DESIGNATED EXTERNAL
+                 CHECK: scanning positions and taking the largest statistic has a known
+                 analytic correction that our empirical null should reproduce. If it
+                 cannot, the library is wrong. Cited in sec:limitations item 4.},
+  verified    = {no}
+}
+
+@book{glaz2001scan,
+  author      = {Glaz, Joseph and Naus, Joseph and Wallenstein, Sylvan},
+  title       = {Scan Statistics},
+  publisher   = {Springer},
+  year        = {2001},
+  annotation  = {The scan-statistic literature the above check would be run against.},
+  verified    = {no}
+}
+
+% =========================================================================
+% The same bias, once per field, each with its own name
+% =========================================================================
+
+@article{bailey2014deflated,
+  author      = {Bailey, David H. and L{\'o}pez de Prado, Marcos},
+  title       = {The Deflated {Sharpe} Ratio: Correcting for Selection Bias, Backtest
+                 Overfitting, and Non-Normality},
+  journal     = {The Journal of Portfolio Management},
+  volume      = {40},
+  number      = {5},
+  pages       = {94--107},
+  year        = {2014},
+  doi         = {10.3905/jpm.2014.40.5.094},
+  annotation  = {Closest prior art in spirit: deflates a selected maximum by the number
+                 of trials. The difference we claim is the estimator, not the target ---
+                 they deflate from a formula's independence assumption, we resample the
+                 screen's own controls. Cited in sec:names and sec:discussion.},
+  verified    = {no}
+}
+
+@article{bailey2014probability,
+  author      = {Bailey, David H. and Borwein, Jonathan M. and L{\'o}pez de Prado, Marcos
+                 and Zhu, Qiji Jim},
+  title       = {The Probability of Backtest Overfitting},
+  journal     = {Journal of Computational Finance},
+  year        = {2016},
+  doi         = {10.21314/JCF.2016.322},
+  annotation  = {Out-of-sample degradation of a max-selected strategy: the finance
+                 statement of "the winner will not reproduce".},
+  verified    = {no}
+}
+
+@article{ioannidis2008winner,
+  author      = {Ioannidis, John P. A.},
+  title       = {Why most discovered true associations are inflated},
+  journal     = {Epidemiology},
+  volume      = {19},
+  number      = {5},
+  pages       = {640--648},
+  year        = {2008},
+  doi         = {10.1097/EDE.0b013e31818131e7},
+  annotation  = {The winner's curse in epidemiology and genetics. Cited to draw the
+                 contrast in sec:contribution item 2: that framing is PER DISCOVERY
+                 (conditional on passing a threshold), ours is PER ENTITY BY OBSERVATION
+                 COUNT, which is the form that breaks comparability in a ranking.},
+  verified    = {no}
+}
+
+@article{zollner2007overcoming,
+  author      = {Z{\"o}llner, Sebastian and Pritchard, Jonathan K.},
+  title       = {Overcoming the winner's curse: estimating penetrance parameters from
+                 case-control data},
+  journal     = {The American Journal of Human Genetics},
+  volume      = {80},
+  number      = {4},
+  pages       = {605--615},
+  year        = {2007},
+  doi         = {10.1086/512821},
+  annotation  = {The corrective literature for the winner's curse; relevant to the
+                 planned GWAS adapter.},
+  verified    = {no}
+}
+
+% =========================================================================
+% Gene-based tests: the correction the GWAS adapter must reproduce
+% =========================================================================
+
+@article{deleeuw2015magma,
+  author      = {de Leeuw, Christiaan A. and Mooij, Joris M. and Heskes, Tom and
+                 Posthuma, Danielle},
+  title       = {{MAGMA}: Generalized Gene-Set Analysis of {GWAS} Data},
+  journal     = {PLoS Computational Biology},
+  volume      = {11},
+  number      = {4},
+  pages       = {e1004219},
+  year        = {2015},
+  doi         = {10.1371/journal.pcbi.1004219},
+  annotation  = {A gene score built as a max or top-k over the SNPs in a gene is inflated
+                 by how many correlated SNPs it contains; MAGMA corrects this
+                 parametrically. Agreement with it is the ACCEPTANCE CRITERION for the
+                 schizophrenia adapter. Cited in sec:limitations item 4.},
+  verified    = {no}
+}
+
+@article{liu2010versatile,
+  author      = {Liu, Jimmy Z. and McRae, Allan F. and Nyholt, Dale R. and others},
+  title       = {A versatile gene-based test for genome-wide association studies
+                 ({VEGAS})},
+  journal     = {The American Journal of Human Genetics},
+  volume      = {87},
+  number      = {1},
+  pages       = {139--145},
+  year        = {2010},
+  doi         = {10.1016/j.ajhg.2010.06.009},
+  annotation  = {Simulation-based gene test using an LD reference --- methodologically
+                 the closest thing to what sieve would do, which is why it is the entry
+                 most likely to expose our row-resampling flaw (blocks, not rows).},
+  verified    = {no}
+}
+
+@article{benjamini1995controlling,
+  author      = {Benjamini, Yoav and Hochberg, Yosef},
+  title       = {Controlling the False Discovery Rate: A Practical and Powerful Approach
+                 to Multiple Testing},
+  journal     = {Journal of the Royal Statistical Society: Series B},
+  volume      = {57},
+  number      = {1},
+  pages       = {289--300},
+  year        = {1995},
+  doi         = {10.1111/j.2517-6161.1995.tb02031.x},
+  annotation  = {Cited as the standard fix that does NOT solve this problem: FDR controls
+                 the cutoff, not the ORDERING among survivors, and a shortlist is an
+                 ordering. Used in sec:discussion.},
+  verified    = {no}
+}
+
+% =========================================================================
+% The reference dataset
+% =========================================================================
+
+@article{tsherniak2017defining,
+  author      = {Tsherniak, Aviad and Vazquez, Francisca and Montgomery, Phil G. and
+                 others and Hahn, William C.},
+  title       = {Defining a Cancer Dependency Map},
+  journal     = {Cell},
+  volume      = {170},
+  number      = {3},
+  pages       = {564--576},
+  year        = {2017},
+  doi         = {10.1016/j.cell.2017.06.010},
+  annotation  = {Frames selective dependency as the useful signal and pan-essentiality as
+                 the confound. Our measurement quantifies the cost of ignoring it: 60
+                 percent of the raw top ten are pan-essential (sec:depmap).},
+  verified    = {no}
+}
+
+@article{dempster2021chronos,
+  author      = {Dempster, Joshua M. and Boyle, Isabella and Vazquez, Francisca and
+                 others},
+  title       = {Chronos: a cell population dynamics model of {CRISPR} experiments that
+                 improves inference of gene fitness effects},
+  journal     = {Genome Biology},
+  volume      = {22},
+  pages       = {343},
+  year        = {2021},
+  doi         = {10.1186/s13059-021-02540-7},
+  annotation  = {Defines the score this library consumes: 0 = no effect, -1 = median
+                 common-essential, dependency NEGATIVE --- which is why the adapter flips
+                 the sign at load time.},
+  verified    = {no}
+}
+
+@misc{depmap2024release,
+  author      = {{Broad Institute}},
+  title       = {{DepMap} Public Release: {CRISPR} Gene Effect and {Achilles} Control
+                 Gene Sets},
+  year        = {2024},
+  howpublished = {Figshare distribution},
+  annotation  = {The exact release used. VERSION MUST BE PINNED before submission ---
+                 see docs/references/README.md.},
+  verified    = {no}
+}
+
+% =========================================================================
+% NF2 - the focused disease reference
+% =========================================================================
+
+@article{plotkin2022updated,
+  author      = {Plotkin, Scott R. and Messiaen, Ludwine and Legius, Eric and others},
+  title       = {Updated diagnostic criteria and nomenclature for neurofibromatosis type
+                 2 and schwannomatosis: An international consensus recommendation},
+  journal     = {Genetics in Medicine},
+  volume      = {24},
+  number      = {9},
+  pages       = {1967--1977},
+  year        = {2022},
+  doi         = {10.1016/j.gim.2022.05.007},
+  annotation  = {The rename to NF2-related schwannomatosis and the separation from
+                 SMARCB1/LZTR1 schwannomatosis. Supports references/nf2.md sec 1 --- the
+                 section that exists because the wrong name returns the wrong corpus.},
+  verified    = {no}
+}
+
+@article{petrilli2016role,
+  author      = {Petrilli, Alejandra M. and Fernandez-Valle, Cristina},
+  title       = {Role of merlin/{NF2} inactivation in tumor biology},
+  journal     = {Oncogene},
+  volume      = {35},
+  number      = {5},
+  pages       = {537--548},
+  year        = {2016},
+  doi         = {10.1038/onc.2015.125},
+  annotation  = {Merlin biology and the pathways downstream of its loss. Supports
+                 references/nf2.md sec 3.},
+  verified    = {no}
+}
+
+@article{zhang2010merlin,
+  author      = {Zhang, Nailing and Bai, Hanjun and David, Karen K. and others and
+                 Pan, Duojia},
+  title       = {The Merlin/{NF2} tumor suppressor functions through the {YAP}
+                 oncoprotein to regulate tissue homeostasis in mammals},
+  journal     = {Developmental Cell},
+  volume      = {19},
+  number      = {1},
+  pages       = {27--38},
+  year        = {2010},
+  doi         = {10.1016/j.devcel.2010.06.015},
+  annotation  = {Merlin acts through YAP. This is the claim that becomes our POSITIVE
+                 CONTROL: if the calibrated NF2-null ranking does not recover
+                 YAP1/WWTR1/TEAD/LATS, the pipeline is broken.},
+  verified    = {no}
+}
+
+@article{sekido2018targeting,
+  author      = {Sekido, Yoshitaka},
+  title       = {Targeting the {Hippo} pathway is a new potential therapeutic modality
+                 for malignant mesothelioma},
+  journal     = {Cancers},
+  volume      = {10},
+  number      = {4},
+  pages       = {90},
+  year        = {2018},
+  doi         = {10.3390/cancers10040090},
+  annotation  = {NF2 loss and Hippo dependency in mesothelioma. Also names the main
+                 threat to that analysis: mesothelioma is over-represented among NF2-null
+                 lines, so lineage can masquerade as genotype (Stage 3).},
+  verified    = {no}
+}
+
+@article{plotkin2009hearing,
+  author      = {Plotkin, Scott R. and Stemmer-Rachamimov, Anat O. and Barker, Fred G.
+                 and others},
+  title       = {Hearing improvement after bevacizumab in patients with
+                 neurofibromatosis type 2},
+  journal     = {New England Journal of Medicine},
+  volume      = {361},
+  number      = {4},
+  pages       = {358--367},
+  year        = {2009},
+  doi         = {10.1056/NEJMoa0902579},
+  annotation  = {Supports references/nf2.md sec 4: the endpoint is hearing preservation
+                 in a benign tumour, not cytotoxicity --- which is why a pan-essential
+                 hit is not merely uninteresting here but disqualifying.},
+  verified    = {no}
+}
+
+% =========================================================================
+% Standards: measurement, reporting, reproducibility
+% =========================================================================
+
+@techreport{jcgm2008gum,
+  author      = {{Joint Committee for Guides in Metrology}},
+  title       = {Evaluation of measurement data --- Guide to the expression of
+                 uncertainty in measurement ({GUM})},
+  number      = {JCGM 100:2008},
+  institution = {BIPM},
+  year        = {2008},
+  url         = {https://www.bipm.org/en/committees/jc/jcgm/publications},
+  annotation  = {Every reported value carries a stated uncertainty and coverage. This is
+                 the standard THIS REPOSITORY CURRENTLY FAILS --- see standards.md sec 7
+                 item 1. It blocks adjudicating both anomalies in sec:anomalies.},
+  verified    = {no}
+}
+
+@book{taguchi1986introduction,
+  author      = {Taguchi, Genichi},
+  title       = {Introduction to Quality Engineering: Designing Quality into Products
+                 and Processes},
+  publisher   = {Asian Productivity Organization},
+  year        = {1986},
+  annotation  = {The closest intellectual relative: separate control factors from NOISE
+                 factors, and prefer the configuration least sensitive to the noise. Our
+                 observation count is a noise factor. See standards.md sec 1.},
+  verified    = {no}
+}
+
+@article{nair1992taguchi,
+  author      = {Nair, Vijayan N. and others},
+  title       = {Taguchi's parameter design: a panel discussion},
+  journal     = {Technometrics},
+  volume      = {34},
+  number      = {2},
+  pages       = {127--161},
+  year        = {1992},
+  doi         = {10.1080/00401706.1992.10484904},
+  annotation  = {The statisticians' critique of Taguchi's ANALYSIS (S/N ratio conflates
+                 location and dispersion). Cited alongside the above so the borrowing is
+                 of the FRAMING, not the estimator --- stated in standards.md sec 1.},
+  verified    = {no}
+}
+
+@book{ohno1988toyota,
+  author      = {Ohno, Taiichi},
+  title       = {Toyota Production System: Beyond Large-Scale Production},
+  publisher   = {Productivity Press},
+  year        = {1988},
+  annotation  = {Jidoka (stop the line on a defect) and mura (unevenness). Mura is
+                 literally this library's subject: unevenness in observation count.},
+  verified    = {no}
+}
+
+@book{nonaka1995knowledge,
+  author      = {Nonaka, Ikujiro and Takeuchi, Hirotaka},
+  title       = {The Knowledge-Creating Company},
+  publisher   = {Oxford University Press},
+  year        = {1995},
+  annotation  = {SECI: the theoretical warrant for this repository's documentation
+                 apparatus. The tacit knowledge here is which numbers to distrust, and
+                 lineage.md is its externalisation.},
+  verified    = {no}
+}
+
+@article{wilkinson2016fair,
+  author      = {Wilkinson, Mark D. and Dumontier, Michel and Aalbersberg, IJsbrand Jan
+                 and others},
+  title       = {The {FAIR} Guiding Principles for scientific data management and
+                 stewardship},
+  journal     = {Scientific Data},
+  volume      = {3},
+  pages       = {160018},
+  year        = {2016},
+  doi         = {10.1038/sdata.2016.18},
+  annotation  = {The data-availability standard the manifests answer to.},
+  verified    = {no}
+}
+
+@article{collberg2016repeatability,
+  author      = {Collberg, Christian and Proebsting, Todd A.},
+  title       = {Repeatability in computer systems research},
+  journal     = {Communications of the ACM},
+  volume      = {59},
+  number      = {3},
+  pages       = {62--69},
+  year        = {2016},
+  doi         = {10.1145/2812803},
+  annotation  = {Why Stage 9 exists. Supports app:repro.},
+  verified    = {no}
+}
+
+@misc{mitchell2019model,
+  author      = {Mitchell, Margaret and Wu, Simone and Zaldivar, Andrew and others},
+  title       = {Model Cards for Model Reporting},
+  year        = {2019},
+  doi         = {10.1145/3287560.3287596},
+  annotation  = {The convention for stating intended use and limits --- the honest place
+                 for "this needs a control pool and your screen may not have one".},
+  verified    = {no}
+}

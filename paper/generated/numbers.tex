@@ -1,0 +1,38 @@
+% GENERATED FILE - DO NOT EDIT.
+% Written by tools/paper_numbers.py from out/*.manifest.json.
+% Every number in the manuscript is a macro defined here, so it cannot drift
+% from the code that measured it. Edit the analysis, re-run, never edit this.
+
+% ---- depmap (depmap.manifest.json) ----
+\newcommand{\DepmapGenesScored}{\num{17916}}
+\newcommand{\DepmapCellLines}{\num{1178}}
+\newcommand{\DepmapControlGenes}{\num{781}}
+\newcommand{\DepmapPanEssentialInRawTop10}{\num{0.6}}
+\newcommand{\DepmapCountSpearmanRaw}{\num{-0.0252}}
+\newcommand{\DepmapCountSpearmanCalibrated}{\num{-0.0377}}
+\newcommand{\DepmapNonessentialMeanZ}{\num{0.036}}
+\newcommand{\DepmapNonessentialSdZ}{\num{1.013}}
+\newcommand{\DepmapNullBlocks}{gene}
+\newcommand{\DepmapCommonEssentialMeanZ}{\num{9.452}}
+
+% ---- nf2 (nf2.manifest.json) ----
+\newcommand{\Nf2LinesTotal}{\num{1178}}
+\newcommand{\Nf2LinesNull}{\num{32}}
+\newcommand{\Nf2LinesWildtype}{\num{1146}}
+\newcommand{\Nf2K}{\num{10}}
+\newcommand{\Nf2GenesContrasted}{\num{17916}}
+\newcommand{\Nf2HippoMedianRankRaw}{\num{12738.5}}
+\newcommand{\Nf2HippoMedianRankCalibrated}{\num{5216.5}}
+\newcommand{\Nf2HippoMedianRankNoDominantLineage}{\num{5142.0}}
+\newcommand{\Nf2PositiveControl}{NOT RECOVERED}
+\newcommand{\Nf2CountSpearmanNullRaw}{\num{-0.021585164379070598}}
+\newcommand{\Nf2CountSpearmanNullCalibrated}{\num{-0.05849131179584148}}
+
+% ---- measured outside the manifest format ----
+\newcommand{\ObesityTrainingMax}{\num{2.0047}}  % obesity screen, top-3-of-12, the celebrated training maximum
+\newcommand{\ObesityNullMeanAtOne}{\num{0.845}}  % obesity screen, null mean of the same statistic at n=1
+\newcommand{\ObesityNullPNNAtOne}{\num{2.434}}  % obesity screen, null p99 at n=1
+\newcommand{\ObesityConfoundRaw}{\num{-0.57}}  % obesity screen, corr(score, observation count), raw
+\newcommand{\ObesityConfoundCal}{\num{0.07}}  % obesity screen, same correlation after calibration
+\newcommand{\ObesityRankBefore}{\num{12}}  % rank of the key entity before calibration
+\newcommand{\ObesityRankAfter}{\num{1}}  % rank of the key entity after calibration

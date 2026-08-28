@@ -1,0 +1,123 @@
+# `tools/` — 33 scripts, grouped by what they are for
+
+> **Role:** the map of this directory. It grew to 11,790 lines without any declared
+> structure, and a flat listing of 33 filenames is not a structure — it is an inventory
+> pretending to be one.
+> **Last revised:** 2026-08-28 · **State:** complete for the 34 files on disk. The groups
+> below are a reading order, not directories: renaming or moving a file would break the
+> pipeline's source tracking (`sieve.pipeline.stages` hashes each tool's path to decide
+> staleness), so the organisation is documentary and deliberately so.
+
+**Read this with [`../docs/references/rare-layers.md`](../docs/references/rare-layers.md)**,
+which grades the *artefacts* as measured, derived or authored. This file organises the
+*producers*. A tool is listed once, in the group naming its primary job.
+
+---
+
+## 1. Ingest — get the data, honestly
+
+| tool | lines | what it does |
+|---|---|---|
+| `ingest.py` | 90 | Downloads the 14 registered public sources (~899 MB). Stdlib only, resumable, licence-aware. Deliberately **not** in the build graph: a missing catalogue should stop a build with a message, never trigger a silent download mid-analysis. |
+
+---
+
+## 2. The catalogue layers — measured from public sources
+
+These read an ingested file and compute. Nothing in this group is authored.
+
+| tool | lines | reads | the number it exists for |
+|---|---|---|---|
+| `build_atlas.py` | 304 | HPO, Orphanet, HPA | the join: 14,831 diseases → 5,524 genes → 154 cell types |
+| `atlas_bias.py` | 329 | HPO, Orphanet, HPA | six biases tested on our own reference data; ascertainment **+0.2357** |
+| `prevalence_audit.py` | 380 | Orphanet | prevalence is a *list*: 17,108 records, five incommensurable types |
+| `ancestry_geography.py` | 454 | Orphanet | the population axis: Europe **8.10**, Africa **0.07** |
+| `evidence_atlas.py` | 272 | HPO | only **39.7 %** of diseases have one sign from a real series |
+| `nongene_measure.py` | 257 | HPO | six of ten authored non-gene classes have a footprint of **zero** |
+| `interactome_sparse.py` | 459 | HPO | modularity **0.861** against **0.162** for a degree-matched null |
+| `dossier.py` | 796 | HPO, Orphanet, HPA, ClinicalTrials.gov | twelve diseases in full; the only tool that queries a live API |
+
+---
+
+## 3. The patient layers — individual people, not aggregates
+
+Added 2026-08-27. The only group built from records of persons rather than of diseases.
+
+| tool | lines | the number it exists for |
+|---|---|---|
+| `patient_frequencies.py` | 328 | at a curated denominator of **n = 1** the catalogue reads 0.932 and the patients say **0.436** |
+| `patient_variants.py` | 355 | the median gene has **66.7 %** of its variants seen exactly once |
+| `genotype_phenotype.py` | 267 | 510 comparisons; only **8 %** could detect a 50-point difference |
+| `clinvar_evidence.py` | 274 | **52 %** of ClinVar is uncertain significance; **84.6 %** sits at ≤ 1 star |
+
+---
+
+## 4. The self-audit — this project checking itself
+
+The group with no analogue in most repositories, and the one that has produced the most
+uncomfortable findings.
+
+| tool | lines | what it confronts |
+|---|---|---|
+| `consistency.py` | 307 | the layers against each other: 3 contradictions, one an identity conflict |
+| `lexicon_check.py` | 455 | every authored identifier against the real catalogues: 5 of 12 flagged |
+| `interactome_string.py` | 218 | our own weakest published claim against an independent graph — it survived |
+| `ecosystem.py` | 283 | which libraries are installed and unused, and which sources are named and not ingested |
+| `pipeline_state.py` | 123 | publishes staleness, so freshness is not a terminal-only fact |
+| `verify_claims.py` | 246 | every published number against the artefact that produced it — F1, and it found stale docs on its first run |
+| `intervals.py` | 268 | a 95 % interval on every headline — A6, and it corrected two published sentences |
+
+| `cancer_subgroups.py` | 262 | selective dependency per cancer subgroup at three nesting levels — audit A29, and the first analysis here to run several library stages on one question |
+| `status.py` | 620 | the derived project checklist — writes `docs/status.md`, and `--check` fails the gate when the repository contradicts the disk (audit A34) |
+
+Two further controls live in `tests/` rather than here, both transferred from sibling
+projects (audit A28): `test_determinism.py` reruns five stages and compares hashes
+(from `F:\CODE\adia`), and `test_thresholds_manifest.py` holds `manifests/thresholds.yaml`
+against the code (from `F:\CODE\climate`).
+
+---
+
+## 5. The authored layers — domain knowledge, marked as such
+
+Written from working knowledge. Each carries its own `provenance` field saying so, and
+[`../docs/audit.md`](../docs/audit.md) A13 tracks which have been tested. **Two of nine have
+been** (`nongene_seed` by `nongene_measure`, `rare_disease_seed` by `lexicon_check`).
+
+| tool | lines | status |
+|---|---|---|
+| `capability_seed.py` | 817 | untested — physics is textbook, costs are estimates |
+| `nongene_seed.py` | 547 | **tested**, and six of ten classes came back at zero |
+| `references_seed.py` | 574 | untested |
+| `barriers_seed.py` | 527 | untested — "underused" is a judgement, marked low/medium confidence |
+| `thesis_seed.py` | 455 | audited against what is built; several rows read "named, not built" |
+| `dimensions.py` / `dimensions_two.py` | 461 / 412 | derived transforms borrowed from named figures |
+| `nomenclature_seed.py` | 279 | untested |
+| `rare_disease_seed.py` | 249 | **tested** by `lexicon_check.py` |
+| `lupus_seed.py` / `lupus_graph.py` | 232 / 311 | untested; cell-type attributions marked as simplifications |
+
+---
+
+## 6. Statistics and output
+
+| tool | lines | what it does |
+|---|---|---|
+| `multiplicity.py` | 211 | from a calibrated z to a defensible cut — the step the library had skipped |
+| `tail_calibration.py` | 258 | how far the calibrated z departs from normal, and where it matters |
+| `capability_math.py` | 362 | capital per patient, derived; contradicts the authored barriers layer |
+| `figure_data.py` | 314 | one data contract, two renderers — the paper and the explorer cannot disagree |
+| `paper_numbers.py` | 104 | no number is typed into the manuscript; each is a macro from a manifest |
+
+---
+
+## The three rules this directory follows
+
+1. **A tool answers one question.** When a second question appears it gets its own file, even
+   when the extraction is shared — which is why `patient_frequencies` and `patient_variants`
+   read the same zip twice. The duplication is cheaper than a tool that does two things and
+   fails at one.
+2. **Authored and measured never mix inside one file.** Where a tool needs a judgement it
+   goes in a named constant with a comment saying it is one — `MODALITY_MARKS` in
+   `dossier.py`, the population table in `ancestry_geography.py`.
+3. **A refusal beats a plausible number.** `sieve.stages.power` raises rather than
+   interpolating an unlisted alpha; `lexicon_check.py` reports `unverifiable` rather than
+   `pass`; `clinvar_evidence.py` counts what is absent from ClinVar rather than dropping it.

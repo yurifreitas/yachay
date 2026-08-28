@@ -8,6 +8,11 @@ method does not apply and the entry should be deleted rather than stretched.
 
 Ordered by expected value: how likely the bug is present × how cheaply it can be checked.
 
+This file covers the *non-biology* neighbours. The disease portfolio — schizophrenia
+(GWAS), NF2-related schwannomatosis, and Duchenne muscular dystrophy, alongside the obesity
+origin — is planned separately in [`disease-expansion.md`](disease-expansion.md), and the
+data / method / domain citations live in [`references/`](references/README.md).
+
 ---
 
 ## 1. `prompt-workbench` (Oráculo) — **implemented**

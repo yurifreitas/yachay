@@ -1,0 +1,12 @@
+\section{Reproducibility}
+\label{app:repro}
+
+\begin{enumerate}
+  \item \texttt{python tasks.py fetch} --- download the release files.
+  \item \texttt{python tasks.py depmap} --- run the analysis; writes \texttt{out/}.
+  \item \texttt{python tools/paper\_numbers.py} --- regenerate every number in this document.
+  \item \texttt{make -C paper final} --- build the PDF.
+\end{enumerate}
+
+\texttt{make -C paper check} fails if any number in this manuscript is stale with respect to
+\texttt{out/*.manifest.json}. A manuscript that cannot pass that check is not submitted.

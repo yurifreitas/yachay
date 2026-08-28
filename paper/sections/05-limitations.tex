@@ -1,0 +1,19 @@
+\section{Limitations}
+\label{sec:limitations}
+
+Stated as constraints on use, not as hedges.
+
+\begin{enumerate}
+  \item \textbf{A control pool is required.} With no observations known to carry no effect,
+        \stage{1} has nothing to fit, and the parametric route is the only route.
+  \item \textbf{The correction addresses trueness, not precision.} It removes a bias; it does
+        not make a noisy estimate less noisy.
+  \item \textbf{Observations are resampled as rows.} Where observations are correlated in
+        blocks --- variants in linkage disequilibrium, cell lines sharing lineage --- row
+        resampling understates the spread of the null and the calibrated $z$ is too large. We
+        predict this is the cause of the anomaly in \cref{sec:anomalies}.\Pending{}
+  \item \textbf{No external ground truth yet.} Every result here is internal-consistency
+        evidence. The designated external checks are the analytic scan-statistic
+        correction~\cite{darling1956limit} and gene-based association
+        tests~\cite{deleeuw2015magma}; neither has been run.\Pending{}
+\end{enumerate}

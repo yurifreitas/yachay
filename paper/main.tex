@@ -1,0 +1,50 @@
+% ---------------------------------------------------------------------------
+% The sieve manuscript. Build with:  make        (draft, line numbers, [P] marks)
+%                                    make final  (submission)
+% Never edit generated/numbers.tex - see paper/README.md.
+% ---------------------------------------------------------------------------
+\documentclass[11pt,a4paper]{article}
+\usepackage[draft]{sieve}   % remove the [draft] option for submission
+
+\usepackage[margin=1in]{geometry}
+\usepackage{authblk}
+
+\title{Null calibration for max-order screening statistics:\\
+       ranking candidates when observation counts vary}
+
+\author[1]{Yuri Freitas\,\orcidlink{0000-0000-0000-0000}}
+\affil[1]{Independent researcher}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/00-abstract}
+\end{abstract}
+
+\noindent\textbf{Keywords:} selection bias; order statistics; winner's curse; null
+calibration; CRISPR screens; target prioritisation.
+
+\input{sections/01-introduction}
+\input{sections/02-method}
+\input{sections/03-results}
+\input{sections/04-discussion}
+\input{sections/05-limitations}
+
+\section*{Data and code availability}
+The library, the analyses that produced every number in this manuscript, and this
+manuscript's source are in one repository. Every reported value is a macro generated from
+the analysis manifests by \texttt{tools/paper\_numbers.py}; none is typed into the source.
+See \cref{app:repro}.
+
+\section*{Contributions}
+CRediT: conceptualisation, methodology, software, formal analysis, writing --- Y.F.
+
+\printbibliography
+
+\appendix
+\input{sections/90-appendix-repro}
+
+\end{document}

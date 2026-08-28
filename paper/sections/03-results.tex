@@ -1,0 +1,48 @@
+\section{Results}
+\label{sec:results}
+
+% Every number here is a macro from generated/numbers.tex. If you are about to type a
+% digit into this file, stop: add it to the manifest and regenerate.
+
+\subsection{A perturbation screen}
+\label{sec:obesity}
+
+\subsection{DepMap, at scale}
+\label{sec:depmap}
+
+The reference application covers \DepmapCellLines{} cell lines and \DepmapGenesScored{} genes,
+with a control pool of \DepmapControlGenes{} nonessential genes.
+
+\begin{table}[t]
+  \centering
+  \begin{threeparttable}
+  \caption{Calibrated $z$ by control class on DepMap.}
+  \label{tab:classes}
+  \begin{tabular}{lS[table-format=4.0]S[table-format=2.2]}
+    \toprule
+    class & {genes} & {mean $z$} \\
+    \midrule
+    common-essential      & 1242 & \DepmapCommonEssentialMeanZ \\
+    nonessential control  & 726  & \DepmapNonessentialMeanZ \\
+    \bottomrule
+  \end{tabular}
+  \begin{tablenotes}\small
+    \item Control genes should calibrate near zero and do not. See \cref{sec:anomalies}.
+  \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+\subsection{Two measured anomalies}
+\label{sec:anomalies}
+
+Reported here rather than in a footnote, because neither is fixed.
+
+\paragraph{The control pool does not centre.} Nonessential controls calibrate to a mean $z$ of
+\DepmapNonessentialMeanZ{} rather than approximately zero. Leading hypothesis: the null is
+fitted by pooling control observations across genes, so it models the spread of a draw from
+the pool rather than of a \emph{gene}.
+
+\paragraph{The count correlation does not collapse.} On DepMap the Spearman correlation with
+$\log \nobs$ moved \DepmapCountSpearmanRaw{} to \DepmapCountSpearmanCalibrated{}. Both are
+near zero, and the range of $\nobs$ here is narrow; without an interval this is not yet a
+result either way.\Pending{}

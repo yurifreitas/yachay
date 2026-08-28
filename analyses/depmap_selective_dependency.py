@@ -83,15 +83,20 @@ log()
 log("=" * 74)
 log("STAGE 1 - null calibration")
 log("=" * 74)
-control = mat.control_pool(nonessential)
+control, control_blocks = mat.control_pool(nonessential, with_blocks=True)
 log("control pool: %s individual (cell line, gene) values from %d nonessential genes"
     % (format(control.shape[0], ","), len(nonessential)))
 log("(these genes are KNOWN to do nothing when knocked out - a real null, not a")
 log(" parametric one, so it inherits the screen's own correlation structure)")
+log("")
+log("blocks=gene: each null draw is one GENE's values, not a mixture of 726 genes.")
+log("Pooling rows across genes was a real defect - it discarded the between-gene")
+log("variance, put these same control genes at z = -4.09 (sd 3.28) instead of ~0, and")
+log("made the null climb 1.93x too steeply with n. See docs/adr/0004-block-nulls.md.")
 
 # reduce="raw": a gene's score is top-k applied directly to its per-line values.
 null = sv.fit_null(control, stat, observed_counts=genes["n"].to_numpy(),
-                   reduce="raw", n_draws=N_DRAWS)
+                   reduce="raw", n_draws=N_DRAWS, blocks=control_blocks)
 log()
 log(null.summary())
 log()
@@ -144,8 +149,9 @@ for label, mask in (("common-essential", genes.is_common_essential),
         log("   %-22s n=%5d   z=%+8.2f   selectivity=%+.3f"
             % (label, len(sub), sub["z"].mean(), sub["selectivity"].mean()))
 log()
-log("-> the nonessential controls sit near zero, which is the check that the null is")
-log("   calibrated correctly: genes known to do nothing must score like nothing.")
+log("-> the nonessential controls must sit near zero with unit spread: genes known to")
+log("   do nothing must score like nothing. That check FAILED before the block fix")
+log("   (-4.09, sd 3.28) and is the reason the fix exists.")
 log()
 
 # ===========================================================================
@@ -163,6 +169,11 @@ for _, r in short.iterrows():
         % (r.entity, r.z, r.score, r.median_dependency, r.selectivity))
 log()
 
+# Ranks are computed HERE, over every gene, and shipped as columns. The explorer only
+# ever receives a subset of the rows, so a rank it computed itself would be a rank
+# within that subset -- which is not the rank anything in this repository claims.
+genes["rank_raw"] = genes["score"].rank(ascending=False, method="min").astype(int)
+genes["rank_cal"] = genes["z"].rank(ascending=False, method="min").astype(int)
 genes.sort_values("z", ascending=False).to_csv(os.path.join(OUT, "depmap_genes.csv"), index=False)
 null.to_frame().to_csv(os.path.join(OUT, "depmap_null.csv"), index=False)
 
@@ -188,6 +199,8 @@ with open(os.path.join(OUT, "depmap.manifest.json"), "w", encoding="utf-8") as f
             "count_spearman_raw": round(before, 4),
             "count_spearman_calibrated": round(after, 4),
             "nonessential_mean_z": round(float(genes[genes.is_nonessential_control]["z"].mean()), 3),
+            "nonessential_sd_z": round(float(genes[genes.is_nonessential_control]["z"].std()), 3),
+            "null_blocks": "gene",
             "common_essential_mean_z": round(float(genes[genes.is_common_essential]["z"].mean()), 3),
         },
     }, fh, indent=2)

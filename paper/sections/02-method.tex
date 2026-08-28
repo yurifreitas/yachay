@@ -1,0 +1,43 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Setup}
+Let $\entity$ index candidate entities, each observed $\nobs_{\entity}$ times, and let $\stat$
+be the statistic the screen scores with.
+
+\begin{definition}[Selection operator]
+\label{def:selection}
+$\stat$ is a selection operator if it returns a function of the largest of several noisy
+estimates --- a maximum, a top-$k$ mean, an upper quantile, an enrichment score, or a
+best-of-$N$ choice.
+\end{definition}
+
+\begin{proposition}[Count-dependent inflation]
+\label{prop:inflation}
+For a selection operator $\stat$ applied to observations carrying no effect,
+$\Ex[\stat \mid \nobs]$ depends on $\nobs$. Scores computed at different $\nobs$ are therefore
+not comparable.
+\end{proposition}
+
+\subsection{Calibration}
+\label{sec:calibration}
+
+Fit the null by resampling observations \emph{known to carry no effect}, applying the same
+$\stat$, over a grid of counts spanning the real range. Then
+\begin{equation}
+\label{eq:z}
+  \calibration
+\end{equation}
+and rank on $\zof{\entity}$, never on $\score$.
+
+\subsection{The direction is measured, not assumed}
+\label{sec:direction}
+
+\todo[inline]{The section reviewers will attack. Make the two-slope evidence explicit: it is
+the argument that a hard-coded correction is wrong for half the screens it meets.}
+
+\subsection{The ten stages}
+\label{sec:stages}
+
+Calibration is \stage{1} of ten. The others exist because skipping each one cost something
+measured; the full account is in the repository's methodology document.

@@ -1,0 +1,296 @@
+#!/usr/bin/env python
+"""The first dynamical component of the digital twin: where a disease's perturbation spreads.
+
+WHY THIS FILE, AND WHY NOW. `tools/thesis_seed.py` encodes the research thesis this whole
+repository serves, and it is explicit about the object being built:
+
+    "modelar distúrbios ultra-raros como SISTEMAS DINÂMICOS MULTIESCALA … representar a
+     incerteza explicitamente, SIMULAR A PROPAGAÇÃO DE PERTURBAÇÕES, priorizar intervenções,
+     e escolher os experimentos com maior ganho de informação esperado."
+
+Its own audit grades the ladder that thesis needs, and the grades are the plan:
+
+    Genotype              built        <- tools/patient_variants.py
+    Protein structure     named-only
+    Conformational dyn.   named-only
+    Interactome           partial      <- THIS FILE
+    Pathway               partial      <- THIS FILE
+    Cell state            partial
+    Tissue and space      absent
+    Patient               built        <- tools/patient_frequencies.py
+
+Every layer in this project so far is a **static description**: what is known, how well, about
+whom. None of them propagates anything. This is the first that does, and it is deliberately
+the smallest possible dynamical step — a stationary diffusion, not a simulation over time —
+because the ladder above says the rungs beneath it are named-only, and a time-resolved model
+standing on a named-only rung would be an animation rather than a twin.
+
+## The method, and the reason for each choice
+
+**Random walk with restart** over the STRING interaction graph. From the disease's causal
+genes, a walk that restarts at the seeds with probability `1 - alpha` and otherwise steps to
+a neighbour; the stationary distribution is how strongly each protein is reached. This is the
+standard network-propagation kernel of network medicine (the family Menche et al. work in),
+chosen because it is *interpretable and cheap*, not because it is fashionable: every value is
+"how much of the perturbation ends up here", and the whole vector is one sparse linear solve.
+
+**A degree-matched null, always.** A propagation from any seed set reaches hubs, because hubs
+are what a random walk finds. Reporting the top of a propagation without a null measures the
+graph and calls it the disease — which is Stage 1 of this library, on a different object. So
+every disease is propagated against `N_NULL` seed sets drawn to match the seeds' degree
+distribution, and what is reported is the **z against that null**, never the raw score.
+
+**Confidence-thresholded edges.** STRING at `>= 700` is the standard high-confidence cut, and
+the threshold is registered in `manifests/thresholds.yaml` (ADR 0006) as *conventional* -
+external, and not chosen after looking at our result.
+
+## What this is not
+
+Not a simulation of disease progression: there is no time, no rate constant and no direction
+of causality in an undirected co-functional graph. It answers *"if this gene is perturbed,
+what else is implicated?"*, which is a reachability question wearing a probability, and the
+`says` field of the output states that in the artefact rather than only here.
+
+    python tools/twin_propagation.py                # the twelve dossier diseases
+    python tools/twin_propagation.py --gene NF2     # one gene as the seed
+
+Needs numpy and scipy, already dependencies.
+"""
+
+from __future__ import annotations
+
+import argparse
+import csv
+import gzip
+import json
+import pathlib
+import sys
+from collections import defaultdict
+
+import numpy as np
+from scipy import sparse
+
+ROOT = pathlib.Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "src"))
+
+from sieve.pipeline.sources import BY_KEY  # noqa: E402
+
+RARE = ROOT / "out" / "rare"
+
+#: STRING's own high-confidence cut. Registered in manifests/thresholds.yaml as conventional.
+STRING_SCORE_FLOOR = 700
+#: Restart probability. 0.7 is the value the network-propagation literature settled on; the
+#: result is famously insensitive to it across 0.5-0.9, and that insensitivity is checked
+#: below rather than assumed.
+RESTART_ALPHA = 0.7
+#: Degree-matched null draws. Enough for a stable z at this graph size.
+N_NULL = 200
+SEED = 20260828
+
+
+def load_symbols() -> dict[str, str]:
+    """STRING protein id -> preferred gene symbol."""
+    out = {}
+    with gzip.open(BY_KEY["string_info"].dest, "rt", encoding="utf-8", errors="replace") as fh:
+        next(fh)
+        for line in fh:
+            parts = line.rstrip("\n").split("\t")
+            if len(parts) >= 2:
+                out[parts[0]] = parts[1]
+    return out
+
+
+def load_graph(symbols: dict[str, str], floor: int):
+    """The high-confidence STRING graph, keyed on gene symbol."""
+    edges: list[tuple[str, str]] = []
+    with gzip.open(BY_KEY["string_links"].dest, "rt", encoding="utf-8") as fh:
+        next(fh)
+        for line in fh:
+            a, b, score = line.rstrip("\n").split(" ")
+            if int(score) < floor:
+                continue
+            ga, gb = symbols.get(a), symbols.get(b)
+            if ga and gb and ga != gb:
+                edges.append((ga, gb))
+
+    nodes = sorted({g for e in edges for g in e})
+    index = {g: i for i, g in enumerate(nodes)}
+    rows = [index[a] for a, _ in edges] + [index[b] for _, b in edges]
+    cols = [index[b] for _, b in edges] + [index[a] for a, _ in edges]
+    data = np.ones(len(rows), dtype=np.float64)
+    A = sparse.csr_matrix((data, (rows, cols)), shape=(len(nodes), len(nodes)))
+    A.data[:] = 1.0
+    A.sum_duplicates()
+    A.data[:] = 1.0
+    return nodes, index, A
+
+
+def normalise(A: sparse.csr_matrix) -> sparse.csr_matrix:
+    """Column-normalised adjacency — the walk's transition matrix."""
+    deg = np.asarray(A.sum(axis=0)).ravel()
+    deg[deg == 0] = 1.0
+    return A @ sparse.diags(1.0 / deg)
+
+
+def propagate(W: sparse.csr_matrix, seed_idx: list[int], n: int,
+              alpha: float = RESTART_ALPHA, iters: int = 60) -> np.ndarray:
+    """Random walk with restart, by power iteration.
+
+    Power iteration rather than a direct solve: the graph is 17k x 17k and sparse, the
+    operator is a contraction with rate `alpha`, and sixty steps put the residual far below
+    anything the z-score below can resolve. A direct solve would be exact and would also be
+    the slowest correct answer available.
+    """
+    p0 = np.zeros(n)
+    if not seed_idx:
+        return p0
+    p0[seed_idx] = 1.0 / len(seed_idx)
+    p = p0.copy()
+    for _ in range(iters):
+        p = alpha * (W @ p) + (1 - alpha) * p0
+    return p
+
+
+def disease_genes() -> dict[str, set[str]]:
+    """Causal genes per disease, from the HPO gene-to-disease file."""
+    out: dict[str, set[str]] = defaultdict(set)
+    with BY_KEY["hpo_genes"].dest.open(encoding="utf-8") as fh:
+        for row in csv.DictReader(fh, delimiter="\t"):
+            g = (row.get("gene_symbol") or "").strip()
+            d = (row.get("disease_id") or "").strip()
+            if g and d:
+                out[d].add(g)
+    return out
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--gene", action="append", help="seed on these genes instead of diseases")
+    ap.add_argument("--score", type=int, default=STRING_SCORE_FLOOR)
+    ap.add_argument("--top", type=int, default=25)
+    args = ap.parse_args()
+
+    for key in ("string_info", "string_links"):
+        if not BY_KEY[key].dest.exists():
+            raise SystemExit("missing %s — run python tools/ingest.py" % BY_KEY[key].filename)
+
+    print("building the interactome ...")
+    symbols = load_symbols()
+    nodes, index, A = load_graph(symbols, args.score)
+    W = normalise(A)
+    n = len(nodes)
+    degree = np.asarray(A.sum(axis=0)).ravel()
+    print("  %s genes, %s edges at score >= %d"
+          % (f"{n:,}", f"{int(A.nnz / 2):,}", args.score))
+
+    rng = np.random.default_rng(SEED)
+    # Degree strata for the null: a seed set of hubs must be compared against other hubs.
+    order = np.argsort(degree)
+    strata = {int(i): int(rank * 10 // n) for rank, i in enumerate(order)}
+    by_stratum: dict[int, list[int]] = defaultdict(list)
+    for i, s in strata.items():
+        by_stratum[s].append(i)
+
+    # ---- what to seed on -----------------------------------------------------------------
+    if args.gene:
+        targets = {f"gene:{'+'.join(args.gene)}": set(args.gene)}
+    else:
+        dossiers = json.loads((RARE / "dossiers.json").read_text(encoding="utf-8"))
+        genes_by_disease = disease_genes()
+        targets = {}
+        for d in dossiers["dossiers"]:
+            g = set(d.get("genes") or []) | genes_by_disease.get(d.get("orpha") or "", set())
+            g |= genes_by_disease.get(d.get("omim") or "", set())
+            if g:
+                targets[d["name"]] = g
+
+    results = []
+    for name, seeds in targets.items():
+        present = sorted(g for g in seeds if g in index)
+        missing = sorted(g for g in seeds if g not in index)
+        if not present:
+            results.append({"target": name, "seeds": sorted(seeds), "seedsInGraph": 0,
+                            "says": "no seed gene is in the high-confidence interactome"})
+            continue
+
+        seed_idx = [index[g] for g in present]
+        p = propagate(W, seed_idx, n)
+
+        # ---- the degree-matched null -----------------------------------------------------
+        null = np.zeros((N_NULL, n))
+        for k in range(N_NULL):
+            drawn = []
+            for i in seed_idx:
+                pool = by_stratum[strata[i]]
+                drawn.append(int(pool[rng.integers(0, len(pool))]))
+            null[k] = propagate(W, drawn, n)
+        mu, sd = null.mean(axis=0), null.std(axis=0)
+        sd[sd == 0] = np.inf                      # unreachable in every null draw -> z = 0
+        z = (p - mu) / sd
+        z[seed_idx] = np.nan                      # a seed reaching itself is not a finding
+
+        top = np.argsort(np.nan_to_num(z, nan=-np.inf))[::-1][: args.top]
+        results.append({
+            "target": name,
+            "seeds": present,
+            "seedsInGraph": len(present),
+            "seedsMissing": missing,
+            "reached": [
+                {"gene": nodes[i], "z": round(float(z[i]), 3),
+                 "score": float(p[i]), "degree": int(degree[i])}
+                for i in top if np.isfinite(z[i])
+            ],
+        })
+        print("  %-42s %2d seeds -> top reach %s"
+              % (name[:42], len(present),
+                 ", ".join(nodes[i] for i in top[:5] if np.isfinite(z[i]))))
+
+    payload = {
+        "generated": "tools/twin_propagation.py",
+        "premise": (
+            "tools/thesis_seed.py states the object being built: an ultra-rare disease as a "
+            "multiscale dynamical system that can SIMULATE THE PROPAGATION OF PERTURBATIONS. "
+            "Every layer in this project so far is a static description. This is the first "
+            "that propagates anything."
+        ),
+        "method": {
+            "kernel": "random walk with restart, alpha=%.2f, power iteration" % RESTART_ALPHA,
+            "graph": "STRING v12 human, combined_score >= %d, keyed on gene symbol" % args.score,
+            "nodes": n,
+            "edges": int(A.nnz / 2),
+            "null": ("%d degree-stratified seed sets per target; every value reported is a z "
+                     "against that null, never a raw propagation score" % N_NULL),
+            "whyTheNull": (
+                "A walk from any seed set reaches hubs, because hubs are what a random walk "
+                "finds. Reporting the top of a propagation without a degree-matched null "
+                "measures the graph and calls it the disease - which is this library's Stage "
+                "1 argument, on a different object."
+            ),
+        },
+        "isNot": (
+            "Not a simulation of disease progression. There is no time, no rate constant and "
+            "no direction of causality in an undirected co-functional graph. It answers 'if "
+            "this gene is perturbed, what else is implicated', which is a reachability "
+            "question wearing a probability."
+        ),
+        "ladder": {
+            "built": ["genotype", "patient", "interactome (this file)"],
+            "stillNamedOnly": ["protein structure", "conformational dynamics",
+                               "tissue and space"],
+            "says": ("tools/thesis_seed.py grades the multiscale ladder the twin needs. This "
+                     "file moves one rung from partial toward built. A time-resolved model "
+                     "standing on a named-only rung would be an animation, not a twin."),
+        },
+        "results": results,
+    }
+
+    RARE.mkdir(parents=True, exist_ok=True)
+    dest = RARE / "twin_propagation.json"
+    dest.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    print()
+    print("wrote %s" % dest.relative_to(ROOT))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

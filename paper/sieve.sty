@@ -1,0 +1,151 @@
+% ---------------------------------------------------------------------------
+% sieve.sty - the single preamble for every manuscript in this repository.
+%
+% One file so that typography, units, citation style and semantic macros are
+% decided ONCE. A manuscript that redefines any of this in its own preamble is
+% a fork, not a paper.
+%
+% Requires: LuaLaTeX or XeLaTeX (unicode-math), biber.
+% Fallback for pdfLaTeX is deliberately not provided - see paper/README.md.
+% ---------------------------------------------------------------------------
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{sieve}[2026/08/26 sieve manuscript standard]
+
+\RequirePackage{kvoptions}
+\SetupKeyvalOptions{family=sieve,prefix=sieve@}
+\DeclareBoolOption{draft}        % line numbers, todo notes, [P]ending marks visible
+\DeclareBoolOption[true]{numbers}% pull in generated/numbers.tex
+\ProcessKeyvalOptions*
+
+% --- language, encoding, typography ---------------------------------------
+\RequirePackage{iftex}
+\RequireLuaTeX
+\RequirePackage{fontspec}
+\RequirePackage{unicode-math}
+\RequirePackage[english]{babel}
+\RequirePackage{csquotes}
+\RequirePackage{microtype}
+
+% Libertinus if installed; silently fall back to the default so a fresh box
+% still builds. Typography is a decision, not a build dependency.
+\IfFontExistsTF{Libertinus Serif}{%
+  \setmainfont{Libertinus Serif}%
+  \setsansfont{Libertinus Sans}%
+  \setmonofont{Libertinus Mono}[Scale=MatchLowercase]%
+  \setmathfont{Libertinus Math}%
+}{}
+
+% --- mathematics -----------------------------------------------------------
+\RequirePackage{amsmath}
+\RequirePackage{amsthm}
+\RequirePackage{mathtools}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+% --- numbers and units: siunitx is the ONLY way a number enters the text ---
+\RequirePackage{siunitx}
+\sisetup{
+  round-mode            = places,
+  round-pad             = false,
+  group-digits          = integer,
+  group-minimum-digits  = 4,
+  separate-uncertainty  = true,        % 0.845 +- 0.045, never 0.845(45)
+  uncertainty-mode      = separate,
+  table-align-uncertainty = true,
+  detect-weight         = true,
+}
+% Uncertainty is not optional (GUM / JCGM 100). \val takes value and half-width.
+\newcommand{\val}[2]{\qty{#1 +- #2}{}}
+% A number still missing its interval. Renders visibly flagged in draft mode so
+% it cannot quietly reach a submission.
+\newcommand{\nointerval}[1]{%
+  \ifsieve@draft\textcolor{orange}{\num{#1}\,\textsuperscript{[no CI]}}\else\num{#1}\fi}
+
+% --- tables and figures ----------------------------------------------------
+\RequirePackage{booktabs}
+\RequirePackage{threeparttable}
+\RequirePackage{tabularx}
+\RequirePackage{graphicx}
+\RequirePackage[font=small,labelfont=bf]{caption}
+\RequirePackage{subcaption}
+\RequirePackage{xcolor}
+% No vertical rules, no \hline. booktabs only: \toprule \midrule \bottomrule.
+
+% --- plots: generated from data, never drawn by hand -----------------------
+\RequirePackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots}
+\usetikzlibrary{external}
+\tikzexternalize[prefix=build/tikz/]
+\pgfplotsset{
+  every axis/.append style={
+    axis lines=left, tick align=outside, line width=0.6pt,
+    label style={font=\small}, tick label style={font=\small},
+    legend style={draw=none, font=\small, fill=none},
+  },
+}
+
+% --- code ------------------------------------------------------------------
+\RequirePackage[newfloat]{minted}
+\setminted{fontsize=\small, breaklines=true, autogobble=true}
+
+% --- bibliography ----------------------------------------------------------
+\RequirePackage[
+  backend=biber,
+  style=numeric-comp,
+  sorting=none,          % citation order: a reader follows the argument, not the alphabet
+  maxbibnames=6,
+  minbibnames=3,
+  giveninits=true,
+  doi=true, isbn=false, url=false, eprint=true,
+]{biblatex}
+\addbibresource{refs.bib}
+% Every \cite in this repository carries WHY. \citewhy{key}{what it supports}
+% mirrors the notes: convention of CITATION.cff.
+\newcommand{\citewhy}[2]{\cite[][]{#1}\footnote{\citetitle{#1}: #2}}
+
+% --- cross-references (load hyperref late, cleveref last) ------------------
+\RequirePackage[hidelinks]{hyperref}
+\RequirePackage[capitalise,nameinlink]{cleveref}
+\RequirePackage{orcidlink}
+
+% --- draft apparatus -------------------------------------------------------
+\RequirePackage[obeyDraft]{todonotes}
+\ifsieve@draft
+  \RequirePackage{lineno}\linenumbers
+\fi
+% knee's convention: every number is Measured or Pending, and it shows.
+\newcommand{\Measured}{\textsuperscript{[M]}}
+\newcommand{\Pending}{\ifsieve@draft\textcolor{red}{\textsuperscript{[P]}}\else\textsuperscript{[P]}\fi}
+
+% --- semantic macros: the vocabulary of this method ------------------------
+% Defined once so the notation cannot drift between papers.
+\newcommand{\entity}{e}                       % a candidate entity
+\newcommand{\nobs}{n}                         % its observation count
+\newcommand{\stat}{T}                         % the screening statistic
+\newcommand{\score}{\stat_{\entity}}          % the observed score
+\newcommand{\nullmean}[1]{\mu_{0}(#1)}        % null mean at a given count
+\newcommand{\nullsd}[1]{\sigma_{0}(#1)}       % null sd at a given count
+\newcommand{\zof}[1]{z(#1)}
+\newcommand{\topk}[1]{\operatorname{top\text{-}#1}}
+\newcommand{\Ex}{\mathbb{E}}
+\newcommand{\neff}{n_{\mathrm{eff}}}
+% The definition the whole method rests on.
+\newcommand{\calibration}{%
+  \zof{\entity} = \frac{\score - \nullmean{\nobs_{\entity}}}{\nullsd{\nobs_{\entity}}}}
+
+% Stage references, so a stage number is never typed loose in prose.
+\newcommand{\stage}[1]{Stage~#1}
+
+% --- generated numbers: no value is ever typed into the source -------------
+\ifsieve@numbers
+  \IfFileExists{generated/numbers.tex}{\input{generated/numbers.tex}}{%
+    \PackageError{sieve}{generated/numbers.tex is missing}{%
+      Run: python tools/paper_numbers.py}}
+\fi
+
+\endinput

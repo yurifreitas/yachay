@@ -1,0 +1,723 @@
+cff-version: 1.2.0
+title: "sieve — null-calibrated shortlisting for large, noisy, confounded screens"
+message: "If you use this work, cite it using the metadata below."
+type: software
+authors:
+  - given-names: Yuri
+    family-names: Freitas
+keywords:
+  - selection bias
+  - order statistics
+  - winner's curse
+  - null calibration
+  - CRISPR screen
+  - DepMap
+  - target prioritisation
+  - best-of-N
+  - rare disease
+  - founder effect
+  - ancestry representation
+  - health equity
+license: CC-BY-4.0
+version: 0.1.0
+date-released: "2026-08-26"
+
+# ---------------------------------------------------------------------------------
+# The claims this repository stands behind, each with the number that supports it.
+# Genealogy in docs/lineage.md; references in docs/references/; stages in docs/methodology.md.
+#
+#  · the celebrated "training maximum" of the obesity screen (2.0047) was measured on ONE
+#    observation, where pure noise averages 0.845 and reaches 2.43 at p99 — the record
+#    score sat at roughly the 93rd percentile of NOTHING HAPPENING
+#  · a -0.57 correlation with observation count, diagnosed as a viability confound,
+#    fell to +0.07 after calibration: the biology was a statistical artifact
+#  · the single most important entity in that screen moved from rank 12 to rank 1
+#  · at DepMap scale (1178 lines x 17916 genes): 60% of the raw top 10 are known
+#    PAN-ESSENTIAL genes — the metric's maximum is toxicity, not selectivity
+#  · the same 1178 lines, grouped by Oncotree instead of pooled, recover textbook lineage
+#    dependencies BLIND — SOX10 and BRAF in skin, TCF7L2 and CTNNB1 in bowel, ISL1/LDB1/
+#    GATA3/MYCN in peripheral nervous system, PAX8 in kidney/ovary/uterus, FLI1 in bone;
+#    5 of 9 pre-named positive controls returned with a rank, and the other 4 are published
+#  · pooled "Lung" (126 lines, the best-powered subgroup) returns NOTHING, while its two
+#    subtypes each return the genes their biology predicts (KRAS; SKP2/CKS1B/E2F3) — a null
+#    result at the coarse level can be evidence of the wrong grouping, not of no effect
+#  · 27 of 37 subtypes cannot detect a 0.8 SD effect and are reported as underpowered
+#    rather than as negative
+#  · grouping the same lines by GENOTYPE instead of by catalogue label reproduces paralog
+#    synthetic lethality under lineage stratification (SMARCA4->SMARCA2 0.97->0.93;
+#    ARID1A->ARID1B 0.88->0.96, where stratifying made the effect LARGER because lineage
+#    was masking it) and the loss of a dependency (TP53->MDM2 -1.58, unmoved)
+#  · but 92 of 121 mutation-defined subgroups are substantially restating MUTATIONAL
+#    BURDEN rather than genotype - hypermutated lines are mutated in everything, so a long
+#    gene becomes a synonym for hypermutation; this is the pan-essential confound one
+#    level up, and it CANNOT be adjusted away, because for a mismatch-repair gene the same
+#    separation is the mechanism (MSH3->WRN falls 1.69->0.82 when it is)
+#  · the damaging-mutation matrix cannot express an activating hotspot, so BRAF shows 9
+#    mutant lines against the ~100 carrying V600E: half the pre-written control set was
+#    inconstructible, which is a result about the data source and is published as one
+#  · with the gates exposed as live controls, 26 of 40 Skin candidates fail on the Stage 0
+#    dependency floor ALONE and the false-discovery and effect-size cuts exclude nothing
+#    between them - two conventional thresholds doing no work on this data
+#  · the measured null bias of a top-20 mean runs 0.3934 (n=347) -> 0.5638 (n=1178)
+#  · the two anomalies this file used to list as OPEN are RESOLVED (2026-08-26), and both
+#    were defects in the same estimator: the null was fitted on pooled control ROWS, so it
+#    described a synthetic entity rather than a gene. Fitting on gene-shaped BLOCKS moves
+#    the nonessential control pool from a mean z of -4.09 to +0.036 (sd 1.013), and the
+#    count correlation from -0.0559 to -0.0377. The count-correlation move was settled with
+#    this repository's first confidence interval: 4,000-resample paired bootstrap over
+#    17,916 genes, change in Spearman 95% CI [-0.0344, -0.0271], P(>0)=0.000 - a defect,
+#    not noise. Evidence in docs/references/deep/internal-audit.md; predicted in advance by
+#    docs/adr/0004-block-nulls.md and scored correct.
+#  · the population axis, measured 2026-08-27 over Orphanet's 17,108 prevalence records:
+#    386 of 525 (73.5%) disorders reported in more than one country fall into DIFFERENT
+#    prevalence classes by country, so prevalence is not a scalar; 55.6% of records assert
+#    'Worldwide', a claim of population-independence that is false wherever it is testable;
+#    representation against population runs Europe 8.10 to Africa 0.07, a factor of 116;
+#    and the catalogue's entire vocabulary for a population is one untyped string
+#  · ONE OPEN ANOMALY remains: the nonessential control set may not be inert. Its 99.95th
+#    percentile of z sits at 8.9 where a standard normal gives 3.3 - a control-set PURITY
+#    problem, not a null problem. Not fixed, not diagnosed (docs/lineage.md §10).
+# ---------------------------------------------------------------------------------
+
+references:
+  # --- the author's own prior work: where the method and the discipline come from ----
+  - type: software
+    title: "nominator — turn sparse, confounded assay data into a defensible shortlist"
+    authors:
+      - { given-names: Yuri, family-names: Freitas }
+    license: Apache-2.0
+    notes: >-
+      THE DIRECT METHODOLOGICAL ANCESTOR, and uncredited here until 2026-08-28. Nine of this
+      repository's ten stages are nominator's, renumbered by the insertion of Stage 1 (Null),
+      which is what sieve genuinely contributes and what produced every headline result in
+      this file. nominator implements all ten stages in 921 lines; sieve implements four in
+      1,627. Its core/validation.py already carried `bootstrap_ci`, `leave_one_entity_out`,
+      `cold_start_split` and `orthogonal_validation` - so finding A6 ("no intervals on
+      published numbers") stayed open here for fourteen audit sweeps and was closed by
+      rewriting a bootstrap the ancestor shipped. See docs/references/prior-work.md and
+      docs/lineage.md §13.
+  - type: software
+    title: "climate — regime engine for Rio Grande do Sul"
+    authors:
+      - { given-names: Yuri, family-names: Freitas }
+    notes: >-
+      States Stage 2 as the constraint that governs the architecture rather than as a gate:
+      with n=36 and SE(RPSS) ~ 0.10-0.15 the standard error is the order of the whole signal,
+      therefore no empirical arbitrage between models exists. sieve reached the same
+      conclusion for rare-disease evidence on 2026-08-28 (audit A26) and acted on it less
+      decisively.
+  - type: software
+    title: "adia — real-time structural break detection (ADIA Lab / CrunchDAO 2026)"
+    authors:
+      - { given-names: Yuri, family-names: Freitas }
+    notes: >-
+      Carries the number Stage 5 exists to produce and sieve has never produced: a measured
+      optimism gap of ~ +0.013 between a local holdout (~0.60) and the board (0.5910 TS-AUC),
+      with the stated consequence "regularize and prune, do not add".
+  - type: software
+    title: "knee — report-derived multilingual labelling and abnormality detection in knee MRI"
+    authors:
+      - { given-names: Yuri, family-names: Freitas }
+    year: 2026
+    notes: >-
+      Source of the documentation discipline this repository adopts: a role/last-revised/state
+      header on every doc, a lineage file that states what each measurement DOES to the
+      ancestor's claim, and an archive of dead ends with the number that killed each. Its
+      teacher-student inversion (CV 0.7652 vs 0.787 against humans) is the same lesson as
+      Stage 5 here: an in-metric validation number is not a held-out number.
+  - type: software
+    title: "agentComp — hybrid agent (LLM + causal engine) for ARC-AGI-3"
+    authors:
+      - { given-names: Yuri, family-names: Freitas }
+    year: 2026
+    notes: >-
+      Origin of the methodological laws inherited through `knee`, in particular "a wrong
+      premise costs more than wrong code" — which is Stage 0 of this library.
+  - type: software
+    title: "prompt-workbench (Oráculo) — prompt and model evaluation harness"
+    authors:
+      - { given-names: Yuri, family-names: Freitas }
+    year: 2026
+    notes: >-
+      The second adapter (`sieve.adapters.llm_eval`). Building it exposed a design flaw in
+      the core (reduce="mean" vs reduce="raw"), which is the return on porting a method to a
+      domain that did not produce it.
+
+  # --- the mechanism: why a maximum is biased ---------------------------------------
+  - type: book
+    title: "Order Statistics"
+    authors:
+      - { family-names: David, given-names: "H. A." }
+      - { family-names: Nagaraja, given-names: "H. N." }
+    year: 2003
+    notes: >-
+      The mechanism underneath every stage-1 claim: E[max of n draws] grows with n. Stage 1
+      is this fact, measured empirically from the screen's own controls instead of assumed
+      from a distributional form.
+  - type: article
+    title: "Extreme value theory / the expected maximum of noise"
+    notes: >-
+      Placeholder for the specific EVT reference to be chosen. What matters for this library
+      is the NON-asymptotic regime — n=1 to n=20 — where EVT's limits do not apply and the
+      empirical null does. To be filled with the reference that actually covers small n.
+
+  # --- the same bias, once per field, each with its own name -------------------------
+  - type: article
+    title: "Winner's curse in genome-wide association studies / effect-size inflation at discovered loci"
+    notes: >-
+      The genetics name for Stage 1. The effect at a locus discovered by its own significance
+      is biased upward, and the bias grows as power falls. Directly relevant to the planned
+      GWAS adapter (docs/disease-expansion.md §2).
+  - type: article
+    title: "The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting and Non-Normality"
+    authors:
+      - { family-names: Bailey, given-names: "David H." }
+      - { family-names: "López de Prado", given-names: Marcos }
+    year: 2014
+    notes: >-
+      The finance name for Stage 1, and the closest prior art in spirit: it deflates a
+      selected maximum by the number of trials. Difference worth stating plainly — the DSR
+      deflates from a formula's assumptions; `sieve` resamples the screen's own controls,
+      so it inherits the real correlation structure rather than assuming independence.
+  - type: article
+    title: "The Probability of Backtest Overfitting"
+    authors:
+      - { family-names: Bailey, given-names: "David H." }
+      - { family-names: "López de Prado", given-names: Marcos }
+    notes: "Companion to the above; the out-of-sample degradation of a max-selected strategy."
+  - type: article
+    title: "Limit theorems for the maximum term in stationary sequences (Darling–Erdős)"
+    authors:
+      - { family-names: Darling, given-names: "D. A." }
+      - { family-names: "Erdős", given-names: "P." }
+    year: 1956
+    notes: >-
+      The change-point name for Stage 1, and the designated ANALYTIC CHECK: scanning
+      positions and taking the largest statistic has a known correction. `sieve` should
+      reproduce it empirically. If it cannot, the library is wrong — see
+      docs/expansion-map.md §2.
+  - type: article
+    title: "Regression to the mean"
+    notes: "The clinical-trial name for the same thing. Kept in the list so the shared mechanism is visible."
+
+  # --- gene-based tests: the correction the GWAS adapter must reproduce ---------------
+  - type: article
+    title: "MAGMA: Generalized Gene-Set Analysis of GWAS Data"
+    authors:
+      - { family-names: "de Leeuw", given-names: "Christiaan A." }
+      - { family-names: Posthuma, given-names: Danielle }
+    year: 2015
+    notes: >-
+      A gene score built as a max/top-k over the SNPs in a gene is inflated by how many
+      correlated SNPs the gene contains. MAGMA corrects this parametrically. The
+      schizophrenia adapter's acceptance criterion is agreement with it.
+  - type: article
+    title: "VEGAS: gene-based test for genome-wide association studies"
+    notes: "Simulation-based gene test using an LD reference — closest in method to what `sieve` would do."
+  - type: article
+    title: "Controlling the False Discovery Rate: a Practical and Powerful Approach to Multiple Testing"
+    authors:
+      - { family-names: Benjamini, given-names: Yoav }
+      - { family-names: Hochberg, given-names: Yosef }
+    year: 1995
+    notes: >-
+      Stage 6's error control. Stated here because it is the standard fix that does NOT
+      solve the Stage 1 problem: FDR controls the rate of false positives among tests, but
+      the ranking within survivors is still a ranking of observation count.
+
+  # --- the reference dataset -----------------------------------------------------------
+  - type: database
+    title: "DepMap — Cancer Dependency Map, CRISPR gene effect (Achilles / Project Score)"
+    notes: >-
+      The scale test: 1178 cell lines x 17916 genes as run in out/DEPMAP_FINDINGS.md.
+      Supplies both control sets used here — AchillesNonessentialControls (the Stage 1 null
+      pool) and AchillesCommonEssentialControls (the Stage 3 confound). Release version to
+      be pinned in docs/references/README.md.
+  - type: article
+    title: "Chronos: a cell population dynamics model of CRISPR experiments (gene effect estimation)"
+    notes: >-
+      Defines the score this library consumes: 0 = no effect, -1 = the median common-essential
+      gene, dependency NEGATIVE — which is why the adapter flips the sign.
+  - type: article
+    title: "Defining a Cancer Dependency Map"
+    authors:
+      - { family-names: Tsherniak, given-names: Aviad }
+      - { family-names: Hahn, given-names: "William C." }
+    year: 2017
+    notes: "The framing of selective dependency as the useful signal, and pan-essentiality as the confound."
+
+  # --- NF2: the focused disease reference ---------------------------------------------
+  - type: article
+    title: "Updated diagnostic criteria and nomenclature for neurofibromatosis type 2 and schwannomatosis (2022 consensus)"
+    year: 2022
+    notes: >-
+      The rename to NF2-related schwannomatosis, and the separation from SMARCB1/LZTR1
+      schwannomatosis. Supports docs/references/nf2.md §1 — the section that exists because
+      the wrong name returns the wrong literature.
+  - type: article
+    title: "The NF2 tumour suppressor merlin and the Hippo pathway (review — reference to be selected)"
+    notes: >-
+      Supports nf2.md §3: merlin acts upstream of LATS1/2, and merlin loss releases YAP/TAZ
+      to act with TEAD. This is the claim that turns into a POSITIVE CONTROL for the NF2
+      analysis — if the calibrated ranking does not recover YAP1/WWTR1/TEAD1-4/LATS1-2, the
+      pipeline is broken and no novel hit from it should be believed.
+  - type: article
+    title: "NF2 loss and YAP/TAZ–TEAD dependency in mesothelioma (primary reports — to be selected)"
+    notes: >-
+      Supports nf2.md §5, and also names the main threat to that analysis: mesothelioma is
+      over-represented among NF2-null lines, so a lineage effect can masquerade as an NF2
+      effect unless lineage is regressed out at Stage 3.
+  - type: article
+    title: "Bevacizumab for vestibular schwannoma in NF2 — hearing response"
+    notes: "Supports nf2.md §4: the endpoint is hearing preservation in a benign tumour, not cytotoxicity."
+  - type: article
+    title: "TEAD inhibitors — clinical status (to be selected)"
+    notes: "The pharmacological expression of the Hippo logic; the most mechanistically motivated current class."
+
+  # --- rare-disease scale: the quantitative axis (docs/references/rare-disease-scale.md) --
+  # Every entry in the three blocks below was resolved through the Crossref API before it was
+  # written down - title, authors, venue, year and DOI are verified, not recalled. See
+  # docs/audit.md A5, which is the finding this practice answers.
+  - type: article
+    title: "Estimating cumulative point prevalence of rare diseases: analysis of the Orphanet database"
+    authors:
+      - { family-names: "Nguengang Wakap", given-names: Stephanie }
+    doi: "10.1038/s41431-019-0508-0"
+    journal: "European Journal of Human Genetics"
+    volume: 28
+    start: 165
+    end: 173
+    year: 2020
+    notes: >-
+      The field's reference prevalence estimate, and the source of the shape
+      rare-disease-scale.md §0 is built on: 3.5-5.9% of the population (263-446 million people),
+      71.9% genetic, 69.9% exclusively paediatric, and - the load-bearing part - 84.5% of
+      analysable diseases below 1/1,000,000 while 77.3-80.7% of the population burden sits in the
+      4.2% (n=149) at the common end. It is also the external check on our own atlas: Orphanet's
+      6,172 diseases against the 14,831 our join reaches, which is a difference in scope rather
+      than a contradiction.
+  - type: article
+    title: "The mutational constraint spectrum quantified from variation in 141,456 humans"
+    authors:
+      - { family-names: Karczewski, given-names: "Konrad J." }
+      - { family-names: Francioli, given-names: "Laurent C." }
+    doi: "10.1038/s41586-020-2308-7"
+    journal: "Nature"
+    year: 2020
+    notes: >-
+      gnomAD constraint, cited for a Stage 6 claim and a Stage 3 caveat at once. It is the best
+      available structural prior for entities with no literature (rare-disease-scale.md §4), and
+      its panel composition is exactly why rare-disease-equity.md §2 requires a constraint-based
+      prior to carry its population in the manifest, the way null_blocks is carried.
+  - type: article
+    title: "The Human Phenotype Ontology in 2021"
+    authors:
+      - { family-names: "Kohler", given-names: Sebastian }
+      - { family-names: Gargano, given-names: Michael }
+    doi: "10.1093/nar/gkaa1043"
+    journal: "Nucleic Acids Research"
+    year: 2020
+    notes: >-
+      The annotation source every rare-disease layer here is joined on - tools/build_atlas.py,
+      tools/dossier.py, tools/nongene_measure.py. Cited for what it CANNOT do as much as for what
+      it can: its inheritance vocabulary has no term for a molecule at a dose, an antibody clone
+      or a pathogen at eight weeks, which is the measured zero behind rare-disease-mechanisms.md
+      §3 - six of ten authored non-gene classes have a footprint of exactly zero.
+  - type: article
+    title: "100,000 Genomes Pilot on Rare-Disease Diagnosis in Health Care - Preliminary Report"
+    doi: "10.1056/NEJMoa2035790"
+    journal: "New England Journal of Medicine"
+    year: 2021
+    notes: >-
+      The honest denominator for anything downstream of diagnosis: a 25% diagnostic yield in the
+      best-resourced programme available, 14% of those found outside standard panel regions.
+      Supports rare-disease-equity.md §2.
+
+  # --- rare-disease mechanisms: the modules (docs/references/rare-disease-mechanisms.md) ---
+  - type: article
+    title: "The RASopathies"
+    authors:
+      - { family-names: Rauen, given-names: "Katherine A." }
+    doi: "10.1146/annurev-genom-091212-153523"
+    journal: "Annual Review of Genomics and Human Genetics"
+    year: 2013
+    notes: >-
+      Defines the RAS-MAPK module of rare-disease-mechanisms.md §1, and the claim that membership
+      rather than gene identity is what makes a pathway inhibitor a cross-syndrome candidate.
+  - type: article
+    title: "The mTOR signalling cascade: paving new roads to cure neurological disease"
+    authors:
+      - { family-names: Crino, given-names: "Peter B." }
+    doi: "10.1038/nrneurol.2016.81"
+    journal: "Nature Reviews Neurology"
+    year: 2016
+    notes: >-
+      The mTORopathies, and the module where somatic mosaicism is the rule rather than the
+      exception - which is also the one non-gene class HPO can partly record (136 diseases under
+      mosaic terms, tools/nongene_measure.py).
+  - type: article
+    title: "Genes and molecular pathways underpinning ciliopathies"
+    authors:
+      - { family-names: Reiter, given-names: "Jeremy F." }
+      - { family-names: Leroux, given-names: "Michel R." }
+    doi: "10.1038/nrm.2017.60"
+    journal: "Nature Reviews Molecular Cell Biology"
+    year: 2017
+    notes: >-
+      The cleanest case for the module claim: one organelle explains a phenotype set (retina,
+      kidney, cerebellum, digits) that shares no organ system. rare-disease-mechanisms.md §1.
+  - type: article
+    title: "Ribosomopathies: human disorders of ribosome dysfunction"
+    authors:
+      - { family-names: Narla, given-names: Anupama }
+      - { family-names: Ebert, given-names: "Benjamin L." }
+    doi: "10.1182/blood-2009-10-178129"
+    journal: "Blood"
+    year: 2010
+    notes: >-
+      Cited for the paradox the module framing has to survive: a defect in a universal
+      housekeeping machine producing strictly tissue-restricted disease. That is the same
+      gene-in-a-context claim this repository's core statistic rests on.
+  - type: article
+    title: "Lysosomal storage diseases"
+    authors:
+      - { family-names: Platt, given-names: "Frances M." }
+      - { family-names: "d Azzo", given-names: Alessandra }
+    doi: "10.1038/s41572-018-0025-4"
+    journal: "Nature Reviews Disease Primers"
+    year: 2018
+    notes: >-
+      The therapeutic template of the rare-disease field - enzyme replacement, substrate
+      reduction, chaperones - and the module where "membership buys you a candidate" is best
+      evidenced.
+  - type: article
+    title: "Mitochondrial diseases"
+    authors:
+      - { family-names: Gorman, given-names: "Grainne S." }
+      - { family-names: Chinnery, given-names: "Patrick F." }
+    doi: "10.1038/nrdp.2016.80"
+    journal: "Nature Reviews Disease Primers"
+    year: 2016
+    notes: >-
+      Two genomes and heteroplasmy: the module where inheritance is quantitative rather than
+      presence/absence. It is the standing counter-example to any gene-shaped architecture,
+      including this repository's own (rare-disease-mechanisms.md §1).
+  - type: article
+    title: "The human disease network"
+    authors:
+      - { family-names: Goh, given-names: "Kwang-Il" }
+      - { family-names: Cusick, given-names: "Michael E." }
+    doi: "10.1073/pnas.0701361104"
+    journal: "Proceedings of the National Academy of Sciences"
+    year: 2007
+    notes: >-
+      The bipartite disease-gene graph, and the first demonstration that disease genes cluster
+      rather than scatter. It is the ancestor of the object tools/interactome_sparse.py measured
+      for an entirely different (computational) reason.
+  - type: article
+    title: "Uncovering disease-disease relationships through the incomplete interactome"
+    authors:
+      - { family-names: Menche, given-names: "Jorg" }
+      - { family-names: Sharma, given-names: Amitabh }
+    doi: "10.1126/science.1257601"
+    journal: "Science"
+    year: 2015
+    notes: >-
+      Disease modules, and network distance between them as a predictor of shared phenotype. Our
+      measurement is adjacent rather than confirmatory: modularity 0.861 on the real HPO graph
+      against 0.162 for a degree-matched rewiring. Same object, different statistic, no interval -
+      and rare-disease-mechanisms.md §5 states the null that would falsify it.
+  - type: article
+    title: "Patient-Customized Oligonucleotide Therapy for a Rare Genetic Disease"
+    authors:
+      - { family-names: Kim, given-names: Jinkuk }
+    doi: "10.1056/NEJMoa1813279"
+    journal: "New England Journal of Medicine"
+    year: 2019
+    notes: >-
+      milasen: the n=1 limiting case of the power axis. Cited in rare-disease-scale.md §4 for what
+      it implies about this library's scope - at n=1 no calibration helps and the whole
+      methodological weight moves onto mechanism. It marks the edge of where Stage 1 applies.
+
+  # --- rare-disease equity: the social layer (docs/references/rare-disease-equity.md) ------
+  - type: article
+    title: "Time to diagnosis and determinants of diagnostic delays of people living with a rare disease: results of a Rare Barometer retrospective patient survey"
+    authors:
+      - { family-names: Faye, given-names: Francois }
+      - { family-names: Crocione, given-names: Claudia }
+    doi: "10.1038/s41431-024-01604-z"
+    journal: "European Journal of Human Genetics"
+    year: 2024
+    notes: >-
+      6,507 people, 1,675 rare diseases, 41 countries; average total diagnosis time 4.7 years, and
+      56% diagnosed more than six months after first medical contact. Usable here rather than
+      merely quotable because its determinants carry intervals: adolescence OR 4.79 (3.7-6.2),
+      childhood 3.11 (2.4-4.0), misdiagnosis 2.48 (2.1-2.9), being a woman 1.22 (1.1-1.4). This is
+      the mechanism by which a social fact becomes the annotation-count attention proxy that
+      tools/atlas_bias.py measures at +0.2357.
+  - type: article
+    title: "The Missing Diversity in Human Genetic Studies"
+    authors:
+      - { family-names: Sirugo, given-names: Giorgio }
+      - { family-names: Williams, given-names: "Scott M." }
+      - { family-names: Tishkoff, given-names: "Sarah A." }
+    doi: "10.1016/j.cell.2019.02.048"
+    journal: "Cell"
+    year: 2019
+    notes: >-
+      With Popejoy and Fullerton, the documented composition of the reference panels any Stage 6
+      prior here would be built on. The consequence is specific rather than rhetorical:
+      under-represented ancestry yields more apparently rare variants, more variants of uncertain
+      significance, and a lower diagnostic yield.
+  - type: article
+    title: "Genomics is failing on diversity"
+    authors:
+      - { family-names: Popejoy, given-names: "Alice B." }
+      - { family-names: Fullerton, given-names: "Stephanie M." }
+    doi: "10.1038/538161a"
+    journal: "Nature"
+    year: 2016
+    notes: >-
+      The measurement that made panel composition a citable fact rather than an impression.
+      Supports rare-disease-equity.md §2.
+  - type: article
+    title: "The RDI-Lancet Commission on Rare Diseases: improving visibility to address health-care disparities for 400 million people"
+    authors:
+      - { family-names: Boycott, given-names: "Kym M." }
+      - { family-names: Giugliani, given-names: Roberto }
+    doi: "10.1016/S0140-6736(25)00211-9"
+    journal: "The Lancet"
+    year: 2025
+    notes: >-
+      The policy-scale framing of the same gap, at a population count (400 million) consistent
+      with the 263-446 million interval of Nguengang Wakap et al. Supports rare-disease-equity.md
+      §4, where the barriers layer's economic claim is contradicted by this project's own
+      arithmetic and the contradiction is published rather than reconciled.
+
+  # --- ancestry, founder history and geography (docs/references/rare-disease-ancestry.md) --
+  # Crossref-verified, like the three blocks above. Several DOIs guessed from memory during
+  # drafting came back 404 or resolved to an unrelated paper; those were discarded rather than
+  # written down. That is the practice docs/audit.md F2 proposes to automate.
+  - type: article
+    title: "Finnish Disease Heritage I: characteristics, causes, background"
+    authors:
+      - { family-names: Norio, given-names: Reijo }
+    doi: "10.1007/s00439-002-0875-3"
+    journal: "Human Genetics"
+    year: 2003
+    notes: >-
+      The founding description of a founder-disease heritage: ~36 autosomal-recessive disorders
+      enriched by repeated bottlenecks, most rare or absent elsewhere - and, symmetrically, cystic
+      fibrosis rare in Finland. Supports rare-disease-ancestry.md §2a, and it is the reason our
+      own §1c spread is read as demography rather than as pathology.
+  - type: article
+    title: "The Finnish genetic heritage in 2022 - from diagnosis to translational research"
+    authors:
+      - { family-names: Uusimaa, given-names: Johanna }
+      - { family-names: Kettunen, given-names: Johannes }
+      - { family-names: Varilo, given-names: Teppo }
+    doi: "10.1242/dmm.049490"
+    journal: "Disease Models & Mechanisms"
+    year: 2022
+    notes: "The modern update to Norio: what a well-characterised founder population yields once it is sequenced. Supports rare-disease-ancestry.md §2a."
+  - type: article
+    title: "Human Genetics: Lessons from Quebec Populations"
+    authors:
+      - { family-names: Scriver, given-names: "Charles R." }
+    doi: "10.1146/annurev.genom.2.1.69"
+    journal: "Annual Review of Genomics and Human Genetics"
+    year: 2001
+    notes: >-
+      A founder population from roughly 8,500 settlers, with regional sub-founder effects
+      producing 30+ enriched Mendelian conditions. Cited for the mechanism, and for the point our
+      measurement cannot make: sub-population structure is invisible to a country-level field.
+  - type: article
+    title: "The population genetics of the Jewish people"
+    authors:
+      - { family-names: Ostrer, given-names: Harry }
+      - { family-names: Skorecki, given-names: Karl }
+    doi: "10.1007/s00439-012-1235-6"
+    journal: "Human Genetics"
+    year: 2012
+    notes: >-
+      The population structure behind the disorders our measurement found hiding inside an untyped
+      string: Canavan disease, mucolipidosis II and IV and cystinosis are tagged 'Specific
+      population' with no population named (rare-disease-ancestry.md §1d).
+  - type: article
+    title: "Carnitine levels in 26,462 individuals from the nationwide screening program for primary carnitine deficiency in the Faroe Islands"
+    authors:
+      - { family-names: Rasmussen, given-names: Jan }
+      - { family-names: Nielsen, given-names: "Olav W." }
+      - { family-names: Janzen, given-names: Nils }
+    doi: "10.1007/s10545-013-9606-2"
+    journal: "Journal of Inherited Metabolic Disease"
+    year: 2013
+    notes: >-
+      The source of the most extreme row our own measurement surfaced: Faroe Islands 6-9/10 000
+      and >1/1000 for systemic primary carnitine deficiency against <1/1 000 000 in China. It also
+      makes the confound concrete - that extreme came from a deliberate nationwide screen of
+      26,462 people, so it is a founder effect AND a measurement artefact at once, which is
+      exactly what tools/ancestry_geography.py reports it cannot separate.
+  - type: article
+    title: "Consanguinity, human evolution, and complex diseases"
+    authors:
+      - { family-names: Bittles, given-names: "Alan H." }
+      - { family-names: Black, given-names: "Michael L." }
+    doi: "10.1073/pnas.0906079106"
+    journal: "Proceedings of the National Academy of Sciences"
+    year: 2010
+    notes: >-
+      Couples related as second cousins or closer, and their children, at about 10.4% of the
+      global population. The mechanism behind the Saudi Arabia row in rare-disease-ancestry.md
+      §1c, and behind the point that consanguineous populations are exceptionally INFORMATIVE for
+      recessive gene discovery - the opposite of the deficit framing.
+  - type: article
+    title: "Global epidemiology of sickle haemoglobin in neonates: a contemporary geostatistical model-based map and population estimates"
+    authors:
+      - { family-names: Piel, given-names: "Frédéric B." }
+      - { family-names: Patil, given-names: "Anand P." }
+      - { family-names: Howes, given-names: "Rosalind E." }
+    doi: "10.1016/S0140-6736(12)61229-X"
+    journal: "The Lancet"
+    year: 2013
+    notes: >-
+      Balancing selection as the third enrichment mechanism, distinct from drift and consanguinity:
+      an allele common because it was useful. Cited for the consequence to a screen - the standard
+      'too common to be causal' frequency filter has a different threshold depending on whose
+      genome is on the bench (rare-disease-ancestry.md §2c).
+  - type: article
+    title: "The Genetic Structure and History of Africans and African Americans"
+    authors:
+      - { family-names: Tishkoff, given-names: "Sarah A." }
+      - { family-names: Reed, given-names: "Floyd A." }
+      - { family-names: Friedlaender, given-names: "Françoise R." }
+    doi: "10.1126/science.1172257"
+    journal: "Science"
+    year: 2009
+    notes: >-
+      The necessary counterweight to every founder-population citation above: African populations
+      carry more genetic diversity than all non-African populations combined, so founder logic does
+      not transfer and 'Africa' is not a population. It is what makes our measured representation
+      ratio of 0.07 a statement about the least-described and most-diverse part of human variation
+      rather than about a small gap in a small place.
+  - type: article
+    title: "Improved allele frequencies in gnomAD through local ancestry inference"
+    authors:
+      - { family-names: Kore, given-names: Shadi }
+      - { family-names: Wilson, given-names: Michael }
+      - { family-names: Tiao, given-names: Grace }
+    doi: "10.1038/s41467-025-63340-2"
+    journal: "Nature Communications"
+    year: 2025
+    notes: >-
+      The number that turns 'panels are skewed' into a magnitude a pipeline can act on: across 27
+      million variants in two admixed groups, 78.5% and 85.1% show at least a TWOFOLD difference in
+      ancestry-specific frequency. A single pooled frequency is the wrong number for most variants
+      in an admixed genome. Supports rare-disease-ancestry.md §3 and ADR 0005.
+  - type: article
+    title: "Clinical use of current polygenic risk scores may exacerbate health disparities"
+    authors:
+      - { family-names: Martin, given-names: "Alicia R." }
+      - { family-names: Kanai, given-names: Masahiro }
+      - { family-names: Kamatani, given-names: Yoichiro }
+    doi: "10.1038/s41588-019-0379-x"
+    journal: "Nature Genetics"
+    year: 2019
+    notes: "The reference statement on score non-transferability, and the reason a Stage 6 prior must carry its panel composition rather than be assumed portable."
+  - type: article
+    title: "The CARE Principles for Indigenous Data Governance"
+    authors:
+      - { family-names: Carroll, given-names: "Stephanie Russo" }
+      - { family-names: Garba, given-names: Ibrahim }
+      - { family-names: "Figueroa-Rodríguez", given-names: "Oscar L." }
+    doi: "10.5334/dsj-2020-043"
+    journal: "Data Science Journal"
+    year: 2020
+    notes: >-
+      Collective benefit, Authority to control, Responsibility, Ethics. Cited as a CONFORMANCE GAP
+      against this repository: references/standards.md lists FAIR, which governs data movement and
+      is silent on who a dataset is about. ADR 0005 proposes adding CARE beside it with the status
+      set honestly to 'not applicable to current inputs, and not designed for'.
+  - type: article
+    title: "Rights, interests and expectations: Indigenous perspectives on unrestricted access to genomic data"
+    authors:
+      - { family-names: Hudson, given-names: Maui }
+      - { family-names: Garrison, given-names: "Nanibaa' A." }
+      - { family-names: Sterling, given-names: Rogena }
+    doi: "10.1038/s41576-020-0228-x"
+    journal: "Nature Reviews Genetics"
+    year: 2020
+    notes: "States the case against unrestricted access as an unqualified good - the direct counterweight to the FAIR reflex in a repository that has one. Supports rare-disease-ancestry.md §5."
+  - type: article
+    title: "Genetic disease risks of under-represented founder populations in New York City"
+    authors:
+      - { family-names: Isshiki, given-names: Mariko }
+      - { family-names: Griffen, given-names: Jonathan }
+      - { family-names: Meissner, given-names: Paul }
+    doi: "10.1371/journal.pgen.1011755"
+    journal: "PLOS Genetics"
+    year: 2025
+    notes: >-
+      The current-decade version of the founder-population argument, and the one that undercuts the
+      geographic framing our own measurement is built on: founder structure travels with people,
+      so a country-level field cannot see a founder community inside a large diverse city. Named in
+      rare-disease-ancestry.md §2a as a limit on §1.
+
+  # --- visualisation forms ---------------------------------------------------------------
+  # Each supports a form built in web/src/components/viz/. Genealogy and what our numbers do
+  # to each claim: docs/lineage.md §14; the form-by-form argument:
+  # docs/references/visualization-canon.md §7d.
+  - type: article
+    title: "Scatterplot matrix techniques for large N"
+    authors:
+      - { family-names: Carr, given-names: "Daniel B." }
+      - { family-names: Littlefield, given-names: "Richard J." }
+      - { family-names: Nicholson, given-names: "Wesley L." }
+      - { family-names: Littlefield, given-names: "John S." }
+    journal: "Journal of the American Statistical Association"
+    volume: "82"
+    year: 1987
+    notes: >-
+      Hexagonal binning. Supports the selectivity plane's density encoding, which replaced an
+      800-point overplotted scatter and showed the plane is bimodal - a structure alpha blending
+      had hidden. Hexagons over squares because a hexagon's centre is equidistant from all six
+      neighbours, so binning does not band along an axis.
+  - type: article
+    title: "Raincloud plots: a multi-platform tool for robust data visualization"
+    authors:
+      - { family-names: Allen, given-names: Micah }
+      - { family-names: Poggiali, given-names: Davide }
+      - { family-names: Whitaker, given-names: Kirstie }
+      - { family-names: Marshall, given-names: "Tom Rhys" }
+      - { family-names: Kievit, given-names: "Rogier A." }
+    journal: "Wellcome Open Research"
+    volume: "4"
+    year: 2019
+    notes: >-
+      Density plus summary plus every observation. Supports replacing the populations box plot,
+      which drew the candidate class as one wide box where the raincloud shows two modes
+      (z about -1.3 and about +15). A five-number summary cannot express that, and the second
+      mode is the most interesting thing on that panel.
+  - type: article
+    title: "UpSet: visualization of intersecting sets"
+    authors:
+      - { family-names: Lex, given-names: Alexander }
+      - { family-names: Gehlenborg, given-names: Nils }
+      - { family-names: Vuillemot, given-names: Romain }
+      - { family-names: Streit, given-names: Marc }
+      - { family-names: Pfister, given-names: Hanspeter }
+    journal: "IEEE Transactions on Visualization and Computer Graphics"
+    volume: "20"
+    year: 2014
+    notes: >-
+      Intersections on a common baseline instead of areas in a Venn. Supports two figures: the
+      run's flag overlap (64 genes are raw-top-100, calibrated-top-100 and common-essential at
+      once) and the catalogue's gap patterns (1,326 of 8,574 diseases are missing gene, onset
+      and sign denominators together). Before these, nothing here could show that an entity
+      carries two labels at once.
+
+  # --- standards and provenance ---------------------------------------------------------
+  - type: standard
+    title: "Citation File Format (CFF) 1.2.0"
+    url: "https://citation-file-format.github.io/"
+    notes: "The format of this file, and of the annotated-reference practice inherited from `knee`."
