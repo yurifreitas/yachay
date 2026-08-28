@@ -56,6 +56,8 @@ export type GeneRecord = {
   world?: import("./worldModel").WorldRecord;
   /** Where the variants fall along the molecule — see GeometryPanels.tsx. */
   geo?: import("./GeometryPanels").GeoRecord;
+  /** The parts of the protein, from UniProt — the track under the needles. */
+  dom?: import("./GeometryPanels").DomRecord;
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;

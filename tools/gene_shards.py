@@ -61,6 +61,7 @@ def main() -> int:
         return 1
 
     geo_path = OUT / "gene_geometry.json"
+    dom_path = OUT / "gene_domains.json"
 
     def _load(path, label):
         if path.exists():
@@ -71,8 +72,10 @@ def main() -> int:
     index = json.loads(index_path.read_text(encoding="utf-8"))
     world = _load(world_path, "gene_world.json")
     geo = _load(geo_path, "gene_geometry.json")
+    dom = _load(dom_path, "gene_domains.json")
 
-    symbols = sorted(set(index["genes"]) | set(world["genes"]) | set(geo["genes"]))
+    symbols = sorted(
+        set(index["genes"]) | set(world["genes"]) | set(geo["genes"]) | set(dom["genes"]))
 
     if DEST.exists():
         # Rebuilt from scratch: a stale shard from a previous run is a gene whose record
@@ -91,6 +94,9 @@ def main() -> int:
         g = geo["genes"].get(sym)
         if g:
             rec["geo"] = g
+        d = dom["genes"].get(sym)
+        if d:
+            rec["dom"] = d
         buckets.setdefault(shard_of(sym), {})[sym] = rec
 
         # The search payload: how many of the six layers say anything. One integer per gene,
@@ -109,10 +115,12 @@ def main() -> int:
         "generated": "tools/gene_shards.py",
         "shards": SHARDS,
         "scope": {**index.get("scope", {}), "world": world.get("scope", {}),
-                  "geo": geo.get("scope", {})},
+                  "geo": geo.get("scope", {}), "dom": dom.get("scope", {})},
         "premise": index.get("premise", ""),
         "worldPremise": world.get("premise", ""),
         "geoCaution": geo.get("caution", ""),
+        "domCaution": dom.get("caution", ""),
+        "domKinds": dom.get("kinds", {}),
         "genes": thin,
     }, separators=(",", ":")), encoding="utf-8")
 

@@ -15,6 +15,15 @@ export type NeedlePlotProps = {
   height?: number;
   /** Individually recurrent residues, labelled in place. */
   recurrent?: { pos: number; n: number }[];
+  /** The parts of the protein, drawn as a track under the needles. Without them a reader
+   *  sees a cluster at residue 340 and cannot know whether 340 is a folded domain, a
+   *  membrane pass, or a stretch nobody has characterised. */
+  features?: {
+    kind: "domain" | "membrane" | "motif" | "active" | "binding";
+    start: number;
+    end: number;
+    label: string;
+  }[];
   /** Where the length came from, printed on the axis: a length inferred from the variants
    *  themselves is a weaker axis and the reader is entitled to know. */
   lengthFrom?: string;
@@ -29,5 +38,11 @@ export type NeedlePlotProps = {
     uncertain: string;
     benign: string;
     conflicting: string;
+    /** One per feature kind, for the track's own legend. */
+    domain?: string;
+    membrane?: string;
+    motif?: string;
+    active?: string;
+    binding?: string;
   };
 };

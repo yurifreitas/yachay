@@ -205,7 +205,7 @@ export default function GenePage() {
               {section === "constraint" && <ConstraintPanel world={rec?.world} scope={data.scope} />}
               {section === "expression" && <ExpressionPanel world={rec?.world} scope={data.scope} />}
               {section === "variants" && <VariantsPanel world={rec?.world} scope={data.scope} />}
-              {section === "needle" && <Needle geo={rec?.geo} />}
+              {section === "needle" && <Needle geo={rec?.geo} dom={rec?.dom} />}
               {section === "routes" && <Routes geo={rec?.geo} />}
               {section === "pathways" && <Pathways geo={rec?.geo} />}
               {section === "dependency" && <Dependency rec={rec} scope={data.scope} />}

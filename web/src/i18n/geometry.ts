@@ -47,6 +47,31 @@ export const GEO = {
   lBenign: bi("benign", "benignas"),
   lConflicting: bi("conflicting", "conflitantes"),
   lengthFromString: bi("length from STRING", "comprimento do STRING"),
+
+  /* The domain track's own legend. Category, not order. */
+  fDomain: bi("folded domain", "domínio dobrado"),
+  fMembrane: bi("membrane pass", "trecho transmembrana"),
+  fMotif: bi("motif", "motivo"),
+  fActive: bi("catalytic residue", "resíduo catalítico"),
+  fBinding: bi("binding site", "sítio de ligação"),
+  trackLede: bi(
+    "The bands under the axis are the parts of the protein, from UniProt's curated features. "
+    + "Without them a cluster at residue 340 is a number; with them it is a variant landing "
+    + "in a kinase domain, or in a membrane pass a cytosolic drug cannot reach, or in a "
+    + "stretch nobody has characterised — and those are three different problems.",
+    "As faixas sob o eixo são as partes da proteína, das anotações curadas do UniProt. Sem "
+    + "elas um agrupamento no resíduo 340 é um número; com elas é uma variante caindo num "
+    + "domínio quinase, ou num trecho transmembrana que um fármaco citosólico não alcança, "
+    + "ou num trecho que ninguém caracterizou — e são três problemas diferentes.",
+  ),
+  trackCaution: bi(
+    "UniProt features are curated: a protein with no annotated part is usually one nobody "
+    + "has characterised, not one without structure. That is the same attention bias the VUS "
+    + "share measures, one layer down. Coverage is 74% of the genes in this navigator.",
+    "As anotações do UniProt são curadas: uma proteína sem parte anotada em geral é uma que "
+    + "ninguém caracterizou, não uma sem estrutura. É o mesmo viés de atenção que a fração "
+    + "de VUS mede, uma camada abaixo. A cobertura é de 74% dos genes deste navegador.",
+  ),
   lengthFromObserved: bi(
     "length inferred from the variants themselves — a weaker axis",
     "comprimento inferido das próprias variantes — um eixo mais fraco",

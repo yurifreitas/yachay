@@ -40,3 +40,24 @@
   margin: 0; min-height: 1.4em;
   font-size: 12.5px; color: var(--r-text-2); font-variant-numeric: tabular-nums;
 }
+
+/* ------------------------------------------------------- the domain track */
+/* Five kinds, and they encode CATEGORY, not order — so five hues, none of them the
+   variant-classification hues above. A track that borrowed the pathogenic red would say the
+   membrane pass was pathogenic. */
+.domain { fill: var(--seq-500); }
+.membrane { fill: var(--r-text-3); }
+.motif { fill: var(--seq-200); }
+.active { fill: var(--series-2); }
+.binding { fill: var(--series-3); }
+
+.swDomain { background: var(--seq-500); }
+.swMembrane { background: var(--r-text-3); }
+.swMotif { background: var(--seq-200); }
+.swActive { background: var(--series-2); }
+.swBinding { background: var(--series-3); }
+
+.featureLabel {
+  font-size: 9.5px; fill: var(--r-brand-fg); pointer-events: none;
+  font-weight: 500;
+}

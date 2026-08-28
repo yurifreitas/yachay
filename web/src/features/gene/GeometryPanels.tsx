@@ -31,9 +31,18 @@ export type GeoRecord = {
   pathwayTotal?: number;
 };
 
+export type DomRecord = {
+  length?: number | null;
+  features?: {
+    kind: "domain" | "membrane" | "motif" | "active" | "binding";
+    start: number; end: number; label: string;
+  }[];
+  featureTotal?: number;
+};
+
 /* --------------------------------------------------------------- the needle */
 
-export function Needle({ geo }: { geo?: GeoRecord }) {
+export function Needle({ geo, dom }: { geo?: GeoRecord; dom?: DomRecord }) {
   const t = useT();
   if (!geo?.hist || !geo.span || !geo.bins) {
     return <p className={css.absentPanel}>{t(GEO.aNeedle)}</p>;
@@ -49,6 +58,7 @@ export function Needle({ geo }: { geo?: GeoRecord }) {
         span={geo.span}
         bins={geo.bins}
         recurrent={geo.recurrent ?? []}
+        features={dom?.features ?? []}
         height={340}
         lengthFrom={t(geo.lengthFrom === "STRING" ? GEO.lengthFromString : GEO.lengthFromObserved)}
         ariaLabel={t(GEO.needleLede)}
@@ -61,8 +71,20 @@ export function Needle({ geo }: { geo?: GeoRecord }) {
           uncertain: t(GEO.lUncertain),
           benign: t(GEO.lBenign),
           conflicting: t(GEO.lConflicting),
+          domain: t(GEO.fDomain),
+          membrane: t(GEO.fMembrane),
+          motif: t(GEO.fMotif),
+          active: t(GEO.fActive),
+          binding: t(GEO.fBinding),
         }}
       />
+
+      {dom?.features?.length ? (
+        <>
+          <p className={css.sub}>{t(GEO.trackLede)}</p>
+          <p className={css.caution}>{t(GEO.trackCaution)}</p>
+        </>
+      ) : null}
 
       <section className={css.cluster}>
         <h4 className={css.clusterTitle}>{t(GEO.clusterTitle)}</h4>

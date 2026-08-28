@@ -29,11 +29,15 @@ import type { NeedlePlotProps } from "./NeedlePlot.types";
  */
 export function NeedlePlot({
   series, span, bins, width = 900, height = 300, recurrent = [], lengthFrom,
-  ariaLabel, readAloud, labels,
+  features = [], ariaLabel, readAloud, labels,
 }: NeedlePlotProps) {
   const [hover, setHover] = useState<number | null>(null);
 
   const order = ["pathogenic", "conflicting", "uncertain", "benign"] as const;
+  const TRACK_SWATCH = {
+    domain: css.swDomain, membrane: css.swMembrane, motif: css.swMotif,
+    active: css.swActive, binding: css.swBinding,
+  } as const;
   const SWATCH = {
     pathogenic: css.swPathogenic, conflicting: css.swConflicting,
     uncertain: css.swUncertain, benign: css.swBenign,
@@ -57,8 +61,12 @@ export function NeedlePlot({
         </ReadAloud>
       )}
 
-      <PlotFrame width={width} height={height} scrollAtWidth={640} ariaLabel={ariaLabel}
-                 margin={{ top: 28, right: 24, bottom: 52, left: 56 }}>
+      {/* The track needs 34px of its own under the axis line, and the axis needs its
+          label under that. Reserving it in the margin rather than overlapping is why the
+          backbone can sit exactly on the boundary. */}
+      <PlotFrame width={width} height={height + (features.length ? 34 : 0)}
+                 scrollAtWidth={640} ariaLabel={ariaLabel}
+                 margin={{ top: 28, right: 24, bottom: features.length ? 86 : 52, left: 56 }}>
         {(box) => {
           const x = linear([1, span], [box.x0, box.x1]);
           const y = linear([0, peak], [box.y0, box.y1]);
@@ -77,6 +85,40 @@ export function NeedlePlot({
                   abstraction; with it the reader is looking at a molecule. */}
               <rect x={box.x0} y={box.y0 - 6} width={box.width} height={6}
                     className={css.backbone} rx={3} />
+
+              {/* THE PARTS OF THE MOLECULE, under the needles that fall on them.
+                  Two rows: spans (domains, membrane passes, motifs) on the first, single
+                  catalytic and binding residues as ticks on the second, because a 1-residue
+                  feature drawn on the span row is invisible next to a 300-residue domain. */}
+              {features.map((f, i) => {
+                const wide = f.end - f.start > 0;
+                const x0 = x(f.start);
+                const x1 = Math.max(x0 + 2, x(f.end));
+                const single = f.kind === "active" || f.kind === "binding";
+                /* BELOW the axis label, not between the axis line and it. At +4 the track
+                   sat exactly where AxisX prints its ticks, and the domain boxes covered
+                   "500" and "1,000" — a track that hides the axis it is indexed against. */
+                const top = box.y0 + (single ? 70 : 48);
+                return (
+                  <g key={`${f.kind}-${f.start}-${i}`}>
+                    <rect x={x0} y={top} width={single && !wide ? 2.5 : x1 - x0}
+                          height={single ? 10 : 14}
+                          className={css[f.kind]} rx={single ? 1 : 2}>
+                      <title>{`${f.label || f.kind} · ${f.start}–${f.end}`}</title>
+                    </rect>
+                    {/* A label only when the box can hold it. A clipped word is worse than
+                        no word: the reader believes they read a name. */}
+                    {!single && x1 - x0 > 58 && f.label && (
+                      <text x={(x0 + x1) / 2} y={top + 11} textAnchor="middle"
+                            className={css.featureLabel}>
+                        {f.label.length > (x1 - x0) / 6
+                          ? f.label.slice(0, Math.max(3, Math.floor((x1 - x0) / 6))) + "…"
+                          : f.label}
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
 
               {Array.from({ length: bins }, (_, i) => {
                 if (!totals[i]) return null;
@@ -141,6 +183,23 @@ export function NeedlePlot({
         ))}
         <span className={css.legendCount}>{fmtInt(grand)} {labels.placed}</span>
       </div>
+
+      {/* The track's own legend, separate from the variants'. They encode different things
+          and one combined row would read as one scale. */}
+      {features.length > 0 && (
+        <div className={css.legend}>
+          {(["domain", "membrane", "motif", "active", "binding"] as const)
+            .filter((k) => features.some((f) => f.kind === k) && labels[k])
+            .map((k) => (
+              <span key={k} className={css.legendItem}>
+                {/* TRACK_SWATCH, not the SVG class: an HTML span takes `background` and the
+                    SVG rect takes `fill`. Using the drawing class on the legend is how the
+                    variant legend came out colourless the first time. */}
+                <i className={`${css.swatch} ${TRACK_SWATCH[k]}`} /> {labels[k]}
+              </span>
+            ))}
+        </div>
+      )}
 
       <p className={css.readout} role="status" aria-live="polite">
         {hover != null && totals[hover] > 0 && (
