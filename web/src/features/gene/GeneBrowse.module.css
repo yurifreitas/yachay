@@ -1,0 +1,100 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-6); }
+
+.head { display: flex; flex-direction: column; gap: var(--sp-3); }
+.title { margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: var(--r-text); }
+.lede { margin: 0; max-width: 84ch; font-size: 13.5px; line-height: 1.7; color: var(--r-text-2); }
+
+/* ---------------------------------------------------------------- the facets */
+.kinds { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.kind, .kindOn {
+  display: inline-flex; align-items: baseline; gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  border: var(--r-hairline); border-radius: 999px;
+  background: transparent; cursor: pointer; font: inherit;
+  font-size: 13px; color: var(--r-text-2);
+  transition: background 140ms var(--r-ease), color 140ms var(--r-ease),
+              border-color 140ms var(--r-ease);
+}
+.kind:hover { background: var(--r-surface-2); color: var(--r-text); }
+.kindOn {
+  composes: kind;
+  background: var(--r-brand); border-color: var(--r-brand); color: var(--r-brand-fg);
+}
+.kindName { font-weight: 500; }
+.kindCount { font-size: 11px; opacity: 0.7; font-variant-numeric: tabular-nums; }
+
+/* Each facet says what it IS before the reader spends a click on it. */
+.kindNote {
+  margin: 0; max-width: 84ch; padding-left: var(--sp-4);
+  border-left: 2px solid var(--r-border-hi);
+  font-size: 12.5px; line-height: 1.65; color: var(--r-text-3);
+}
+
+.filter {
+  max-width: 380px; height: 40px; padding: 0 var(--sp-4);
+  font: inherit; font-size: 13.5px;
+  color: var(--r-text); background: var(--r-surface);
+  border: 1px solid var(--r-border-hi); border-radius: var(--r-radius-sm);
+}
+.filter:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 1px; }
+
+/* ----------------------------------------------------------- values | members */
+.split {
+  display: grid; grid-template-columns: minmax(320px, 460px) 1fr; gap: var(--sp-8);
+  align-items: start;
+}
+@media (max-width: 1000px) { .split { grid-template-columns: 1fr; gap: var(--sp-6); } }
+
+.values {
+  list-style: none; margin: 0; padding: var(--sp-2);
+  display: grid; gap: 2px;
+  max-height: 460px; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.value, .valueOn {
+  display: grid; grid-template-columns: minmax(0, 1fr) 96px 56px;
+  align-items: center; gap: var(--sp-3);
+  width: 100%; padding: var(--sp-2) var(--sp-3);
+  border: 0; background: transparent; cursor: pointer; font: inherit; text-align: left;
+  border-radius: var(--r-radius-sm);
+}
+.value:hover { background: var(--r-surface-2); }
+.valueOn { composes: value; background: var(--r-brand-tint); }
+.valueName {
+  font-size: 13px; color: var(--r-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+/* Which classes are big is the first thing a reader wants from a list of 304, and a bare
+   count makes them compare four-digit numbers by eye. */
+.valueTrack { height: 8px; background: var(--r-surface-2); border-radius: 999px; }
+.valueBar { display: block; height: 100%; border-radius: 999px; background: var(--r-brand); }
+.valueCount {
+  font-size: 12px; color: var(--r-text-3); text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.none { padding: var(--sp-4); font-size: 13px; color: var(--r-text-3); }
+
+.members { display: flex; flex-direction: column; gap: var(--sp-4); min-height: 120px; }
+.membersHead { margin: 0; font-size: 13px; color: var(--r-text-2); }
+.membersHead strong { color: var(--r-text); }
+.pickOne { margin: 0; font-size: 13px; color: var(--r-text-3); }
+
+.genes { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.gene {
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--r-hairline); border-radius: var(--r-radius-sm);
+  background: var(--r-surface); cursor: pointer;
+  font-family: var(--mono); font-size: 12.5px; color: var(--r-text);
+  transition: border-color 140ms var(--r-ease), background 140ms var(--r-ease);
+}
+.gene:hover { border-color: var(--r-brand); background: var(--r-surface-2); }
+
+.floor { margin: 0; max-width: 84ch; font-size: 12px; line-height: 1.65; color: var(--r-text-3); }
+.absent { margin: 0; font-size: 13px; color: var(--r-text-2); }
+.absent code { font-family: var(--mono); }
+.skeleton { min-height: 320px; border-radius: var(--r-radius); background: var(--r-surface-2); }
+
+.wrap :is(button, input):focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  .kind, .kindOn, .gene { transition: none; }
+}

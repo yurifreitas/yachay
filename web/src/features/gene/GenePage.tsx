@@ -12,6 +12,7 @@ import { shardOf } from "./shard";
 import { WORLD } from "../../i18n/world";
 import { ConstraintPanel, ExpressionPanel, Form, VariantsPanel } from "./WorldPanels";
 import { Needle, Pathways, Routes } from "./GeometryPanels";
+import { GeneBrowse } from "./GeneBrowse";
 import { GEO } from "../../i18n/geometry";
 import css from "./GenePage.module.css";
 
@@ -440,6 +441,10 @@ function Empty({ scope, onPick }: { scope: GeneSearchIndex["scope"]; onPick: (s:
         {fmtInt(scope.genes)} {t(GENE.indexed)} · {fmtInt(scope.disease.pairs)}{" "}
         {t(GENE.pairs)}
       </p>
+
+      {/* THE OTHER WAY IN. The four seeds above teach what the page does; this is how
+          someone who does not have a symbol in mind actually gets to a gene. */}
+      <GeneBrowse onPick={onPick} />
     </div>
   );
 }
