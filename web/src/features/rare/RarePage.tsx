@@ -20,6 +20,8 @@ import { DiseaseCard } from "./components/DiseaseCard";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { RARE } from "../../i18n/strings";
+import { TROP } from "../../i18n/tropical";
+import { useT } from "../../i18n";
 import { StatusDot } from "../../components/atoms/StatusDot";
 import { Chip } from "../../components/atoms/Chip";
 import css from "./RarePage.module.css";
@@ -46,6 +48,7 @@ const NonGene = lazy(() => import("./components/NonGene").then((m) => ({ default
 const Ancestry = lazy(() => import("./components/Ancestry").then((m) => ({ default: m.Ancestry })));
 const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ default: m.SelfAudit })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
+const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 const PatientEvidence = lazy(() => import("./components/PatientEvidence").then((m) => ({ default: m.PatientEvidence })));
 
 
@@ -80,6 +83,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "names", label: RARE.sNames, group: "known" },
   { id: "atlas", label: RARE.sAtlas, group: "known" },
   { id: "gaps", label: RARE.sGaps, group: "known" },
+  { id: "tropical", label: TROP.section, group: "known" },
 
   // 2. What a disease is OF — the ladder's middle rungs, in order of scale.
   { id: "cell", label: RARE.sCell, group: "cause" },
@@ -114,6 +118,7 @@ export default function RarePage() {
   const [sort, setSort] = useState<SortKey>("gaps");
   const [selected, setSelected] = useState<string | null>(null);
   // Both nav levels live in the URL and are drawn by the rail, not by this page.
+  const tt = useT();
   const { section } = useSectionNav({
     owner: "rare", groups: GROUPS, sections: SECTIONS, initial: "world",
   });
@@ -181,6 +186,16 @@ export default function RarePage() {
       <SectionHeading />
 
       <Suspense key={section} fallback={<SectionSkeleton />}>
+
+      {section === "tropical" && (
+        <section className={css.block}>
+          <div>
+            <h3 className={css.h3}>{tt(TROP.heading)}</h3>
+            <p className={css.sub}>{tt(TROP.sub)}</p>
+          </div>
+          <TropicalGap />
+        </section>
+      )}
 
       {section === "gaps" && (
         <section className={css.block}>

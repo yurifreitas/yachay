@@ -354,7 +354,7 @@ emit("figures", figures);
   // gap_patterns: the co-occurrence measurement behind the UpSet, written by
   // tools/gap_patterns.py. It is the answer to visualization-canon.md §7b's third row.
   for (const name of ["patient_frequencies", "patient_variants", "genotype_phenotype",
-                      "intervals", "gap_patterns"]) {
+                      "intervals", "gap_patterns", "tropical_gap"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

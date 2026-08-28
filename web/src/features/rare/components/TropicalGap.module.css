@@ -1,0 +1,82 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-12); }
+
+/* The headline number, in the house style. */
+.finding {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-8); align-items: baseline;
+  padding: var(--sp-8);
+  background: var(--r-surface-2); border-radius: var(--r-radius);
+  border-left: 3px solid var(--unknown);
+}
+.value {
+  font-size: 56px; font-weight: 640; letter-spacing: -0.03em; line-height: 1;
+  color: var(--unknown); font-variant-numeric: tabular-nums;
+}
+.finding p { margin: 0; max-width: 70ch; font-size: 14.5px; line-height: 1.7; color: var(--r-text-2); }
+.finding strong { color: var(--r-text); }
+
+/* --------------------------------------------------------------- the comparison */
+.compare {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--sp-6);
+}
+.stat {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.statK {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.statRow { display: grid; grid-template-columns: 108px 1fr 44px; align-items: center; gap: var(--sp-3); }
+.statLabel { font-size: 12px; color: var(--r-text-2); text-align: right; }
+.statTrack { height: 14px; background: var(--r-surface-2); border-radius: 999px; }
+.statBar { display: block; height: 100%; border-radius: 999px; background: var(--unknown); }
+/* The reference set is drawn in the neutral: it is the baseline, not a second finding. */
+.statBarRef { display: block; height: 100%; border-radius: 999px; background: var(--r-border-hi); }
+.statVal {
+  font-size: 14px; color: var(--r-text); text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.premise {
+  margin: 0; max-width: 82ch; padding-left: var(--sp-5);
+  border-left: 2px solid var(--r-border-hi);
+  font-size: 13.5px; line-height: 1.7; color: var(--r-text-2);
+}
+
+/* ------------------------------------------------------------------- the groups */
+.group { display: flex; flex-direction: column; gap: var(--sp-4); }
+.groupName {
+  margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--r-text-3);
+}
+.groupNote { margin: 0; max-width: 76ch; font-size: 12.5px; line-height: 1.6; color: var(--r-text-3); }
+
+.rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.row, .rowUnnamed {
+  display: grid; grid-template-columns: minmax(180px, 300px) 1fr 52px 40px;
+  align-items: center; gap: var(--sp-4);
+  padding: var(--sp-2) 0;
+}
+.rowUnnamed { opacity: 0.55; }
+.name { font-size: 13.5px; color: var(--r-text); display: flex; align-items: baseline; gap: var(--sp-2); }
+.tag {
+  font-size: 10px; padding: 1px var(--sp-2); border-radius: 999px;
+  background: var(--r-surface-2); color: var(--r-text-3);
+}
+.track { height: 12px; background: var(--r-surface-2); border-radius: 999px; }
+.bar { display: block; height: 100%; border-radius: 999px; background: var(--unknown); }
+.barRef { display: block; height: 100%; border-radius: 999px; background: var(--r-border-hi); }
+.count {
+  font-size: 12.5px; color: var(--r-text-2); text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Gene · denominator · prevalence — the three fields every other panel assumes exist. */
+.dots { display: inline-flex; gap: 4px; justify-content: flex-end; }
+.dotOn, .dotOff { width: 8px; height: 8px; border-radius: 50%; }
+.dotOn { background: var(--known); }
+.dotOff { background: transparent; box-shadow: inset 0 0 0 1px var(--r-border-hi); }
+
+.caveat { margin: 0; max-width: 82ch; font-size: 12px; line-height: 1.65; color: var(--r-text-3); }
+.caveat code { font-family: var(--mono); font-size: 0.94em; }
