@@ -14,6 +14,8 @@ import { ConstraintPanel, ExpressionPanel, Form, VariantsPanel } from "./WorldPa
 import { Needle, Pathways, Routes } from "./GeometryPanels";
 import { GeneBrowse } from "./GeneBrowse";
 import { RelatedGenes } from "./RelatedGenes";
+import { Datasheet } from "./Datasheet";
+import { DS } from "../../i18n/datasheet";
 import { REL } from "../../i18n/related";
 import { GEO } from "../../i18n/geometry";
 import css from "./GenePage.module.css";
@@ -39,6 +41,10 @@ const GROUPS: NavGroupDef[] = [
   /* WHAT IT IS COMES FIRST. A reader who does not yet know what the protein does cannot
      weigh a dependency score, and the screen results are meaningless without it. The order
      is: what it is, what breaking it costs, what our screen found, what it is linked to. */
+  /* FIRST. Everything after it is one aspect argued at length; this is the whole component
+     on one page, with every number's conditions beside it. A reader who wants the summary
+     should not have to assemble it from nine sections. */
+  { id: "sheet", label: DS.group, question: DS.question },
   { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
   { id: "shape", label: GEO.gShape, question: GEO.qShape },
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
@@ -51,6 +57,7 @@ const GROUPS: NavGroupDef[] = [
 ];
 
 const SECTIONS: NavSectionDef[] = [
+  { id: "datasheet", label: DS.section, group: "sheet" },
   { id: "form", label: WORLD.sForm, group: "world" },
   { id: "constraint", label: WORLD.sConstraint, group: "world" },
   { id: "expression", label: WORLD.sExpression, group: "world" },
@@ -69,7 +76,7 @@ const SECTIONS: NavSectionDef[] = [
 export default function GenePage() {
   const t = useT();
   const { section } = useSectionNav({
-    owner: "gene", groups: GROUPS, sections: SECTIONS, initial: "form",
+    owner: "gene", groups: GROUPS, sections: SECTIONS, initial: "datasheet",
   });
   const [symbol, setSymbol] = useHashParam("g", "");
   const [query, setQuery] = useState("");
@@ -209,6 +216,7 @@ export default function GenePage() {
             <p className={css.absentPanel}>{t(GENE.loadFailed)}</p>
           ) : (
             <>
+              {section === "datasheet" && <Datasheet rec={rec} />}
               {section === "form" && <Form world={rec?.world} scope={data.scope} />}
               {section === "constraint" && <ConstraintPanel world={rec?.world} scope={data.scope} />}
               {section === "expression" && <ExpressionPanel world={rec?.world} scope={data.scope} />}

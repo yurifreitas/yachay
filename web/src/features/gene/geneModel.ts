@@ -60,6 +60,14 @@ export type GeneRecord = {
   dom?: import("./GeometryPanels").DomRecord;
   /** Routes out of this gene, each with its relation stated. */
   rel?: import("./RelatedGenes").RelRecord;
+  /** Order statistics with their test conditions — the datasheet block. */
+  ds?: {
+    dep?: {
+      n: number; min: number; q1: number; median: number; q3: number; max: number;
+      mean: number; sd: number | null; dependent: number; strong: number;
+    };
+    exp?: { types: number; min: number; median: number; max: number; ratio: number | null };
+  };
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;

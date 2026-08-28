@@ -1,0 +1,58 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-12); }
+.lede { margin: 0; max-width: 84ch; font-size: 13.5px; line-height: 1.7; color: var(--r-text-2); }
+
+.block { display: flex; flex-direction: column; gap: var(--sp-3); }
+.blockTitle {
+  margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--r-text);
+}
+.blockNote { margin: 0; max-width: 84ch; font-size: 12.5px; line-height: 1.6; color: var(--r-text-3); }
+
+/* A datasheet table is dense on purpose: the whole value is that a reader can run a finger
+   down the typical column. Rules are hairlines, numbers are tabular, nothing is decorative. */
+.tableWrap { overflow-x: auto; overscroll-behavior-x: contain; }
+.table {
+  border-collapse: collapse; width: 100%; min-width: 640px;
+  font-size: 12.5px; font-variant-numeric: tabular-nums;
+}
+.table thead th {
+  padding: var(--sp-2) var(--sp-3);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--r-text-3); border-bottom: 1px solid var(--r-border-hi);
+  text-align: right; white-space: nowrap;
+}
+.thParam { text-align: left !important; width: 32%; }
+.thSym { text-align: left !important; width: 9%; }
+.thNum { width: 9%; }
+.thUnit { text-align: left !important; width: 11%; }
+.thCond { text-align: left !important; width: 30%; }
+
+.table tbody tr + tr th, .table tbody tr + tr td { border-top: var(--r-hairline); }
+.table td, .table th { padding: var(--sp-3); }
+
+.param { text-align: left; font-weight: 500; color: var(--r-text); }
+.sym { text-align: left; font-family: var(--mono); font-size: 11.5px; color: var(--r-text-3); }
+.num { text-align: right; color: var(--r-text-2); }
+/* The typical is the column a reader scans; it carries the weight and the others support it. */
+.numTyp { text-align: right; color: var(--r-text); font-weight: 600; }
+.dash { color: var(--r-border-hi); }
+.unit { text-align: left; font-size: 11.5px; color: var(--r-text-3); }
+.cond { text-align: left; font-size: 11.5px; line-height: 1.45; color: var(--r-text-3); }
+
+/* A flagged row is marked on the parameter, not by colouring the number: a red figure in a
+   table of figures reads as a different quantity rather than as a warning. */
+.table tbody tr[data-tone="warn"] .param {
+  box-shadow: inset 3px 0 0 var(--unknown); padding-left: var(--sp-4);
+}
+.table tbody tr[data-tone="good"] .param {
+  box-shadow: inset 3px 0 0 var(--known); padding-left: var(--sp-4);
+}
+
+.convention {
+  margin: 0; max-width: 84ch; padding-left: var(--sp-4);
+  border-left: 2px solid var(--r-border-hi);
+  font-size: 12px; line-height: 1.65; color: var(--r-text-3);
+}
+.absent { margin: 0; max-width: 76ch; font-size: 13.5px; line-height: 1.65; color: var(--r-text-2); }
+
+@media (max-width: 620px) { .wrap { gap: var(--sp-8); } }
