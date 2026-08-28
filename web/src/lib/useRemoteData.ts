@@ -41,6 +41,10 @@ export function useRemoteData<T>(
   if (result.state === "ready") last.current = result.data;
 
   useEffect(() => {
+    // AN EMPTY URL MEANS "not yet". Callers that fetch on demand — the command palette does
+    // not load its index until someone opens it — pass "" until they are armed, and without
+    // this guard that becomes a request for the page's own directory.
+    if (!url) return;
     if (cache.has(url)) {
       setResult({ state: "ready", data: cache.get(url) as T });
       return;

@@ -13,6 +13,8 @@ import { WORLD } from "../../i18n/world";
 import { ConstraintPanel, ExpressionPanel, Form, VariantsPanel } from "./WorldPanels";
 import { Needle, Pathways, Routes } from "./GeometryPanels";
 import { GeneBrowse } from "./GeneBrowse";
+import { RelatedGenes } from "./RelatedGenes";
+import { REL } from "../../i18n/related";
 import { GEO } from "../../i18n/geometry";
 import css from "./GenePage.module.css";
 
@@ -42,6 +44,10 @@ const GROUPS: NavGroupDef[] = [
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
   { id: "context", label: GENE.gContext, question: GENE.qContext },
   { id: "clinic", label: GENE.gClinic, question: GENE.qClinic },
+  /* LAST, AND IT IS A DESTINATION. Everything above describes this gene; this is the only
+     group that takes the reader somewhere else, so it sits where a reader arrives after
+     reading rather than before. */
+  { id: "next", label: REL.section, question: REL.question },
 ];
 
 const SECTIONS: NavSectionDef[] = [
@@ -57,6 +63,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "genotype", label: GENE.sGenotype, group: "screen" },
   { id: "network", label: GENE.sNetwork, group: "context" },
   { id: "disease", label: GENE.sDisease, group: "clinic" },
+  { id: "related", label: REL.group, group: "next" },
 ];
 
 export default function GenePage() {
@@ -214,6 +221,9 @@ export default function GenePage() {
               {section === "genotype" && <Genotype rec={rec} scope={data.scope} />}
               {section === "network" && <Network rec={rec} scope={data.scope} />}
               {section === "disease" && <Diseases rec={rec} />}
+              {section === "related" && (
+                <RelatedGenes rel={rec?.rel} onPick={(g) => { setSymbol(g); setQuery(""); }} />
+              )}
             </>
           )}
         </>

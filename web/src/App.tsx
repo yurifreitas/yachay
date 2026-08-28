@@ -4,6 +4,7 @@ import { NavProvider } from "./lib/nav";
 import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
 import { NavSidebar, type NavFamily, type NavView } from "./components/organisms/NavSidebar";
+import { CommandPalette } from "./components/organisms/CommandPalette";
 
 /** Lazy, and stored as a RENDER FUNCTION rather than an element below: building the
  *  element eagerly is what put all three pages in the entry chunk. A visitor who opens
@@ -120,6 +121,10 @@ function Shell() {
   return (
     <div className="app">
       <a className="skip" href="#content">{t(S.skip)}</a>
+
+      {/* Ctrl-K from anywhere. Reaching a gene used to take four actions from any other
+          page, and the people this is for look things up constantly. */}
+      <CommandPalette onPick={(symbol) => { window.location.hash = `gene?g=${symbol}`; }} />
 
       <NavSidebar families={FAMILIES} views={views} activeView={view} onView={go} />
 

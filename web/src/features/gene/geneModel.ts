@@ -58,6 +58,8 @@ export type GeneRecord = {
   geo?: import("./GeometryPanels").GeoRecord;
   /** The parts of the protein, from UniProt — the track under the needles. */
   dom?: import("./GeometryPanels").DomRecord;
+  /** Routes out of this gene, each with its relation stated. */
+  rel?: import("./RelatedGenes").RelRecord;
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;

@@ -1,0 +1,65 @@
+.veil {
+  position: fixed; inset: 0; z-index: 60;
+  display: flex; justify-content: center; align-items: flex-start;
+  padding-top: 12vh;
+  background: oklch(0% 0 0 / 0.45);
+  backdrop-filter: blur(2px);
+}
+.panel {
+  width: min(560px, calc(100vw - var(--sp-8)));
+  display: flex; flex-direction: column;
+  background: var(--r-surface);
+  border: 1px solid var(--r-border-hi); border-radius: var(--r-radius-lg);
+  box-shadow: var(--r-shadow);
+  overflow: hidden;
+}
+.input {
+  width: 100%; height: 56px; padding: 0 var(--sp-6);
+  border: 0; border-bottom: var(--r-hairline); background: transparent;
+  font: inherit; font-size: 16px; font-family: var(--mono); color: var(--r-text);
+}
+.input:focus { outline: none; }
+.input::placeholder { font-family: var(--sans); color: var(--r-text-3); }
+
+.list {
+  list-style: none; margin: 0; padding: var(--sp-2);
+  max-height: 46vh; overflow-y: auto; overscroll-behavior: contain;
+  display: grid; gap: 2px;
+}
+.row, .rowOn {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-radius-sm); cursor: pointer;
+}
+.rowOn { composes: row; background: var(--r-brand-tint); }
+.sym { font-family: var(--mono); font-size: 13.5px; color: var(--r-text); }
+
+/* How many of the seven layers describe this gene, so a reader can skip the empty ones
+   without opening them. */
+.pips { display: inline-flex; gap: 3px; }
+.pip, .pipOn { width: 5px; height: 5px; border-radius: 50%; }
+.pip { background: var(--r-surface-2); box-shadow: inset 0 0 0 1px var(--r-border); }
+.pipOn { background: var(--r-brand); }
+
+.hint { margin: 0; padding: var(--sp-6); font-size: 13px; color: var(--r-text-3); }
+.foot {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin: 0; padding: var(--sp-3) var(--sp-4);
+  border-top: var(--r-hairline);
+  font-size: 11.5px; color: var(--r-text-3); font-variant-numeric: tabular-nums;
+}
+.keys { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.keys kbd {
+  padding: 1px 5px; border-radius: 4px;
+  background: var(--r-surface-2); box-shadow: inset 0 0 0 1px var(--r-border);
+  font-family: var(--mono); font-size: 10.5px; color: var(--r-text-2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .panel { animation: rise 140ms var(--r-ease); }
+  @keyframes rise {
+    from { transform: translateY(-6px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+}
