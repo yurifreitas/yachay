@@ -22,8 +22,10 @@ const bi = (en: string, pt: string): Bi => ({ en, pt });
 /* ------------------------------------------------------------------ the shell */
 
 export const S = {
-  tagline: bi("screen → defensible shortlist",
-              "triagem → lista curta defensável"),
+  /* quechua: to know. The tagline says what the name means, because a reader who does not
+     recognise the word gets nothing from it otherwise. */
+  tagline: bi("quechua: to know · free to use",
+              "quechua: conhecer · livre para usar"),
   navLabel: bi("Sections of this site", "Seções deste site"),
   skip: bi("Skip to content", "Pular para o conteúdo"),
   loading: bi("Loading view", "Carregando a visão"),
@@ -39,11 +41,17 @@ export const S = {
   ),
 
   /* Families of views, in the sidebar. */
+  famEntity: bi("By gene", "Por gene"),
   famScreens: bi("Screens", "Triagens"),
   famDomains: bi("Domains", "Domínios"),
   famMethod: bi("Method", "Método"),
 
   /* Views. */
+  viewGene: bi("Gene navigator", "Navegador de genes"),
+  viewGeneBlurb: bi(
+    "Every layer on this site, for one gene — including what was measured and not found.",
+    "Todas as camadas deste site, para um gene — inclusive o que foi medido e não encontrado.",
+  ),
   viewCancer: bi("Cancer", "Câncer"),
   viewCancerBlurb: bi(
     "What each cancer needs that the others do not, by label and by genotype.",

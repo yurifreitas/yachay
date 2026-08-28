@@ -1,0 +1,177 @@
+.page { display: flex; flex-direction: column; gap: var(--sp-12); color: var(--r-text); }
+
+/* ---------------------------------------------------------------------- hero */
+.hero {
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(320px, 0.7fr);
+  gap: var(--sp-12) var(--sp-16); align-items: start;
+}
+@media (max-width: 900px) { .hero { grid-template-columns: 1fr; } }
+
+.eyebrow {
+  margin: 0 0 var(--sp-3); font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--r-text-3);
+}
+.title { margin: 0 0 var(--sp-4); font-size: 30px; line-height: 1.15; letter-spacing: -0.02em; }
+.lede { margin: 0; max-width: 62ch; font-size: 14px; line-height: 1.65; color: var(--r-text-2); }
+
+/* --------------------------------------------------------------------- search */
+.search { position: relative; display: flex; flex-direction: column; gap: var(--sp-2); }
+.searchLabel {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.input {
+  width: 100%; height: 44px; padding: 0 var(--sp-4);
+  font: inherit; font-size: 15px; font-family: var(--mono);
+  color: var(--r-text); background: var(--r-surface);
+  border: 1px solid var(--r-border-hi); border-radius: var(--r-radius-sm);
+}
+.input:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 1px; }
+.searchNote { margin: 0; font-size: 11.5px; color: var(--r-text-3); }
+
+.results {
+  list-style: none; margin: 0; padding: var(--sp-1);
+  max-height: 320px; overflow-y: auto;
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-sm);
+  box-shadow: var(--r-shadow);
+}
+.result, .resultOn {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3);
+  width: 100%; padding: var(--sp-2) var(--sp-3);
+  border: 0; background: transparent; cursor: pointer; font: inherit; text-align: left;
+  border-radius: var(--r-radius-sm);
+}
+.result:hover { background: var(--r-surface-2); }
+.resultOn { composes: result; background: var(--r-brand-tint); }
+.sym { font-family: var(--mono); font-size: 13px; color: var(--r-text); }
+
+/* How many of the five layers describe this gene, before it is opened. A result list that
+   does not say this makes every row look equally worth clicking. */
+.layers { display: inline-flex; gap: 3px; }
+.pip, .pipOn { width: 6px; height: 6px; border-radius: 50%; }
+.pip { background: var(--r-surface-2); border: 1px solid var(--r-border); }
+.pipOn { background: var(--r-brand); }
+
+/* --------------------------------------------------------------------- chosen */
+.chosen { display: flex; flex-direction: column; gap: var(--sp-4); }
+.symbol {
+  margin: 0; font-family: var(--mono); font-size: 34px; font-weight: 600;
+  letter-spacing: -0.01em; color: var(--r-text);
+}
+.layerBar {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: var(--sp-3);
+}
+.layerOn, .layerOff {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--r-radius-sm);
+  border-left: 3px solid;
+}
+/* An absent layer is drawn, not hidden: "tested and not found" must not look like "never
+   asked", and a missing card says nothing at all. */
+.layerOn { background: var(--r-surface-2); border-left-color: var(--r-brand); }
+.layerOff { background: transparent; border-left-color: var(--r-border); }
+.layerName { font-size: 12px; font-weight: 600; color: var(--r-text); }
+.layerOff .layerName { color: var(--r-text-3); }
+.layerDetail { font-size: 11.5px; line-height: 1.45; color: var(--r-text-3); }
+
+/* --------------------------------------------------------------------- panels */
+.block { display: flex; flex-direction: column; gap: var(--sp-6); }
+.sub { margin: 0; max-width: 82ch; font-size: 13.5px; line-height: 1.6; color: var(--r-text-2); }
+
+.facts {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px;
+  background: var(--r-border); border: 1px solid var(--r-border);
+  border-radius: var(--r-radius); overflow: hidden;
+}
+.fact {
+  display: flex; flex-direction: column; gap: var(--sp-1);
+  padding: var(--sp-4) var(--sp-5); background: var(--r-surface);
+}
+.factK {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.factV {
+  font-size: 24px; font-weight: 620; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; color: var(--r-text);
+}
+.fact[data-tone="good"] .factV { color: var(--known); }
+.fact[data-tone="warn"] .factV { color: var(--unknown); }
+.factS { font-size: 11.5px; line-height: 1.45; color: var(--r-text-3); }
+
+.note {
+  margin: 0; max-width: 82ch; padding: var(--sp-4) var(--sp-5);
+  font-size: 13px; line-height: 1.6;
+  border-left: 3px solid; border-radius: 0 var(--r-radius-sm) var(--r-radius-sm) 0;
+  background: var(--r-surface-2);
+}
+.note[data-tone="warn"] { border-left-color: var(--unknown); color: var(--r-text); }
+.note[data-tone="good"] { border-left-color: var(--known); color: var(--r-text-2); }
+.note[data-tone="info"] { border-left-color: var(--partial); color: var(--r-text-2); }
+
+/* ---------------------------------------------------------------------- table */
+.table { border-collapse: collapse; font-size: 13px; width: 100%; }
+.table th, .table td { padding: var(--sp-2) var(--sp-3); text-align: left; }
+.table thead th {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--r-text-3); border-bottom: var(--r-hairline);
+}
+.table tbody th { font-weight: 600; color: var(--r-text); }
+.table tbody td { color: var(--r-text-2); }
+.table tbody tr + tr th, .table tbody tr + tr td { border-top: var(--r-hairline); }
+.num { text-align: right !important; font-variant-numeric: tabular-nums; }
+.level { font-size: 11.5px; color: var(--r-text-3); }
+
+/* -------------------------------------------------------------------- disease */
+.assoc { display: flex; flex-direction: column; gap: var(--sp-2); }
+.assocName {
+  display: flex; align-items: baseline; gap: var(--sp-3); margin: 0;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--r-text);
+}
+.assocCount { font-size: 11px; font-weight: 400; color: var(--r-text-3); }
+.diseaseList {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--sp-1);
+}
+.diseaseList li {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-2) 0; border-bottom: var(--r-hairline);
+}
+.diseaseName { font-size: 13px; color: var(--r-text); }
+.diseaseId { font-family: var(--mono); font-size: 11px; color: var(--r-text-3); flex: none; }
+
+/* ---------------------------------------------------------------------- empty */
+.empty { display: flex; flex-direction: column; gap: var(--sp-6); }
+.emptyLede { margin: 0; max-width: 68ch; font-size: 14px; color: var(--r-text-2); }
+.seeds {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: var(--sp-3);
+}
+.seed {
+  display: flex; flex-direction: column; gap: var(--sp-2); width: 100%; text-align: left;
+  padding: var(--sp-5); cursor: pointer; font: inherit;
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+  transition: border-color 140ms var(--r-ease), background 140ms var(--r-ease);
+}
+.seed:hover { border-color: var(--r-brand); background: var(--r-surface-2); }
+.seedSym { font-family: var(--mono); font-size: 17px; font-weight: 600; color: var(--r-text); }
+.seedWhy { font-size: 12.5px; line-height: 1.5; color: var(--r-text-3); }
+
+.foot { margin: 0; font-size: 12px; color: var(--r-text-3); }
+.absent, .absentPanel {
+  margin: 0; max-width: 76ch; font-size: 13.5px; line-height: 1.65; color: var(--r-text-2);
+}
+.absentPanel {
+  padding: var(--sp-6); background: var(--r-surface-2);
+  border-left: 3px solid var(--r-border-hi); border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.provenance {
+  margin: 0; padding-top: var(--sp-6); border-top: var(--r-hairline);
+  max-width: 88ch; font-size: 12px; line-height: 1.6; color: var(--r-text-3);
+}
+.provenance code { font-family: var(--mono); }
+.skeleton { min-height: 60vh; border-radius: var(--r-radius); background: var(--r-surface-2); }
+
+@media (prefers-reduced-motion: reduce) { .seed { transition: none; } }

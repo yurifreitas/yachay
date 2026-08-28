@@ -45,3 +45,7 @@ paper/build/
 .claude*/
 **/.claude/
 CLAUDE.md
+
+# Working drafts: posts, talks, notes. Material for a person, not part of what the
+# repository publishes, and explicitly asked to stay out of version control.
+/drafts/

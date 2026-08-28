@@ -26,3 +26,16 @@ export const LANGS: { id: Lang; label: string; long: string }[] = [
   { id: "en", label: "EN", long: "English" },
   { id: "pt", label: "PT", long: "Português" },
 ];
+
+/** Substitute `{name}` placeholders in a resolved string.
+ *
+ *  Interpolation has to survive translation, and the two languages do not put the numbers in
+ *  the same place — "90th percentile 5, largest 254" against "percentil 90 5, maior 254", and
+ *  worse where a clause order flips. Concatenating fragments would force one language's word
+ *  order onto the other; a named placeholder lets each sentence put the value where its own
+ *  grammar wants it.
+ */
+export function fill(s: string, vars: Record<string, string | number>): string {
+  return s.replace(/\{(\w+)\}/g, (m, k) =>
+    k in vars ? String(vars[k]) : m);
+}

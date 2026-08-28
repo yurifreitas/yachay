@@ -12,6 +12,7 @@ const RunView = lazy(() => import("./features/run/RunView"));
 const Docs = lazy(() => import("./features/docs/Docs"));
 const RarePage = lazy(() => import("./features/rare/RarePage"));
 const CancerPage = lazy(() => import("./features/cancer/CancerPage"));
+const GenePage = lazy(() => import("./features/gene/GenePage"));
 
 /** THE VIEWS ARE FAMILIES NOW, not a row.
  *
@@ -20,6 +21,10 @@ const CancerPage = lazy(() => import("./features/cancer/CancerPage"));
  *  and one is the method itself. The families say which is which before anything is clicked,
  *  and they are the level the rail groups on. */
 const FAMILIES: NavFamily[] = [
+  /* THE GENE COMES FIRST, and the order is the argument. Every other family is organised by
+     METHOD — a screen, a domain, the ten stages — and people do not arrive holding a method.
+     They arrive holding a symbol. */
+  { id: "entity", label: S.famEntity },
   { id: "screens", label: S.famScreens },
   { id: "domains", label: S.famDomains },
   { id: "method", label: S.famMethod },
@@ -41,6 +46,8 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
       family: "screens",
       render: () => <RunView runId={r.id} />,
     })),
+  { id: "gene", label: S.viewGene, family: "entity",
+    blurb: S.viewGeneBlurb, render: () => <GenePage /> },
   { id: "cancer", label: S.viewCancer, family: "domains",
     blurb: S.viewCancerBlurb, render: () => <CancerPage /> },
   { id: "rare", label: S.viewRare, family: "domains",
@@ -103,7 +110,7 @@ function Shell() {
          render: () => <RunView runId={view} /> };
 
   useEffect(() => {
-    document.title = `${t(current.label)} — sieve`;
+    document.title = `${t(current.label)} — yachay`;
   }, [current, t]);
 
   /* An unlisted run still needs a row in the rail while it is open, or the rail would show

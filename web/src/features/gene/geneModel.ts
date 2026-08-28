@@ -1,0 +1,130 @@
+/** The per-gene join, typed.
+ *
+ *  Written by `tools/gene_index.py` over every artefact on disk. Nothing is derived here:
+ *  the effect sizes, q-values and ranks are the ones Python computed, and a chart that
+ *  recomputes its own statistic is a second implementation of the analysis.
+ */
+
+export type GeneDependency = {
+  score: number;
+  n: number;
+  nullMean: number;
+  nullSd: number;
+  z: number;
+  rankRaw: number;
+  rankCal: number;
+  commonEssential: boolean;
+  control: boolean;
+  medianDependency: number;
+  selectivity: number;
+};
+
+export type CancerHit = {
+  level: "lineage" | "disease" | "subtype";
+  subgroup: string;
+  /** Effect size: how much more this subgroup needs the gene than everything outside it. */
+  d: number;
+  q: number;
+  lines: number | null;
+};
+
+export type GenotypeHit = {
+  /** The gene whose damaging mutation DEFINES the subgroup — not this gene. */
+  mutatedGene: string;
+  d: number;
+  q: number;
+  lines: number | null;
+};
+
+export type NetworkPosition = {
+  degree: number;
+  community: number | null;
+  diseases: number;
+};
+
+export type DiseaseLink = {
+  id: string;
+  name: string;
+  /** HPO's own association type. MENDELIAN, POLYGENIC and UNKNOWN are three different
+   *  claims and are never collapsed into "associated". */
+  assoc: string;
+};
+
+export type GeneRecord = {
+  dep?: GeneDependency;
+  cancer?: CancerHit[];
+  cancerTotal?: number;
+  genotype?: GenotypeHit[];
+  genotypeTotal?: number;
+  net?: NetworkPosition;
+  dis?: DiseaseLink[];
+  disTotal?: number;
+};
+
+export type GeneIndex = {
+  generated: string;
+  premise: string;
+  scope: {
+    dependency: { genes: number; source?: string };
+    cancer: { levels: string[]; subgroups: number };
+    genotype: { subgroups: number };
+    network: { nodes: number; modularity?: number };
+    disease: { pairs: number; genes: number; unnamed?: number };
+    genes: number;
+  };
+  genes: Record<string, GeneRecord>;
+};
+
+/** Which layers have anything to say about this gene, as DATA rather than as a sentence.
+ *
+ *  Returned for every layer including the empty ones, because the interface has to render
+ *  the ABSENCES: "measured in the screen, in no cancer subgroup" is a finding, and a missing
+ *  panel is not.
+ *
+ *  An earlier version built the English string here and the Portuguese reader got
+ *  "measured in 1,178 cell lines" under a Portuguese heading. Formatting belongs where the
+ *  language is known; this returns the numbers and lets the component say them. */
+export type LayerState = {
+  id: "dependency" | "cancer" | "genotype" | "network" | "disease";
+  present: boolean;
+  /** The numbers the sentence needs, whichever language it ends up in. */
+  vars: Record<string, number>;
+};
+
+export function layersFor(rec: GeneRecord | undefined, scope: GeneIndex["scope"]): LayerState[] {
+  const r = rec ?? {};
+  return [
+    { id: "dependency", present: !!r.dep,
+      vars: { n: r.dep?.n ?? 0, scope: scope.dependency.genes } },
+    { id: "cancer", present: !!r.cancer?.length,
+      vars: { n: r.cancerTotal ?? 0, scope: scope.cancer.subgroups } },
+    { id: "genotype", present: !!r.genotype?.length,
+      vars: { n: r.genotypeTotal ?? 0, scope: scope.genotype.subgroups } },
+    { id: "network", present: !!r.net,
+      vars: { n: r.net?.degree ?? 0, diseases: r.net?.diseases ?? 0,
+              scope: scope.network.nodes } },
+    { id: "disease", present: !!r.dis?.length,
+      vars: { n: r.disTotal ?? 0, scope: scope.disease.genes } },
+  ];
+}
+
+/** Rank a search term against the symbol list.
+ *
+ *  Exact match, then prefix, then substring — in that order and never mixed, because a
+ *  reader who types a full symbol expects that gene first and a fuzzy score can bury it
+ *  under a longer name that happens to contain it.
+ */
+export function searchGenes(symbols: string[], query: string, limit = 40): string[] {
+  const q = query.trim().toUpperCase();
+  if (!q) return [];
+  const exact: string[] = [];
+  const prefix: string[] = [];
+  const inside: string[] = [];
+  for (const s of symbols) {
+    if (s === q) exact.push(s);
+    else if (s.startsWith(q)) prefix.push(s);
+    else if (s.includes(q)) inside.push(s);
+    if (exact.length + prefix.length >= limit && q.length > 2) break;
+  }
+  return [...exact, ...prefix, ...inside].slice(0, limit);
+}

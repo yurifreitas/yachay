@@ -31,7 +31,7 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
       <div className={css.brand}>
         <span className={css.mark} aria-hidden="true" />
         <div>
-          <h1>sieve</h1>
+          <h1>yachay</h1>
           <p>{t(S.tagline)}</p>
         </div>
         <LangSwitch />
