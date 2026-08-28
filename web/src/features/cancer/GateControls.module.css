@@ -1,0 +1,100 @@
+/* Gate controls. The panel has two visual states and they must not be confusable at a
+   glance: at the registered values it is quiet, and off them it is marked. That is the whole
+   point of the component, so the difference is carried by colour, a left rule and a changed
+   number weight — three channels, not one. */
+
+.wrap {
+  display: flex; flex-direction: column; gap: 24px;
+  padding: 24px; border: 1px solid var(--r-border); border-radius: 10px;
+  background: var(--r-surface);
+}
+
+.head { display: flex; gap: 24px; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; }
+.title { margin: 0 0 4px; font-size: 16px; font-weight: 600; }
+.sub { margin: 0; font-size: 13px; color: var(--r-text-3); line-height: 1.6; max-width: 62ch; }
+
+.countBlock { display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+  flex-shrink: 0; }
+.count { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1; }
+.countLabel { font-size: 12px; color: var(--r-text-3); }
+
+/* ---------------------------------------------------------------- the three controls */
+
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; }
+.control { display: flex; flex-direction: column; gap: 8px; }
+
+.label {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  font-size: 13px; font-weight: 500; cursor: pointer;
+}
+.value, .valueMoved {
+  font-variant-numeric: tabular-nums; font-family: var(--r-mono, ui-monospace, monospace);
+  font-size: 13px;
+}
+.value { color: var(--r-text-3); }
+.valueMoved { color: var(--unknown); font-weight: 700; }
+
+.hint { margin: 0; font-size: 11.5px; color: var(--r-text-3); line-height: 1.5; }
+.moved { color: var(--unknown); }
+
+/* A native range input: it is keyboard-operable, announces its value, and honours the
+   platform's own assistive settings. Restyled, not replaced. */
+/* The visible track is 4px; the INPUT is 44px so the thing a finger or a shaky pointer has
+   to hit is the size the guideline asks for. Height on the element, not padding, because
+   padding on a range input does not extend its hit area in every engine. */
+.range {
+  width: 100%; height: 44px; margin: 0; appearance: none; background: transparent;
+  cursor: pointer;
+}
+.range:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 4px; border-radius: 4px; }
+.range::-webkit-slider-runnable-track {
+  height: 4px; border-radius: 2px; background: var(--r-border);
+}
+.range::-moz-range-track { height: 4px; border-radius: 2px; background: var(--r-border); }
+.range::-webkit-slider-thumb {
+  appearance: none; width: 18px; height: 18px; margin-top: -7px; border-radius: 50%;
+  background: var(--r-brand); border: 2px solid var(--r-surface);
+}
+.range::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--r-brand); border: 2px solid var(--r-surface);
+}
+
+.binding {
+  margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--r-text-2);
+  padding: 12px 16px; border-radius: 8px; background: var(--r-surface-2);
+  max-width: 78ch;
+}
+
+/* ---------------------------------------------------------------- the two states */
+
+.ok {
+  margin: 0; font-size: 12.5px; color: var(--r-text-3); line-height: 1.6;
+  padding-left: 12px; border-left: 2px solid var(--known);
+}
+
+.warn {
+  display: flex; gap: 16px; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 16px; border-radius: 8px;
+  background: var(--r-surface-2); border-left: 3px solid var(--unknown);
+}
+.warn p { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--r-text-2);
+  max-width: 68ch; }
+.warn code { font-size: 12px; }
+
+.reset {
+  flex-shrink: 0; min-height: 40px; padding: 8px 16px;
+  border: 1px solid var(--unknown); border-radius: 8px; background: transparent;
+  color: var(--unknown); font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: background 150ms cubic-bezier(.2,.8,.2,1);
+}
+.reset:hover { background: var(--r-surface); }
+.reset:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .reset { transition: none; } }
+@media (max-width: 720px) {
+  .wrap { padding: 16px; gap: 16px; }
+  .controls { gap: 16px; }
+}

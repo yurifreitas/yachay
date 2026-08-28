@@ -1,0 +1,101 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* Two columns (set labels | plot) and two rows (bars | matrix). The bars and the matrix
+   share one column template so a bar sits exactly over its own dots — if those two ever
+   drift apart the figure is not merely ugly, it is wrong. */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(210px, 260px) 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--sp-3) var(--sp-4);
+  align-items: end;
+}
+.barsCorner { grid-column: 1; grid-row: 1; }
+
+.bars {
+  grid-column: 2; grid-row: 1;
+  display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: var(--sp-2);
+  align-items: end;
+}
+.bar, .barOn {
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch;
+  gap: var(--sp-1); height: 100%;
+  border: 0; background: transparent; padding: 0; cursor: pointer; font: inherit;
+}
+.barValue {
+  font-size: 10.5px; font-variant-numeric: tabular-nums; color: var(--r-text-3);
+  text-align: center;
+}
+.barFill {
+  display: block; height: var(--h); min-height: 2px;
+  border-radius: 3px 3px 0 0;
+  background: var(--r-brand);
+  transition: background 140ms var(--r-ease);
+}
+.bar:hover .barFill { background: var(--r-brand-hi); }
+.barOn .barFill { background: var(--r-text); }
+.barOn .barValue { color: var(--r-text); font-weight: 600; }
+
+.setTotals {
+  grid-column: 1; grid-row: 2;
+  display: grid; gap: var(--sp-1); align-content: start;
+}
+.setRow {
+  display: grid; grid-template-columns: 1fr 52px 38px; align-items: center; gap: var(--sp-2);
+  height: 26px;
+}
+/* ONE LINE, ALWAYS. The set rows and the dot matrix are two separate grids that align only
+   because both use 26px rows; a label that wraps makes its own row taller and every dot below
+   it stops sitting under its own bar. Truncation is the lesser failure — a clipped name is
+   recoverable from the tooltip, a misaligned matrix is silently wrong. */
+.setName {
+  font-size: 12px; color: var(--r-text); text-align: right;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.setBarTrack { height: 8px; background: var(--r-surface-2); border-radius: 999px; }
+.setBar { display: block; height: 100%; border-radius: 999px; background: var(--r-border-hi); }
+.setCount {
+  font-size: 11px; color: var(--r-text-3); font-variant-numeric: tabular-nums; text-align: right;
+}
+
+.matrix { grid-column: 2; grid-row: 2; position: relative; }
+.matrixRow {
+  display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: var(--sp-2);
+  height: 26px; align-items: center;
+}
+.dot, .dotOn {
+  justify-self: center;
+  width: 11px; height: 11px; border-radius: 50%;
+}
+/* An absent membership is a light dot, not an empty cell: the grid has to stay legible as a
+   grid, or the eye loses the column. */
+.dot { background: var(--r-surface-2); }
+.dotOn { background: var(--r-text); }
+.dot[data-selected], .dotOn[data-selected] { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+.connectors {
+  position: absolute; inset: 0;
+  display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: var(--sp-2);
+  align-items: start;
+  pointer-events: none;
+}
+.connector {
+  position: relative; justify-self: center; width: 2px;
+  background: var(--r-text);
+}
+
+.foot { margin: 0; max-width: 76ch; font-size: 12.5px; line-height: 1.55; color: var(--r-text-2); }
+
+.detail {
+  padding: var(--sp-4);
+  border-left: 3px solid var(--r-brand);
+  background: var(--r-surface-2);
+  border-radius: 0 var(--r-radius-sm) var(--r-radius-sm) 0;
+}
+.detail p { margin: 0; font-size: 13px; color: var(--r-text); }
+.members {
+  margin-top: var(--sp-2) !important;
+  font-family: var(--mono); font-size: 11.5px; color: var(--r-text-2) !important;
+  line-height: 1.6; word-break: break-word;
+}
+.absent { margin: 0; font-size: 13px; color: var(--r-text-2); max-width: 68ch; }

@@ -1,0 +1,114 @@
+/* Genotype view. Shares the cancer page's tokens and rhythm; only the two shapes that do
+   not exist there — the burden bars and the confound slopegraph — are defined here. */
+
+.caution {
+  padding: 16px; border-radius: 8px;
+  border: 1px solid var(--r-border); border-left: 3px solid var(--unknown);
+  background: var(--r-surface-2);
+}
+
+/* ------------------------------------------------------------ burden separation bars */
+
+.burdenList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+
+.bRow, .bRowOn {
+  display: grid; width: 100%; align-items: center; gap: 12px;
+  grid-template-columns: minmax(80px, 110px) minmax(90px, 1fr) 48px 40px 64px;
+  padding: 8px 12px; min-height: 44px;
+  border: 1px solid transparent; border-radius: 8px; background: transparent;
+  color: var(--r-text); text-align: left; font-size: 13px; cursor: pointer;
+  transition: background 150ms cubic-bezier(.2,.8,.2,1);
+}
+.bRow:hover:not(:disabled) { background: var(--r-surface-2); }
+.bRowOn { composes: bRow; background: var(--r-surface-2); border-color: var(--r-border); }
+.bRow:disabled { cursor: default; opacity: 0.55; }
+.bRow:focus-visible, .bRowOn:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+.bName { font-family: var(--r-mono, ui-monospace, monospace); font-weight: 600; font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; }
+.bTrack { position: relative; height: 8px; border-radius: 4px; background: var(--r-border); }
+/* The 0.8 flag line, drawn on the track rather than stated in the caption: a threshold the
+   reader can see a bar cross is a threshold they do not have to take on trust. */
+.bFlag {
+  position: absolute; top: -3px; bottom: -3px; left: 20%; width: 0;
+  border-left: 1px dashed var(--r-text-3);
+}
+.bFill, .bFillHot { position: absolute; inset: 0 auto 0 0; border-radius: 4px; }
+.bFill { background: var(--r-brand); }
+.bFillHot { background: var(--unknown); }
+.bNum, .bLines { font-variant-numeric: tabular-nums; font-size: 12px; text-align: right;
+  color: var(--r-text-3); }
+.bHits { font-size: 12px; font-weight: 600; color: var(--r-brand); text-align: right; }
+.bHitsNone { font-size: 12px; color: var(--r-text-3); text-align: right; }
+
+.badgeHot {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: 999px;
+  border: 1px solid var(--unknown); color: var(--unknown);
+}
+
+/* ------------------------------------------------------------ the confound slopegraph */
+
+.slopeWrap { overflow-x: auto; }
+.slope {
+  position: relative; height: 320px; min-width: 420px;
+  margin: 28px 96px 32px 0;   /* right margin holds the direct labels */
+}
+.svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.gridline { stroke: var(--r-border); stroke-width: 1; }
+.slopeLine { fill: none; stroke: var(--r-brand); stroke-width: 1.5; opacity: 0.75; }
+.axisLabel {
+  position: absolute; top: -22px; transform: translateX(-50%);
+  font-size: 11px; color: var(--r-text-3); white-space: nowrap;
+}
+.axisLabel:first-of-type { transform: translateX(0); }
+/* Direct labelling, not a legend: ten near-identical lines are unreadable from a key. */
+.endLabel {
+  position: absolute; left: calc(100% + 8px); transform: translateY(-50%);
+  font-family: var(--r-mono, ui-monospace, monospace); font-size: 11px;
+  color: var(--r-text-2); white-space: nowrap;
+}
+
+/* ------------------------------------------------------------ tables */
+
+.tableWrap { overflow-x: auto; }
+.num { font-variant-numeric: tabular-nums; text-align: right; }
+.mech { color: var(--r-text-3); font-size: 12px; }
+.strataWarn { color: var(--unknown); font-size: 11px; }
+
+.pill {
+  display: inline-block; font-size: 11px; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid currentColor; white-space: nowrap;
+}
+.pill[data-tone="ok"] { color: var(--known); }
+.pill[data-tone="warn"] { color: var(--unknown); }
+.pill[data-tone="unknown"] { color: var(--r-text-3); }
+
+.hitTable { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.hitTable > li {
+  display: grid; align-items: center; gap: 12px; min-height: 32px;
+  grid-template-columns: minmax(80px, 110px) 48px 48px 56px 76px 1fr;
+  font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--r-border);
+}
+.hitGene { font-family: var(--r-mono, ui-monospace, monospace); font-weight: 600; }
+.qv, .strata { color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+
+.skel {
+  height: 420px; border-radius: 10px;
+  background: linear-gradient(90deg, var(--r-border) 25%, var(--r-surface-2) 50%, var(--r-border) 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s linear infinite;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skel { animation: none; }
+  .bRow, .bRowOn { transition: none; }
+}
+
+@media (max-width: 720px) {
+  .bRow, .bRowOn { grid-template-columns: minmax(72px, 96px) 1fr 44px 56px; }
+  .bLines { display: none; }
+  .slope { margin-right: 72px; height: 260px; }
+  .hitTable > li { grid-template-columns: minmax(72px, 96px) 44px 44px 52px; }
+  .qv, .strata { display: none; }
+}

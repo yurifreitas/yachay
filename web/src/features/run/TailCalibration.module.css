@@ -1,0 +1,110 @@
+/* The tail-calibration panel. The ratio ladder is the argument; everything else supports it. */
+
+.wrap { display: grid; gap: var(--sp-6); min-width: 0; }
+.premise { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.7; color: var(--r-text-2); }
+.says { margin: 0; max-width: 92ch; font-size: 14px; line-height: 1.7; color: var(--r-text-2); }
+.h4 { margin: 0; font-size: 17px; font-weight: 600; color: var(--r-text); text-wrap: balance; }
+.kicker {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--cap-warn);
+}
+
+.moments { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+.moment, .momentBig {
+  display: grid; gap: 2px; padding: var(--sp-6);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.momentBig { border-color: var(--cap-serious); }
+.mk { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--r-text-3); }
+.mv {
+  font-size: 30px; font-weight: 600; letter-spacing: -0.025em;
+  color: var(--r-text); font-variant-numeric: tabular-nums;
+}
+.momentBig .mv { color: var(--cap-serious); }
+.ms { font-size: 12px; color: var(--r-text-3); }
+
+/* ---- the ladder ---------------------------------------------------------- */
+.ladder {
+  display: grid; gap: var(--sp-4); padding: var(--sp-8);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-lg);
+}
+.rows { display: grid; gap: var(--sp-2); }
+.row {
+  display: grid; align-items: center; gap: var(--sp-4);
+  grid-template-columns: 66px 170px minmax(0, 1fr) 64px 210px;
+}
+@media (max-width: 1050px) {
+  .row { grid-template-columns: 66px minmax(0, 1fr) 64px; }
+  .frac, .inside { display: none; }
+}
+.z { font-size: 13px; color: var(--r-text); font-variant-numeric: tabular-nums; }
+.frac { display: flex; align-items: baseline; gap: var(--sp-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.obs { color: var(--r-text); }
+.vs { color: var(--r-text-3); }
+.exp { color: var(--r-text-3); }
+.track { display: block; height: 14px; }
+/* Log-scaled, because the ratio spans two orders of magnitude and a linear bar would show
+   one row and five slivers. */
+.ratioBar { display: block; height: 14px; border-radius: 3px; background: var(--cap-cell); min-width: 2px; }
+.ratioBar[data-bad="true"] { background: var(--cap-serious); }
+.ratioOk { font-size: 13px; text-align: right; color: var(--r-text-2); font-variant-numeric: tabular-nums; }
+.ratioBad { font-size: 15px; font-weight: 600; text-align: right; color: var(--cap-serious); font-variant-numeric: tabular-nums; }
+.inside { display: grid; gap: 1px; font-size: 11px; color: var(--r-text-3); }
+.count { font-variant-numeric: tabular-nums; }
+.verdict {
+  margin: 0; max-width: 92ch; padding: var(--sp-4);
+  font-size: 14px; line-height: 1.7; color: var(--r-text);
+  background: var(--r-surface-2); border-radius: var(--r-radius);
+}
+
+/* ---- the lambda trap ------------------------------------------------------ */
+.trap {
+  display: grid; gap: var(--sp-3); padding: var(--sp-8);
+  border: 1px dashed var(--cap-warn);
+  background: color-mix(in oklch, var(--cap-warn) 7%, transparent);
+  border-radius: var(--r-radius-lg);
+}
+.lam { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--sp-6); align-items: start; }
+@media (max-width: 760px) { .lam { grid-template-columns: 1fr; gap: var(--sp-3); } }
+.lamV {
+  font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;
+  color: var(--cap-warn); font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.lam p { margin: 0; max-width: 88ch; font-size: 14px; line-height: 1.7; color: var(--r-text); }
+
+/* ---- fits ------------------------------------------------------------------ */
+.fits { display: grid; gap: var(--sp-4); }
+.fitRows { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.fit, .fitBest {
+  display: grid; gap: var(--sp-1); padding: var(--sp-4);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.fitBest { border-color: var(--cap-good); }
+.fitName { display: flex; align-items: baseline; gap: var(--sp-2); font-size: 15px; font-weight: 600; color: var(--r-text); }
+.badge {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  color: var(--cap-good); border: 1px solid currentColor; border-radius: 999px; padding: 1px 6px;
+}
+.fitAic { font-size: 12px; color: var(--r-text-2); font-variant-numeric: tabular-nums; }
+.fitParams { font-size: 11px; color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+
+/* ---- consequence ------------------------------------------------------------ */
+.cons { display: grid; gap: var(--sp-4); }
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: left; padding: var(--sp-2) var(--sp-3);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--r-text-3); font-weight: 600; border-bottom: 1px solid var(--r-border-hi);
+}
+.table td { padding: var(--sp-3); border-bottom: var(--r-hairline); color: var(--r-text-2); }
+.r { text-align: right; font-variant-numeric: tabular-nums; }
+.table th.r { text-align: right; }
+.best td { color: var(--r-text); background: color-mix(in oklch, var(--cap-good) 8%, transparent); }
+.finding {
+  margin: 0; max-width: 92ch; padding: var(--sp-6);
+  font-size: 15px; line-height: 1.75; color: var(--r-text);
+  border-left: 3px solid var(--cap-serious);
+  background: color-mix(in oklch, var(--cap-serious) 8%, transparent);
+  border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.uses { margin: 0; max-width: 92ch; font-size: 12px; line-height: 1.65; color: var(--r-text-3); }

@@ -1,0 +1,8 @@
+.root { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.slot { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.ont {
+  font-size: 0.66rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--r-text-3);
+}

@@ -1,0 +1,521 @@
+/* The population axis. Tokens only — no literal colour, no spacing off the 4px scale.
+ *
+ * The one place this file spends colour is the caveat banner and the four stat tiles;
+ * everything else is neutral, because the data marks (the prevalence ramp and the six
+ * region hues) have to be the loudest thing on screen and they cannot be if the chrome
+ * competes with them. 60/30/10, with the 10 going to data rather than to decoration.
+ */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+  /* MIN-WIDTH ZERO IS LOAD-BEARING, and the symptom it fixes is not obvious. A grid or flex
+     item defaults to `min-width: auto`, meaning it refuses to shrink below its content —
+     and one of the children here is an ECharts canvas, which measures its container, sets
+     its own width, and is then measured back. Without this line those two facts form a
+     ratchet: the canvas is sized from a pre-layout measurement, the track grows to fit the
+     canvas, and the page acquires a horizontal scrollbar that clips the last stat tile.
+     Measured before the fix: document scrollWidth 2028 against clientWidth 1918, with the
+     chart host reporting 1585px inside a narrower column. */
+  min-width: 0;
+}
+
+/* Same reason, one level down: the chart host must be allowed to be narrower than the
+   canvas it contains, and must clip rather than push if it ever is not. */
+.chart {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* --- the banner that must be read before the data ----------------------------- */
+
+.caveat {
+  display: block;
+  padding: var(--sp-4) var(--sp-6);
+  border-left: 3px solid var(--unknown);
+  border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2);
+  color: var(--r-text-2);
+  font-size: 13px;
+  line-height: 1.6;
+  max-width: 92ch;
+}
+
+.caveatTag {
+  display: inline-block;
+  margin-right: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: 999px;
+  background: var(--unknown);
+  color: var(--r-brand-fg);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+/* --- view switcher ------------------------------------------------------------- */
+
+.viewNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-1);
+  border-bottom: var(--r-hairline);
+}
+
+.view,
+.viewOn {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  color: var(--r-text-3);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 160ms var(--r-ease), border-color 160ms var(--r-ease);
+}
+
+.view:hover { color: var(--r-text-2); }
+
+.viewOn {
+  composes: view;
+  color: var(--r-text);
+  border-bottom-color: var(--r-brand);
+}
+
+.view:focus-visible,
+.viewOn:focus-visible,
+.sort:focus-visible,
+.sortOn:focus-visible,
+.list:focus-visible,
+.search:focus-visible {
+  outline: 2px solid var(--r-brand);
+  outline-offset: 2px;
+  border-radius: var(--r-radius-sm);
+}
+
+/* --- stat tiles ---------------------------------------------------------------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--sp-4);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  padding: var(--sp-6);
+  border: var(--r-hairline);
+  border-radius: var(--r-radius);
+  background: var(--r-surface);
+}
+
+.tileLabel {
+  color: var(--r-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.tileValue {
+  color: var(--r-text);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+/* THE TILE AND THE CHART MUST NOT DISAGREE. These are the two ends of the diverging scale
+   the lollipop draws with — blue at hue 258 below parity, orange at hue 42 above it — and
+   the tokens carry the same two hues. An earlier version used the green `--known` for
+   over-representation, which was wrong twice over: it made Europe green and Africa orange
+   in a tile sitting directly above a chart that coloured Europe orange, and it smuggled a
+   VALENCE into an encoding that only carries a DIRECTION. Being over-represented is not
+   good; it is up. */
+.over  { color: var(--unknown); }
+.under { color: var(--partial); }
+.warn  { color: var(--r-text-2); }
+
+.tileNote {
+  color: var(--r-text-2);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* --- toolbar: search and sort -------------------------------------------------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.searchLabel {
+  color: var(--r-text-3);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.search {
+  min-width: 260px;
+  height: 40px;
+  padding: 0 var(--sp-3);
+  border: var(--r-hairline);
+  border-radius: var(--r-radius-sm);
+  background: var(--r-surface);
+  color: var(--r-text);
+  font: inherit;
+  font-size: 13px;
+}
+
+.search::placeholder { color: var(--r-text-3); }
+
+.searchResult {
+  color: var(--r-text-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sorts { display: flex; gap: var(--sp-1); margin-left: auto; }
+
+.sort,
+.sortOn {
+  appearance: none;
+  height: 32px;
+  padding: 0 var(--sp-3);
+  border: var(--r-hairline);
+  border-radius: 999px;
+  background: var(--r-surface);
+  color: var(--r-text-2);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
+}
+
+.sort:hover { border-color: var(--r-border-hi); }
+
+.sortOn {
+  composes: sort;
+  background: var(--r-brand-tint);
+  border-color: var(--r-brand);
+  color: var(--r-text);
+}
+
+/* --- master / detail ----------------------------------------------------------- */
+
+.split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  gap: var(--sp-6);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .split { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* The band scale, drawn once above the list so every row is read against the same axis
+   instead of carrying its own labels. */
+.scaleHead {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  margin-left: 236px;
+  margin-right: 132px;
+  padding-bottom: var(--sp-2);
+  border-bottom: var(--r-hairline);
+}
+
+.scaleTick {
+  color: var(--r-text-3);
+  font-size: 9.5px;
+  letter-spacing: 0.01em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.list {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: var(--r-hairline);
+  border-top: 0;
+  border-radius: 0 0 var(--r-radius) var(--r-radius);
+  background: var(--r-surface);
+}
+
+.row,
+.rowOn {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 116px;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: 0 var(--sp-4);
+  border-bottom: 1px solid var(--r-border);
+  cursor: pointer;
+  transition: background 120ms var(--r-ease);
+}
+
+.row:hover { background: var(--r-surface-2); }
+
+.rowOn {
+  composes: row;
+  background: var(--r-brand-tint);
+  box-shadow: inset 3px 0 0 var(--r-brand);
+}
+
+.rowName {
+  color: var(--r-text);
+  font-size: 13px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The range mark: the bands a disorder actually occupies, against the full scale. */
+.track {
+  position: relative;
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--r-surface-2);
+}
+
+.range {
+  position: absolute;
+  top: 3px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--r-border-hi);
+}
+
+.band {
+  position: absolute;
+  top: 0;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1.5px var(--r-surface);
+}
+
+.rowMeta {
+  color: var(--r-text-2);
+  font-size: 11.5px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rowMeta strong { color: var(--r-text); font-weight: 600; }
+
+.listNote {
+  margin-top: var(--sp-3);
+  color: var(--r-text-3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.emptyList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-12) var(--sp-6);
+  border: var(--r-hairline);
+  border-top: 0;
+  border-radius: 0 0 var(--r-radius) var(--r-radius);
+  background: var(--r-surface);
+}
+
+/* --- detail panel -------------------------------------------------------------- */
+
+.detail {
+  position: sticky;
+  top: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-6);
+  border: var(--r-hairline);
+  border-radius: var(--r-radius);
+  background: var(--r-surface);
+  box-shadow: var(--r-shadow);
+}
+
+.detailEyebrow {
+  color: var(--r-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.detailTitle {
+  margin: 0;
+  color: var(--r-text);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.detailLede {
+  margin: 0;
+  color: var(--r-text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.detailLede code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--r-surface-2);
+  color: var(--r-text);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.places {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 340px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.place {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-2) 0;
+  border-bottom: 1px solid var(--r-border);
+}
+
+.placeName {
+  color: var(--r-text);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placeBands { display: flex; align-items: center; gap: var(--sp-2); flex-shrink: 0; }
+
+.placeBand {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.placeClass {
+  color: var(--r-text-2);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  min-width: 96px;
+  text-align: right;
+}
+
+/* --- prose --------------------------------------------------------------------- */
+
+.reading {
+  max-width: 78ch;
+  margin: 0;
+  color: var(--r-text-2);
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.reading strong { color: var(--r-text); font-variant-numeric: tabular-nums; }
+
+.provenance {
+  margin: 0;
+  padding-top: var(--sp-4);
+  border-top: var(--r-hairline);
+  color: var(--r-text-3);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.provenance code {
+  color: var(--r-text-2);
+  font-size: 11px;
+}
+
+/* --- states -------------------------------------------------------------------- */
+
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-12);
+  border: var(--r-hairline);
+  border-radius: var(--r-radius);
+  background: var(--r-surface);
+}
+
+.stateTitle { color: var(--r-text); font-size: 15px; font-weight: 600; }
+
+.stateBody {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--r-text-2);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.hint {
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2);
+  color: var(--r-text);
+  font-size: 12px;
+}
+
+/* A skeleton with the shape of the content, so nothing shifts when the data lands. */
+.shimmer {
+  border-radius: var(--r-radius);
+  background: linear-gradient(
+    90deg,
+    var(--r-surface-2) 25%,
+    var(--r-surface) 50%,
+    var(--r-surface-2) 75%
+  );
+  background-size: 200% 100%;
+  animation: slide 1.4s var(--r-ease) infinite;
+}
+
+@keyframes slide {
+  to { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer { animation: none; }
+  .view, .viewOn, .row, .rowOn, .sort, .sortOn { transition: none; }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

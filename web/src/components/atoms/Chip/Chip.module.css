@@ -1,0 +1,22 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: 999px;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  border: 1px solid var(--r-border);
+  color: var(--r-text-2);
+  background: transparent;
+}
+.code {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+  border-radius: var(--r-radius-sm);
+}
+/* colour-mix keeps one hue token per state instead of a light and a dark literal each. */
+.known   { background: color-mix(in oklch, var(--known) 16%, transparent);   border-color: color-mix(in oklch, var(--known) 42%, transparent);   color: var(--known); }
+.partial { background: color-mix(in oklch, var(--partial) 16%, transparent); border-color: color-mix(in oklch, var(--partial) 42%, transparent); color: var(--partial); }
+.unknown { background: color-mix(in oklch, var(--unknown) 16%, transparent); border-color: color-mix(in oklch, var(--unknown) 46%, transparent); color: var(--unknown); }
+.absent  { background: color-mix(in oklch, var(--absent) 14%, transparent);  border-color: color-mix(in oklch, var(--absent) 40%, transparent);  color: var(--absent); }

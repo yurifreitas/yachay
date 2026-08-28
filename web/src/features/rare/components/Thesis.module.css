@@ -1,0 +1,206 @@
+/* The thesis layer. Reads like an argument, so it holds a reading measure rather than
+   spreading every paragraph across a 1900px screen — the one place on this dashboard where
+   the content is prose and the width should serve the line, not the data. */
+
+.root { display: grid; gap: var(--sp-8); }
+.premise { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.7; color: var(--r-text-2); }
+.sub { margin: 0; max-width: 88ch; font-size: 14px; line-height: 1.65; color: var(--r-text-2); }
+.h4 { margin: 0; font-size: 17px; font-weight: 600; color: var(--r-text); text-wrap: balance; }
+.label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--r-text-3); margin-right: var(--sp-2);
+}
+
+/* ---- the one-line statement --------------------------------------------- */
+.oneLine {
+  display: grid; gap: var(--sp-3); padding: var(--sp-8);
+  border: 1px solid var(--r-brand); background: var(--r-brand-tint);
+  border-radius: var(--r-radius-lg);
+}
+.oneLineL {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+  font-weight: 600; color: var(--r-brand);
+}
+.oneLineV {
+  margin: 0; font-size: clamp(19px, 1.6vw, 25px); line-height: 1.4;
+  letter-spacing: -0.015em; color: var(--r-text); max-width: 40ch; text-wrap: balance;
+}
+.deepest { margin: 0; max-width: 88ch; font-size: 14px; line-height: 1.7; color: var(--r-text-2); }
+
+/* ---- counts -------------------------------------------------------------- */
+.counts { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.stat {
+  display: grid; gap: var(--sp-1); align-content: start;
+  padding: var(--sp-6); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.statV {
+  font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--r-text); font-variant-numeric: tabular-nums;
+}
+.statL { font-size: 13px; font-weight: 500; color: var(--r-text-2); }
+.statS { font-size: 12px; line-height: 1.5; color: var(--r-text-3); }
+
+/* ---- tabs ---------------------------------------------------------------- */
+.tabs { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.tab, .tabOn {
+  display: grid; gap: 2px; text-align: left; cursor: pointer;
+  padding: var(--sp-3) var(--sp-6); font: inherit; font-size: 14px; font-weight: 500;
+  border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface); color: var(--r-text);
+}
+.tab:hover { border-color: var(--r-border-hi); }
+.tabOn { background: var(--r-brand-tint); border-color: var(--r-brand); }
+.tabSub { font-size: 12px; font-weight: 400; color: var(--r-text-3); }
+
+/* ---- status pills: a fact about the repository, never colour alone ------- */
+.pill {
+  justify-self: start; white-space: nowrap;
+  padding: 3px var(--sp-3); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  border-radius: 999px; border: 1px solid currentColor;
+}
+.good { color: var(--cap-good); background: color-mix(in oklch, var(--cap-good) 12%, transparent); }
+.warn { color: var(--cap-warn); background: color-mix(in oklch, var(--cap-warn) 12%, transparent); }
+.serious { color: var(--cap-serious); background: color-mix(in oklch, var(--cap-serious) 12%, transparent); }
+.muted { color: var(--r-text-3); background: var(--r-surface-2); }
+
+/* ---- the ladder ---------------------------------------------------------- */
+.ladder { display: grid; gap: 0; }
+.rung {
+  display: grid; grid-template-columns: 40px 20px minmax(0, 1fr); gap: var(--sp-4);
+  padding: var(--sp-6) 0;
+}
+.rungN {
+  font-size: 18px; font-weight: 600; color: var(--r-text-3);
+  font-variant-numeric: tabular-nums; line-height: 1.4;
+}
+/* One continuous line down the ladder: the rungs are a sequence, and the spine says so
+   without a heavier device. */
+.spine { position: relative; }
+.spine::before {
+  content: ""; position: absolute; left: 50%; top: 6px; bottom: -28px; width: 1px;
+  background: var(--r-border-hi);
+}
+.rung:last-child .spine::before { bottom: auto; height: 14px; }
+.spine::after {
+  content: ""; position: absolute; left: 50%; top: 6px;
+  width: 9px; height: 9px; border-radius: 50%;
+  transform: translateX(-50%); background: var(--r-brand);
+}
+.rungBody { display: grid; gap: var(--sp-2); min-width: 0; }
+.rungHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-3); }
+.rungName { margin: 0; font-size: 18px; font-weight: 600; color: var(--r-text); }
+.unit { font-size: 12px; color: var(--r-text-3); }
+.changes { margin: 0; max-width: 88ch; font-size: 14px; line-height: 1.7; color: var(--r-text); }
+.artifact { margin: 0; max-width: 88ch; font-size: 13px; line-height: 1.6; color: var(--r-text-2); }
+.gap {
+  margin: 0; max-width: 88ch; padding: var(--sp-3);
+  font-size: 13px; line-height: 1.6; color: var(--r-text);
+  background: color-mix(in oklch, var(--cap-serious) 9%, transparent);
+  border-radius: var(--r-radius-sm);
+}
+.gapL {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--cap-serious); margin-right: var(--sp-2);
+}
+
+/* ---- the claims ---------------------------------------------------------- */
+.claims { display: grid; gap: var(--sp-2); }
+.claim, .claimOpen {
+  border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface); overflow: hidden;
+}
+.claimOpen { border-color: var(--r-brand); }
+.claimHead {
+  display: grid; align-items: center; gap: var(--sp-4);
+  grid-template-columns: 34px minmax(0, 1fr) 120px 132px;
+  width: 100%; cursor: pointer; text-align: left;
+  padding: var(--sp-4) var(--sp-6); font: inherit;
+  background: none; border: 0; color: var(--r-text);
+}
+@media (max-width: 900px) {
+  .claimHead { grid-template-columns: 34px minmax(0, 1fr); }
+  .regFounded, .regHypothesis { display: none; }
+}
+.claimN { font-size: 13px; color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+.claimTitle { font-size: 15px; font-weight: 500; line-height: 1.4; }
+.regFounded, .regHypothesis {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+}
+.regFounded { color: var(--cap-cell); }
+.regHypothesis { color: var(--cap-molecule); }
+.claimBody {
+  display: grid; gap: var(--sp-3);
+  padding: var(--sp-6); padding-top: var(--sp-5);
+  border-top: var(--r-hairline);
+}
+.statement { margin: 0; max-width: 88ch; font-size: 15px; line-height: 1.7; color: var(--r-text); }
+.note { margin: 0; max-width: 88ch; font-size: 13px; line-height: 1.65; color: var(--r-text-2); }
+
+/* ---- the register -------------------------------------------------------- */
+.regWrap { display: grid; gap: var(--sp-6); }
+.regBlock {
+  display: grid; gap: var(--sp-3); padding: var(--sp-8);
+  border-radius: var(--r-radius-lg); border: var(--r-hairline);
+  background: var(--r-surface);
+}
+.regBlock[data-kind="founded"] { border-left: 3px solid var(--cap-good); }
+.regBlock[data-kind="hypothesis"] { border-left: 3px solid var(--cap-warn); }
+.regBlock[data-kind="metaphor"] { border-left: 3px solid var(--cap-serious); }
+.regNote { margin: 0; max-width: 88ch; font-size: 13px; line-height: 1.65; color: var(--r-text-2); }
+.regList {
+  display: grid; gap: var(--sp-2); margin: 0; padding-left: var(--sp-6);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+.regList li { font-size: 13px; line-height: 1.6; color: var(--r-text); }
+
+.supplied {
+  display: grid; gap: var(--sp-4); padding: var(--sp-8);
+  border: 1px dashed var(--cap-serious);
+  background: color-mix(in oklch, var(--cap-serious) 6%, transparent);
+  border-radius: var(--r-radius-lg);
+}
+.supGrid { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.sup { display: grid; gap: var(--sp-2); align-content: start; }
+.supClaim { margin: 0; font-size: 14px; line-height: 1.6; color: var(--r-text); }
+.supOk { margin: 0; font-size: 12px; line-height: 1.5; color: var(--r-text-3); }
+.supUnver { margin: 0; font-size: 12px; line-height: 1.5; color: var(--cap-serious); font-weight: 500; }
+
+.theses { display: grid; gap: var(--sp-6); grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+.theses > div {
+  display: grid; gap: var(--sp-2); align-content: start;
+  padding: var(--sp-6); background: var(--r-surface-2);
+  border-radius: var(--r-radius);
+}
+.theses p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--r-text); }
+
+.arch { display: grid; gap: var(--sp-4); padding: var(--sp-8);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-lg); }
+.archList { display: grid; gap: 1px; background: var(--r-border);
+  border: 1px solid var(--r-border); border-radius: var(--r-radius); overflow: hidden; }
+.archRow {
+  display: grid; align-items: baseline; gap: var(--sp-4);
+  grid-template-columns: minmax(120px, 160px) minmax(150px, 240px) minmax(0, 1fr);
+  padding: var(--sp-3) var(--sp-6); background: var(--r-surface);
+}
+@media (max-width: 900px) { .archRow { grid-template-columns: 1fr; gap: var(--sp-1); } }
+.archName { font-size: 14px; font-weight: 600; color: var(--r-text); }
+.archHolds { font-size: 13px; color: var(--r-text-2); }
+.archNote { font-size: 13px; line-height: 1.6; color: var(--r-text-3); }
+
+.loop { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.loopStep {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: 4px var(--sp-3); font-size: 12px; color: var(--r-text);
+  background: var(--r-surface-2); border-radius: 999px;
+}
+.loopArrow { color: var(--r-text-3); }
+.loopBack { font-size: 16px; color: var(--r-brand); }
+
+.provenance {
+  margin: 0; max-width: 92ch; padding: var(--sp-6);
+  font-size: 13px; line-height: 1.7; color: var(--r-text-2);
+  background: var(--r-surface-2); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.provenance strong { color: var(--r-text); }

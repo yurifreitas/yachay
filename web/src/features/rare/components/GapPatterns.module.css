@@ -1,0 +1,36 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-8); }
+
+/* The headline number, in the house style: the figure earns a sentence, not a caption. */
+.finding {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-6); align-items: baseline;
+  padding: var(--sp-6);
+  background: var(--r-surface-2); border-radius: var(--r-radius);
+  border-left: 3px solid var(--unknown);
+}
+.value {
+  font-size: 44px; font-weight: 640; letter-spacing: -0.03em;
+  color: var(--unknown); font-variant-numeric: tabular-nums; line-height: 1;
+}
+.finding p { margin: 0; max-width: 72ch; font-size: 14px; line-height: 1.6; color: var(--r-text-2); }
+.finding strong { color: var(--r-text); }
+
+.numbers { display: flex; flex-wrap: wrap; gap: var(--sp-8); margin: 0; }
+.numbers div { display: flex; flex-direction: column; gap: var(--sp-1); }
+.numbers dt {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.numbers dd {
+  margin: 0; font-size: 15px; color: var(--r-text); font-variant-numeric: tabular-nums;
+}
+
+.split {
+  margin: 0; max-width: 76ch; padding: var(--sp-4) var(--sp-6);
+  border-left: 3px solid var(--r-border-hi);
+  font-size: 13px; line-height: 1.6; color: var(--r-text-2);
+}
+.split strong { color: var(--r-text); }
+
+.caveat { margin: 0; max-width: 76ch; font-size: 12px; line-height: 1.6; color: var(--r-text-3); }
+.caveat code { font-family: var(--mono); font-size: 0.94em; }
+.absent { margin: 0; font-size: 13px; color: var(--r-text-2); }

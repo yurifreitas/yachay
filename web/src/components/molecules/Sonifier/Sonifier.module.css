@@ -1,0 +1,48 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  padding: var(--sp-3) 0;
+}
+.button {
+  font: inherit;
+  font-size: 14px;
+  min-height: 40px;
+  padding: 0 var(--sp-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  border-radius: 999px;
+  border: 1px solid var(--r-border);
+  background: transparent;
+  color: var(--r-text-2);
+  cursor: pointer;
+  transition: background 160ms var(--r-ease), color 160ms var(--r-ease),
+              border-color 160ms var(--r-ease);
+}
+.button:hover { border-color: var(--r-border-hi); color: var(--r-text); }
+.button:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+.playing {
+  background: var(--r-brand-tint);
+  border-color: color-mix(in oklch, var(--r-brand) 48%, transparent);
+  color: var(--r-brand);
+}
+.icon { width: 9px; height: 9px; flex: none; }
+.iconPlay {
+  border-left: 9px solid currentColor;
+  border-top: 5.5px solid transparent;
+  border-bottom: 5.5px solid transparent;
+  width: 0; height: 0;
+}
+.iconStop { background: currentColor; border-radius: 1.5px; }
+/* The key. A sonification whose mapping is not printed is a novelty, not a channel. */
+.key {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--r-text-2);
+  max-width: 58ch;
+}
+.key strong { color: var(--r-text); font-weight: 600; }
+.unsupported { font-size: 13px; color: var(--r-text-3); }
+@media (prefers-reduced-motion: reduce) { .button { transition: none; } }

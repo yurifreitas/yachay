@@ -1,0 +1,148 @@
+/* The rail. 264px is the width at which a three-level tree still reads as a tree: the
+   section labels on this site are sentences, and at 220px they wrapped to three lines and
+   the indentation that carries the hierarchy stopped being visible. */
+.rail {
+  position: sticky;
+  top: 0;
+  align-self: start;
+  height: 100dvh;
+  width: 264px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+  padding: var(--sp-6) var(--sp-4) var(--sp-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--r-surface);
+  border-right: var(--r-hairline);
+}
+
+/* The mark and the wordmark on one row, the language switch on its own beneath. Inline, the
+   switch squeezed the tagline into three lines at 264px — a control that damages the thing
+   it sits next to has been put in the wrong place. */
+.brand {
+  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-2) var(--sp-3);
+  align-items: center; padding: 0 var(--sp-2);
+}
+.brand > div { min-width: 0; }
+.brand > :last-child { grid-column: 2; justify-self: start; }
+.mark {
+  width: 30px; height: 30px; border-radius: var(--r-radius-sm); flex: none;
+  background: linear-gradient(135deg, var(--series-1), var(--series-3));
+}
+.brand h1 { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.01em;
+  color: var(--r-text); }
+.brand p { margin: 0; font-size: 12px; color: var(--r-text-3); }
+
+.tree { display: flex; flex-direction: column; gap: var(--sp-6); }
+.family { display: flex; flex-direction: column; gap: var(--sp-1); }
+.familyLabel {
+  padding: 0 var(--sp-2) var(--sp-1);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+
+/* ---------- level 1: the view ---------- */
+.view {
+  display: block; width: 100%; text-align: left;
+  border: 0; background: transparent; cursor: pointer; font: inherit;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-radius-sm);
+  font-size: 13.5px; font-weight: 500; color: var(--r-text-2);
+  transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
+}
+.view:hover { background: var(--r-surface-2); color: var(--r-text); }
+.viewOn { composes: view; background: var(--r-brand-tint); color: var(--r-text); font-weight: 600; }
+.blurb {
+  display: block; margin-top: 2px;
+  font-size: 11.5px; font-weight: 400; line-height: 1.4; color: var(--r-text-3);
+}
+
+/* ---------- level 2: the question ---------- */
+/* Indented against a hairline rather than boxed. The rail already has one border; a second
+   nested box would spend contrast on chrome that the sections need for themselves. */
+.groups {
+  display: flex; flex-direction: column; gap: var(--sp-1);
+  margin: var(--sp-2) 0 var(--sp-2) var(--sp-3);
+  padding-left: var(--sp-3);
+  border-left: var(--r-hairline);
+}
+.group {
+  display: flex; align-items: baseline; gap: var(--sp-2); width: 100%; text-align: left;
+  border: 0; background: transparent; cursor: pointer; font: inherit;
+  padding: var(--sp-2) var(--sp-2);
+  border-radius: var(--r-radius-sm);
+  font-size: 12.5px; color: var(--r-text-2);
+  transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
+}
+.group:hover { background: var(--r-surface-2); color: var(--r-text); }
+.groupOn { composes: group; color: var(--r-text); font-weight: 600; }
+.groupLabel { flex: 1; }
+.count {
+  font-variant-numeric: tabular-nums;
+  font-size: 11px; color: var(--r-text-3);
+}
+.question {
+  margin: 0 0 var(--sp-2) var(--sp-2);
+  font-size: 11.5px; line-height: 1.45; color: var(--r-text-3);
+}
+
+/* ---------- level 3: the panel ---------- */
+.sections {
+  display: flex; flex-direction: column; gap: 1px;
+  margin: 0 0 var(--sp-2) var(--sp-2);
+  padding-left: var(--sp-3);
+  border-left: var(--r-hairline);
+}
+.section {
+  display: flex; align-items: baseline; gap: var(--sp-2); width: 100%; text-align: left;
+  border: 0; background: transparent; cursor: pointer; font: inherit;
+  padding: var(--sp-2) var(--sp-2);
+  border-radius: var(--r-radius-sm);
+  font-size: 12.5px; line-height: 1.35; color: var(--r-text-3);
+  transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
+}
+.section:hover { background: var(--r-surface-2); color: var(--r-text); }
+/* The open panel is the only place in the rail that carries the brand at full strength.
+   One mark, unmistakable, in a column of forty labels. */
+.sectionOn {
+  composes: section;
+  background: var(--r-brand); color: var(--r-brand-fg); font-weight: 550;
+}
+.sectionOn .badge { color: var(--r-brand-fg); opacity: 0.8; }
+.badge { font-variant-numeric: tabular-nums; font-size: 11px; color: var(--r-text-3); }
+
+.rail :is(button):focus-visible {
+  outline: 2px solid var(--r-brand-hi); outline-offset: 2px;
+}
+
+/* ---------- narrow: the rail becomes a strip ---------- */
+/* Below 1100px there is not enough width for a 264px rail and a chart, so the tree lies
+   down: the views scroll horizontally at the top and the page's own groups and sections go
+   with them. Nothing is removed — a reader on a laptop reaches the same forty panels. */
+@media (max-width: 1099px) {
+  .rail {
+    position: static; width: auto; height: auto;
+    flex-direction: column; gap: var(--sp-4);
+    border-right: 0; border-bottom: var(--r-hairline);
+    padding: var(--sp-4) var(--sp-4) var(--sp-3);
+  }
+  .tree { gap: var(--sp-4); }
+  .family { flex-direction: row; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+  .familyLabel { padding: 0; }
+  .view { width: auto; }
+  .blurb { display: none; }
+  /* Each level takes its own line rather than sitting as one item inside the view row —
+     otherwise a nineteen-section group is squeezed into whatever space the view labels
+     left over. */
+  .groups, .sections {
+    flex-direction: row; flex-wrap: wrap; flex-basis: 100%;
+    border-left: 0; padding-left: 0; margin-left: 0;
+  }
+  .question { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail :is(button) { transition: none; }
+}

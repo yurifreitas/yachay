@@ -1,0 +1,164 @@
+/* The self-audit. Tokens only; the marimekko's ramp is the one place a literal colour
+   appears, and it lives in the component because ECharts cannot read custom properties. */
+
+.root { display: flex; flex-direction: column; gap: var(--sp-8); min-width: 0; }
+
+.premise {
+  margin: 0;
+  padding: var(--sp-4) var(--sp-6);
+  border-left: 3px solid var(--r-brand);
+  border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2);
+  color: var(--r-text-2);
+  font-size: 13px; line-height: 1.6; max-width: 92ch;
+}
+.premise strong { color: var(--r-text); font-weight: 500; }
+
+.viewNav { display: flex; flex-wrap: wrap; gap: var(--sp-1); border-bottom: var(--r-hairline); }
+.view, .viewOn {
+  appearance: none; border: 0; background: none;
+  padding: var(--sp-3) var(--sp-4); border-bottom: 2px solid transparent; margin-bottom: -1px;
+  color: var(--r-text-3); font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: color 160ms var(--r-ease), border-color 160ms var(--r-ease);
+}
+.view:hover { color: var(--r-text-2); }
+.viewOn { composes: view; color: var(--r-text); border-bottom-color: var(--r-brand); }
+.view:focus-visible, .viewOn:focus-visible {
+  outline: 2px solid var(--r-brand); outline-offset: 2px; border-radius: var(--r-radius-sm);
+}
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: var(--sp-4); }
+.tile {
+  display: flex; flex-direction: column; gap: var(--sp-1);
+  padding: var(--sp-6); border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface);
+}
+.tileLabel {
+  color: var(--r-text-3); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.03em; text-transform: uppercase;
+}
+.tileValue {
+  color: var(--r-text); font-size: 26px; font-weight: 600; letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+}
+.tileNote { color: var(--r-text-2); font-size: 11.5px; line-height: 1.5; }
+
+/* Three states, and they are NOT a scale: a gap is not between ok and bad, it is a
+   different kind of answer. Colour is paired with a glyph everywhere it is used. */
+.ok  { color: var(--known); }
+.gap { color: var(--r-text-3); }
+.bad { color: var(--unknown); }
+
+/* --- contradictions ---------------------------------------------------------- */
+
+.conflicts { display: flex; flex-direction: column; gap: var(--sp-4); margin: 0; padding: 0; list-style: none; }
+.conflict {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6); border: var(--r-hairline); border-left: 3px solid var(--unknown);
+  border-radius: var(--r-radius); background: var(--r-surface);
+}
+.conflictHead { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.conflictName { color: var(--r-text); font-size: 15px; font-weight: 600; }
+.conflictField {
+  padding: 2px var(--sp-2); border-radius: 4px; background: var(--r-surface-2);
+  color: var(--r-text-2); font-size: 11px; font-variant-numeric: tabular-nums;
+}
+.sev { color: var(--r-text-3); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.sevHigh { composes: sev; color: var(--unknown); font-weight: 600; }
+
+.claims { display: flex; flex-direction: column; gap: var(--sp-2); }
+.claim { display: grid; grid-template-columns: 74px 132px minmax(0, 1fr); align-items: center; gap: var(--sp-3); }
+.grade {
+  padding: 2px var(--sp-2); border-radius: 999px; font-size: 9.5px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase; text-align: center;
+  background: var(--r-surface-2); color: var(--r-text-3);
+}
+.authored { composes: grade; background: var(--unknown); color: var(--r-brand-fg); }
+.measured { composes: grade; background: var(--known); color: var(--r-brand-fg); }
+.derived  { composes: grade; background: var(--partial); color: var(--r-brand-fg); }
+.claimLayer { color: var(--r-text-2); font-size: 12.5px; }
+.claimValue { color: var(--r-text); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.orphanet { margin: 0; color: var(--r-text-3); font-size: 11.5px; line-height: 1.5; }
+.orphanet code { color: var(--r-text-2); }
+.conflictSays { margin: 0; color: var(--r-text-2); font-size: 12.5px; line-height: 1.6; }
+
+.more { border-top: var(--r-hairline); padding-top: var(--sp-4); }
+.summary { color: var(--r-text-2); font-size: 12.5px; cursor: pointer; }
+.coverList { display: flex; flex-direction: column; gap: var(--sp-2); margin: var(--sp-4) 0 0; padding: 0; list-style: none; }
+.coverRow { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: var(--sp-4); align-items: center; }
+.coverName { color: var(--r-text); font-size: 12.5px; }
+.coverLayers { display: flex; flex-wrap: wrap; gap: var(--sp-1); }
+.layerChip {
+  padding: 1px var(--sp-2); border-radius: 999px; border: var(--r-hairline);
+  color: var(--r-text-3); font-size: 10.5px;
+}
+
+/* --- the identifier matrix ---------------------------------------------------- */
+
+.matrixWrap { overflow-x: auto; }
+.matrix { width: 100%; border-collapse: collapse; }
+.caption {
+  caption-side: top; text-align: left; padding-bottom: var(--sp-3);
+  color: var(--r-text-2); font-size: 12.5px; line-height: 1.6;
+}
+.legend { display: flex; gap: var(--sp-4); margin-top: var(--sp-2); font-size: 11.5px; }
+.th, .thName {
+  text-align: center; padding: var(--sp-2); border-bottom: var(--r-hairline);
+  color: var(--r-text-3); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.03em; text-transform: uppercase;
+}
+.thName { text-align: left; min-width: 220px; }
+.rowName {
+  text-align: left; padding: var(--sp-2); color: var(--r-text); font-size: 12.5px;
+  font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-width: 260px;
+}
+.rowFlagged .rowName { color: var(--r-text); font-weight: 500; }
+.rowFlagged { background: var(--r-surface-2); }
+.cell { text-align: center; padding: var(--sp-2); border-bottom: 1px solid var(--r-border); }
+.mark { font-size: 14px; cursor: help; }
+.confidence { color: var(--r-text-3); font-size: 11px; }
+
+/* --- the marimekko ------------------------------------------------------------ */
+
+.chart { min-width: 0; }
+.mekkoKey {
+  display: flex; margin: var(--sp-2) 0 0 44px; padding: 0 12px 0 0; list-style: none; gap: 1px;
+}
+.mekkoKeyRow {
+  display: flex; flex-direction: column; gap: 1px; min-width: 0; overflow: hidden;
+  border-top: 2px solid var(--r-border-hi); padding-top: var(--sp-1);
+}
+.mekkoName {
+  color: var(--r-text-2); font-size: 9.5px; line-height: 1.25;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mekkoPct { color: var(--r-text-3); font-size: 9.5px; font-variant-numeric: tabular-nums; }
+
+.toolbar { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.searchLabel { color: var(--r-text-3); font-size: 12px; }
+.searchResult { color: var(--r-text-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+
+.reading { max-width: 80ch; margin: 0; color: var(--r-text-2); font-size: 13px; line-height: 1.65; }
+.reading strong { color: var(--r-text); font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) { .view, .viewOn { transition: none; } }
+
+/* --- confidence calibration --------------------------------------------------- */
+
+.calibration {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6); border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface);
+}
+.calibLabel {
+  color: var(--r-text-3); font-size: 10.5px; font-weight: 600;
+  letter-spacing: 0.03em; text-transform: uppercase;
+}
+.calibRow { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-4); }
+.calibCell { display: grid; grid-template-columns: 58px minmax(0, 1fr) 42px; align-items: center; gap: var(--sp-2); }
+.calibConf { color: var(--r-text-2); font-size: 11.5px; }
+.calibBar { height: 7px; border-radius: 999px; background: var(--r-surface-2); overflow: hidden; }
+.calibFill { display: block; height: 100%; background: var(--unknown); border-radius: 999px; }
+.calibCount { color: var(--r-text); font-size: 11.5px; text-align: right; font-variant-numeric: tabular-nums; }

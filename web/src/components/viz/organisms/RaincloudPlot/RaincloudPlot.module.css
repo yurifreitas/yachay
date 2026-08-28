@@ -1,0 +1,24 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.rowLabel { font-size: 12.5px; font-weight: 600; fill: var(--r-text); }
+.rowMeta { font-size: 10.5px; fill: var(--r-text-3); font-variant-numeric: tabular-nums; }
+
+/* The cloud is a fill with no stroke: it is a shape to be compared, not an outline to be
+   traced. Kept translucent so an overlapping rule stays visible through it. */
+.cloud { opacity: 0.42; }
+.whisker { stroke: var(--r-border-hi); stroke-width: 1; }
+.box { fill: var(--r-surface); stroke-width: 1.5; }
+.median { stroke: var(--r-text); stroke-width: 2; }
+.drop { opacity: 0.55; }
+
+/* The numbers under the figure. A shape is for comparing; a reader who wants to quote a
+   median needs it as text, and it must come from the same arithmetic. */
+.numbers { border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.numbers th, .numbers td { padding: var(--sp-2) var(--sp-3); text-align: right; }
+.numbers thead th {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--r-text-3); border-bottom: var(--r-hairline);
+}
+.numbers tbody th { text-align: left; font-weight: 600; color: var(--r-text); }
+.numbers tbody td { color: var(--r-text-2); }
+.numbers tbody tr + tr th, .numbers tbody tr + tr td { border-top: var(--r-hairline); }

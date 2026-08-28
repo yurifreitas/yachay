@@ -1,0 +1,81 @@
+/* The multiplicity panel. The assumption test is visually the loudest thing here because it
+   is the thing that decides whether anything below it is usable. */
+
+.wrap { display: grid; gap: var(--sp-6); min-width: 0; }
+.premise { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.7; color: var(--r-text-2); }
+.kicker {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--r-text-3); display: block; margin-bottom: var(--sp-2);
+}
+
+.assumeOk, .assumeBad {
+  display: grid; gap: var(--sp-4); padding: var(--sp-8); border-radius: var(--r-radius-lg);
+}
+.assumeOk {
+  border: 1px solid var(--cap-good);
+  background: color-mix(in oklch, var(--cap-good) 8%, transparent);
+}
+.assumeBad {
+  border: 1px solid var(--cap-serious);
+  background: color-mix(in oklch, var(--cap-serious) 8%, transparent);
+}
+.assumeBad .kicker { color: var(--cap-serious); }
+.assumeOk .kicker { color: var(--cap-good); }
+.claim { margin: 0; max-width: 88ch; font-size: 16px; line-height: 1.6; color: var(--r-text); }
+
+.tests { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.testOk, .testBad {
+  display: grid; gap: 2px; padding: var(--sp-4);
+  background: var(--r-surface); border-radius: var(--r-radius);
+  border-left: 3px solid var(--cap-good);
+}
+.testBad { border-left-color: var(--cap-serious); }
+.tk { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--r-text-3); }
+.tv {
+  font-size: 20px; font-weight: 600; color: var(--r-text);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.015em;
+}
+.testBad .tv { color: var(--cap-serious); }
+.ts { font-size: 11px; color: var(--r-text-3); }
+
+.matters { margin: 0; max-width: 92ch; font-size: 14px; line-height: 1.7; color: var(--r-text); }
+.verdict {
+  margin: 0; max-width: 92ch; font-size: 14px; line-height: 1.7; font-weight: 500;
+  color: var(--r-text); padding: var(--sp-4); background: var(--r-surface);
+  border-radius: var(--r-radius);
+}
+
+.cols { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); }
+.route {
+  display: grid; gap: var(--sp-3); align-content: start;
+  padding: var(--sp-6); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.route[data-tone="ok"] { border-color: color-mix(in oklch, var(--cap-good) 55%, transparent); }
+.route[data-tone="warn"] { border-color: color-mix(in oklch, var(--cap-warn) 55%, transparent); }
+.routeName { font-size: 16px; font-weight: 600; color: var(--r-text); }
+.routeSub { font-size: 12px; line-height: 1.5; color: var(--r-text-3); }
+.big { display: grid; gap: 2px; }
+.bigV {
+  font-size: 38px; font-weight: 600; letter-spacing: -0.03em; line-height: 1;
+  color: var(--r-text); font-variant-numeric: tabular-nums;
+}
+.bigL { font-size: 12px; color: var(--r-text-2); }
+.dl { display: grid; gap: var(--sp-2); margin: 0; }
+.dl > div { display: flex; justify-content: space-between; gap: var(--sp-3); font-size: 12px; }
+.dl dt { color: var(--r-text-3); }
+.dl dd { margin: 0; color: var(--r-text); font-variant-numeric: tabular-nums; text-align: right; }
+.routeNote { margin: 0; font-size: 12px; line-height: 1.6; color: var(--r-text-3); }
+
+.resolution {
+  margin: 0; max-width: 95ch; padding: var(--sp-6);
+  font-size: 13px; line-height: 1.7; color: var(--r-text);
+  background: var(--r-surface-2); border-radius: var(--r-radius);
+}
+.finding {
+  margin: 0; max-width: 92ch; padding: var(--sp-6);
+  font-size: 15px; line-height: 1.7; color: var(--r-text);
+  border-left: 3px solid var(--r-brand); background: var(--r-brand-tint);
+  border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.uses { margin: 0; max-width: 92ch; font-size: 12px; line-height: 1.65; color: var(--r-text-3); }

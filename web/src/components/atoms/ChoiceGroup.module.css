@@ -1,0 +1,42 @@
+/* Two shapes, one behaviour. `pill` is a compact switch inside a panel; `card` is the
+   page-level choice that carries a description under its label. */
+
+.pills, .cards { display: flex; gap: 8px; flex-wrap: wrap; }
+.pills { gap: 4px; }
+
+.off, .on {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
+  min-height: 44px;                       /* the touch-target floor, not a coincidence */
+  border: 1px solid var(--r-border); border-radius: 8px; background: transparent;
+  color: var(--r-text-3); text-align: left; cursor: pointer;
+  font-size: 14px; font-weight: 500;
+  transition: background 150ms cubic-bezier(.2,.8,.2,1), border-color 150ms;
+}
+.on { composes: off; }
+
+.pills .off, .pills .on { padding: 8px 16px; justify-content: center; }
+.cards .off, .cards .on {
+  flex: 1 1 260px; min-width: 0; padding: 16px 20px; border-radius: 10px;
+}
+
+.off:hover { background: var(--r-surface-2); }
+
+/* The selected state is carried on THREE channels — fill, border and label weight — because
+   the group is also the thing a reader returns to after scrolling, and one channel is easy
+   to miss at a glance. */
+.pills .on {
+  background: var(--r-brand); border-color: var(--r-brand); color: var(--r-brand-fg);
+}
+.cards .on {
+  background: var(--r-surface); border-color: var(--r-brand); color: var(--r-text);
+  box-shadow: inset 0 0 0 1px var(--r-brand);
+}
+
+.off:focus-visible, .on:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+.label { font-size: 15px; font-weight: 600; color: inherit; }
+.pills .label { font-size: 14px; font-weight: 500; }
+.cards .on .label { color: var(--r-text); }
+.note { font-size: 12px; color: var(--r-text-3); font-weight: 400; }
+
+@media (prefers-reduced-motion: reduce) { .off, .on { transition: none; } }

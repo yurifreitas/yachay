@@ -1,0 +1,22 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+  gap: var(--sp-6);
+}
+.card {
+  border: var(--r-hairline);
+  border-radius: var(--r-radius);
+  padding: var(--sp-8);
+  background: var(--r-surface);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.id { font-weight: 600; letter-spacing: 0.01em; }
+.name { font-size: 0.83rem; color: var(--r-text-2); }
+.role { font-size: 0.86rem; color: var(--r-text-2); line-height: 1.55; }
+.pattern {
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.74rem;
+  color: var(--r-text-3);
+}

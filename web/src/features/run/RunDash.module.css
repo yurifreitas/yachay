@@ -1,0 +1,168 @@
+/* The run dashboard. Same rhythm as the rare-disease page, in its own sheet: sharing a
+   CSS module between two features couples them through a file neither owns. */
+/* Layout for the rare-disease atlas.
+ *
+ * Spacing is the design decision. The page's subject is uncertainty, and dense layout
+ * reads as confidence — so every value comes off the 4px scale, sections breathe at 96px,
+ * cards pad at 24–32px, and the measure holds near 66ch.
+ *
+ * Colour budget: the ground and surfaces are neutrals tinted toward the brand hue; the
+ * brand carries interaction only; everything else that is coloured is data.
+ */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-24);
+  color: var(--r-text);
+}
+
+/* ---- hero -------------------------------------------------------------------- */
+/* The hero is the only place a narrow measure is right, so it gets its own column and
+   the space beside it carries the counters instead of sitting empty. */
+/* THE HERO WAS TWO COLUMNS AND A HOLE. Headline left, counters right, and because the
+   headline is four short lines and the counters are one row tall, the middle of a 1900px
+   screen was empty. It is now stacked: the headline and the lede sit side by side at the top
+   (each at a readable measure rather than stretched), and the counters run the full width
+   underneath, which is where four numbers of equal weight belong. */
+.hero { display: grid; gap: var(--sp-12); }
+.heroTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--sp-12) var(--sp-16);
+  align-items: end;
+}
+.heroText { display: flex; flex-direction: column; gap: var(--sp-4); }
+/* The lede sits BESIDE the headline rather than under it. Stacked, the two of them occupied
+   one narrow column and left half the width of a wide screen empty — the hole the layout was
+   supposed to close. Side by side, each keeps its own measure and the row is full. */
+.heroSide { display: flex; flex-direction: column; gap: var(--sp-4); }
+@media (max-width: 1100px) { .heroTop { grid-template-columns: 1fr; gap: var(--sp-6); } }
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--r-text-3);
+  margin: 0 0 var(--sp-1);
+}
+.title {
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.022em;
+  margin: 0;
+  max-width: 20ch;
+  text-wrap: balance;
+}
+.lede {
+  margin: 0;
+  max-width: 66ch;
+  color: var(--r-text-2);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.lede strong { color: var(--r-text); font-weight: 600; }
+.lede code {
+  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Consolas, monospace;
+  font-size: 0.86em;
+  padding: 2px 6px;
+  border-radius: var(--r-radius-sm);
+  background: color-mix(in oklch, var(--unknown) 14%, transparent);
+  color: var(--unknown);
+}
+
+/* ---- stat tiles -------------------------------------------------------------- */
+.counters {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: var(--sp-4);
+}
+/* A bare count says nothing; the share is the comparison that makes it readable. */
+/* Proportion bar: the same number again, as length. Position/length is decoded far more
+   accurately than a numeral is compared. */
+/* ---- provenance -------------------------------------------------------------- */
+/* ---- blocks ------------------------------------------------------------------ */
+/* A left rail carries the title and the prose; the content takes the rest of the screen.
+   This is the wide-dashboard pattern: the explanation stays at a readable measure without
+   forcing the charts and tables to be narrow too, which is what a centred column does. */
+.block {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: var(--sp-8) var(--sp-16);
+  width: 100%;
+  align-items: start;
+}
+/* Everything that is not the head flows into the wide column. */
+.block > *:not(.blockHead) { grid-column: 2; }
+/* A block whose head is a bare <div> (no controls) still lands in the rail. */
+.block > div:first-child { grid-column: 1; }
+
+@media (max-width: 1200px) {
+  .block { grid-template-columns: 1fr; }
+  .blockHead, .block > *:not(.blockHead), .block > div:first-child { grid-column: 1; }
+  .blockHead { position: static; }
+}
+.h3 {
+  font-size: 26px;
+  font-weight: 600;
+  margin: 0 0 var(--sp-2);
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.sub {
+  margin: 0;
+  color: var(--r-text-2);
+  font-size: 15px;
+  line-height: 1.62;
+  max-width: 42ch;
+}
+
+/* ---- controls ---------------------------------------------------------------- */
+/* ---- definitions & facts: hairline lists, not boxed tables ------------------- */
+/* ---- empty state ------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .def, .fact { grid-template-columns: 1fr; gap: var(--sp-2); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab, .tabOn { transition: none; }
+}
+
+/* The two navigation levels read as one unit, so they sit closer to each other than to
+   anything else on the page. */
+
+/* Section loading: the shape of what is coming, at a reserved height. */
+@media (prefers-reduced-motion: reduce) {
+  .skelBar, .skelPanel { animation: none; background: var(--r-surface-2); }
+}
+
+/* ---- what the calibration did ------------------------------------------- */
+.effect {
+  display: grid; gap: var(--sp-1);
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  background: var(--r-border); border: 1px solid var(--r-border);
+  border-radius: var(--r-radius); overflow: hidden;
+}
+.cell {
+  display: grid; gap: 2px; align-content: start;
+  padding: var(--sp-4) var(--sp-6); background: var(--r-surface);
+}
+.cellL { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--r-text-3); }
+.cellV {
+  font-size: 26px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--r-text); font-variant-numeric: tabular-nums;
+}
+.cellS { font-size: 12px; line-height: 1.5; color: var(--r-text-3); }
+
+.statistic { margin: 0; font-size: 13px; color: var(--r-text-2); }
+.label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--r-text-3); margin-right: var(--sp-2);
+}
+.sep { margin: 0 var(--sp-3); color: var(--r-text-3); }
+.caveat {
+  margin: 0; max-width: 95ch; font-size: 13px; line-height: 1.65; color: var(--r-text-2);
+}
+.blockBody { display: grid; gap: var(--sp-6); min-width: 0; }

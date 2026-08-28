@@ -1,0 +1,32 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 0.82rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* Shape carries the state as well as colour: a filled disc for known, a half disc for
+   partial, a hollow ring for unknown, a dash for absent. A reader who cannot separate the
+   hues still reads four distinct marks. */
+.mark {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+.sm .mark { width: 9px; height: 9px; }
+
+.known   { background: var(--known); }
+.partial {
+  background: linear-gradient(90deg, var(--partial) 0 50%, transparent 50% 100%);
+  border: 1.5px solid var(--partial);
+}
+.unknown { border: 2px solid var(--unknown); background: transparent; }
+.absent  {
+  border-radius: 1px;
+  height: 2.5px;
+  background: var(--absent);
+}

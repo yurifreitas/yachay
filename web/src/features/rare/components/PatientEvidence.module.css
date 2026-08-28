@@ -1,0 +1,92 @@
+/* The patient layer. Tokens only; the two data hues come from the diverging scale the
+   charts use, so a tile and the chart beneath it cannot disagree. */
+
+.root { display: flex; flex-direction: column; gap: var(--sp-8); min-width: 0; }
+
+.caveat {
+  margin: 0; padding: var(--sp-4) var(--sp-6);
+  border-left: 3px solid var(--unknown); border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2); color: var(--r-text-2);
+  font-size: 13px; line-height: 1.6; max-width: 92ch;
+}
+.caveatTag {
+  display: inline-block; margin-right: var(--sp-2); padding: 2px var(--sp-2);
+  border-radius: 999px; background: var(--unknown); color: var(--r-brand-fg);
+  font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.viewNav { display: flex; flex-wrap: wrap; gap: var(--sp-1); border-bottom: var(--r-hairline); }
+.view, .viewOn {
+  appearance: none; border: 0; background: none; padding: var(--sp-3) var(--sp-4);
+  border-bottom: 2px solid transparent; margin-bottom: -1px; color: var(--r-text-3);
+  font: inherit; font-size: 13px; font-weight: 500; cursor: pointer;
+  transition: color 160ms var(--r-ease), border-color 160ms var(--r-ease);
+}
+.view:hover { color: var(--r-text-2); }
+.viewOn { composes: view; color: var(--r-text); border-bottom-color: var(--r-brand); }
+.view:focus-visible, .viewOn:focus-visible {
+  outline: 2px solid var(--r-brand); outline-offset: 2px; border-radius: var(--r-radius-sm);
+}
+
+.chart { min-width: 0; }
+
+.lede, .note, .provenance {
+  margin: 0; max-width: 84ch; color: var(--r-text-2); font-size: 13px; line-height: 1.65;
+}
+.lede strong, .note strong { color: var(--r-text); }
+.lede code, .note code {
+  padding: 1px 5px; border-radius: 4px; background: var(--r-surface-2);
+  color: var(--r-text); font-size: 11.5px;
+}
+.provenance {
+  padding-top: var(--sp-4); border-top: var(--r-hairline);
+  color: var(--r-text-3); font-size: 11.5px;
+}
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--sp-4); }
+.tile {
+  display: flex; flex-direction: column; gap: var(--sp-1); padding: var(--sp-6);
+  border: var(--r-hairline); border-radius: var(--r-radius); background: var(--r-surface);
+}
+.tileLabel {
+  color: var(--r-text-3); font-size: 10.5px; font-weight: 600;
+  letter-spacing: .03em; text-transform: uppercase;
+}
+.tileValue {
+  color: var(--r-text); font-size: 26px; font-weight: 600; letter-spacing: -.02em;
+  font-variant-numeric: tabular-nums; line-height: 1.2;
+}
+.tileNote { color: var(--r-text-2); font-size: 11.5px; line-height: 1.5; }
+.bad { color: var(--unknown); }
+.gap { color: var(--r-text-3); }
+
+/* --- the forest plot's readings ------------------------------------------- */
+
+.readings { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0; padding: 0; list-style: none; }
+.reading {
+  display: grid; grid-template-columns: 76px 118px minmax(0, 1fr);
+  align-items: center; gap: var(--sp-4);
+  padding: var(--sp-2) 0; border-bottom: 1px solid var(--r-border);
+}
+.reading:last-child { border-bottom: 0; }
+.bucket {
+  color: var(--r-text); font-size: 12.5px; font-variant-numeric: tabular-nums;
+  font-weight: 500;
+}
+/* An interval that excludes zero and one that does not are different KINDS of answer, so
+   they get different marks rather than different shades. */
+.real, .null_ {
+  padding: 2px var(--sp-2); border-radius: 999px; font-size: 10px; font-weight: 600;
+  letter-spacing: .03em; text-transform: uppercase; text-align: center;
+}
+.real { background: var(--unknown); color: var(--r-brand-fg); }
+.null_ { border: 1px dashed var(--r-border-hi); color: var(--r-text-3); }
+.readingText { color: var(--r-text-2); font-size: 12.5px; }
+
+.toggle {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  color: var(--r-text-2); font-size: 12.5px; cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) { .view, .viewOn { transition: none; } }

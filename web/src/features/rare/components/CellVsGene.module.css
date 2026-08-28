@@ -1,0 +1,119 @@
+.root { display: flex; flex-direction: column; gap: var(--sp-12); width: 100%; }
+
+/* The framing prose and the boundary card sit side by side rather than stacking, so the
+   top of the section is one band of information instead of two narrow paragraphs. */
+.intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-8);
+  align-items: start;
+}
+/* The two charts are read together — where a gene acts, and where a therapy points —
+   so they belong on one line. */
+.pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: var(--sp-12);
+  align-items: start;
+}
+@media (max-width: 1300px) {
+  .intro, .pair { grid-template-columns: 1fr; }
+}
+
+/* ---- framing ------------------------------------------------------------------ */
+.frame { display: flex; flex-direction: column; gap: var(--sp-4); }
+.claim {
+  margin: 0; max-width: 68ch; font-size: 16px; line-height: 1.65; color: var(--r-text-2);
+}
+.claim strong { color: var(--r-text); font-weight: 600; }
+
+/* ---- the boundary aside ------------------------------------------------------- */
+.boundary {
+  max-width: none;
+  padding: var(--sp-8);
+  border: var(--r-hairline);
+  border-left: 3px solid var(--partial);
+  border-radius: var(--r-radius);
+  background: var(--r-surface);
+  display: flex; flex-direction: column; gap: var(--sp-3);
+}
+.boundaryTitle { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.boundary p { margin: 0; font-size: 15px; line-height: 1.62; color: var(--r-text-2); }
+.disparity {
+  padding-top: var(--sp-3);
+  border-top: var(--r-hairline);
+}
+.chips { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; padding-top: var(--sp-1); }
+
+/* ---- blocks ------------------------------------------------------------------- */
+.block { display: flex; flex-direction: column; gap: var(--sp-4); }
+.blockHead {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  gap: var(--sp-6); flex-wrap: wrap;
+}
+.h4 { margin: 0 0 var(--sp-1); font-size: 19px; font-weight: 600; letter-spacing: -0.012em; max-width: 34ch; text-wrap: balance; }
+.sub { margin: 0; font-size: 14px; line-height: 1.6; color: var(--r-text-2); max-width: 62ch; }
+
+.filters { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.tab, .tabOn {
+  font: inherit; font-size: 13px; cursor: pointer;
+  min-height: 36px; padding: 0 var(--sp-3);
+  border-radius: 999px; border: var(--r-hairline);
+  background: transparent; color: var(--r-text-2);
+  transition: background 160ms var(--r-ease), color 160ms var(--r-ease), border-color 160ms var(--r-ease);
+}
+.tab:hover { border-color: var(--r-border-hi); color: var(--r-text); }
+.tabOn {
+  background: var(--r-brand-tint);
+  border-color: color-mix(in oklch, var(--r-brand) 48%, transparent);
+  color: var(--r-brand); font-weight: 500;
+}
+.tab:focus-visible, .tabOn:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+/* ---- gene list ---------------------------------------------------------------- */
+/* Twelve genes in one long column wastes the width; two columns halve the scroll. */
+.genes {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+  gap: 0 var(--sp-12);
+  border-top: var(--r-hairline);
+}
+.gene {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: var(--sp-4);
+  align-items: baseline;
+  padding: var(--sp-4) 0;
+  border-bottom: var(--r-hairline);
+}
+.geneName {
+  font-weight: 600; font-size: 15px;
+  font-family: ui-monospace, SFMono-Regular, "JetBrains Mono", Consolas, monospace;
+  display: flex; flex-direction: column; gap: 3px;
+}
+.alt { font-size: 11.5px; font-weight: 400; color: var(--r-text-3); }
+.geneMeta { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.geneNote { grid-column: 2; font-size: 14px; line-height: 1.6; color: var(--r-text-2); }
+
+/* ---- finding ------------------------------------------------------------------ */
+.finding {
+  margin: var(--sp-2) 0 0;
+  padding: var(--sp-4) var(--sp-6);
+  border: 1px solid color-mix(in oklch, var(--unknown) 40%, transparent);
+  background: color-mix(in oklch, var(--unknown) 8%, transparent);
+  border-radius: var(--r-radius);
+  font-size: 15px; line-height: 1.65; color: var(--r-text-2); max-width: 76ch;
+}
+.finding strong { color: var(--r-text); }
+.caveat { color: var(--r-text-3); font-size: 13.5px; }
+
+.provenance {
+  margin: 0; padding-top: var(--sp-6); border-top: var(--r-hairline);
+  font-size: 13px; line-height: 1.6; color: var(--r-text-3); max-width: 80ch;
+}
+.provenance strong { color: var(--r-text-2); }
+
+@media (max-width: 900px) {
+  .gene { grid-template-columns: 1fr; gap: var(--sp-2); }
+}
+@media (prefers-reduced-motion: reduce) { .tab, .tabOn { transition: none; } }

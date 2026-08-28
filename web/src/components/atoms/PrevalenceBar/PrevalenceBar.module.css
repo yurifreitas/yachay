@@ -1,0 +1,22 @@
+.root { display: flex; flex-direction: column; gap: var(--sp-2); }
+.track { display: flex; gap: 3px; }
+.step {
+  height: 6px;
+  flex: 1;
+  border-radius: 2px;
+  background: color-mix(in oklch, var(--r-text-3) 18%, transparent);
+}
+/* Sequential ramp: rarest is the most saturated step, and every step up to the value is
+   filled, so the encoding is position-and-length rather than hue alone. */
+.s0 { background: var(--rare-p0); }
+.s1 { background: var(--rare-p1); }
+.s2 { background: var(--rare-p2); }
+.s3 { background: var(--rare-p3); }
+.s4 {
+  background: repeating-linear-gradient(45deg,
+    var(--rare-p4) 0 3px, transparent 3px 6px);
+  border: 1px dashed color-mix(in oklch, var(--r-text-3) 45%, transparent);
+  height: 8px;
+  margin-top: -1px;
+}
+.label { font-size: 0.76rem; color: var(--r-text-2); font-variant-numeric: tabular-nums; }

@@ -1,0 +1,493 @@
+/* Capability layer: instruments, cost, people.
+   Full-bleed, because the ladder needs the width to hold four decades of capital. */
+
+.root { display: grid; gap: var(--sp-8); }
+
+.premise {
+  margin: 0; max-width: 90ch;
+  font-size: 15px; line-height: 1.6; color: var(--r-text-2);
+}
+
+/* ---- headline counts ---------------------------------------------------- */
+.counts {
+  display: grid; gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.stat {
+  display: grid; gap: var(--sp-1); align-content: start;
+  padding: var(--sp-6); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.statV {
+  font-size: 30px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--r-text); font-variant-numeric: tabular-nums;
+}
+.statL { font-size: 13px; font-weight: 500; color: var(--r-text-2); }
+.statS { font-size: 12px; line-height: 1.5; color: var(--r-text-3); }
+
+/* ---- view tabs ---------------------------------------------------------- */
+.tabs { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+.tab, .tabOn {
+  display: grid; gap: 2px; text-align: left; cursor: pointer;
+  padding: var(--sp-3) var(--sp-6);
+  font: inherit; font-size: 14px; font-weight: 500;
+  border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface); color: var(--r-text);
+  transition: background 140ms var(--r-ease), border-color 140ms var(--r-ease);
+}
+.tab:hover { border-color: var(--r-border-hi); }
+.tabOn {
+  background: var(--r-brand-tint); border-color: var(--r-brand);
+  color: var(--r-text);
+}
+.tabSub { font-size: 12px; font-weight: 400; color: var(--r-text-3); }
+
+/* ---- plans -------------------------------------------------------------- */
+.planWrap {
+  display: grid; gap: var(--sp-8);
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 1000px) { .planWrap { grid-template-columns: 1fr; } }
+
+.planPick {
+  display: grid; gap: var(--sp-2); position: sticky; top: var(--sp-4);
+  max-height: calc(100vh - var(--sp-12)); overflow: auto;
+}
+.pick, .pickOn {
+  display: grid; gap: var(--sp-1); text-align: left; cursor: pointer;
+  padding: var(--sp-4); font: inherit;
+  border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface); color: var(--r-text);
+}
+.pick:hover { border-color: var(--r-border-hi); }
+.pickOn { background: var(--r-brand-tint); border-color: var(--r-brand); }
+.pickName { font-size: 14px; font-weight: 600; line-height: 1.35; }
+.pickMeta { font-size: 12px; color: var(--r-text-3); }
+
+.plan {
+  display: grid; gap: var(--sp-8); min-width: 0;
+  padding: var(--sp-8); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius-lg);
+}
+.planHead { display: grid; gap: var(--sp-2); }
+.planTitle {
+  margin: 0; font-size: 24px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--r-text); text-wrap: balance;
+}
+.goal { margin: 0; font-size: 16px; line-height: 1.55; color: var(--r-text-2); max-width: 75ch; }
+
+.ledger {
+  display: grid; gap: var(--sp-1);
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  background: var(--r-border); border: 1px solid var(--r-border);
+  border-radius: var(--r-radius); overflow: hidden;
+}
+.cellBox {
+  display: grid; gap: 2px; align-content: start;
+  padding: var(--sp-4) var(--sp-6); background: var(--r-surface-2);
+}
+.cellL { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--r-text-3); }
+.cellV {
+  font-size: 20px; font-weight: 600; color: var(--r-text);
+  font-variant-numeric: tabular-nums;
+}
+.cellS { font-size: 12px; line-height: 1.45; color: var(--r-text-3); }
+
+.physics {
+  display: grid; gap: var(--sp-2);
+  padding: var(--sp-6); border-left: 3px solid var(--cap-molecule);
+  background: var(--r-surface-2); border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.physics p { margin: 0; font-size: 15px; line-height: 1.65; color: var(--r-text); max-width: 80ch; }
+.label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--r-text-3);
+}
+
+/* stages — numbered because they genuinely are an ordered, gated sequence */
+.stages { display: grid; gap: var(--sp-4); margin: 0; padding: 0; list-style: none; }
+.stage {
+  display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: var(--sp-4);
+  padding: var(--sp-6); background: var(--r-surface-2);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.stageN {
+  font-size: 20px; font-weight: 600; color: var(--r-text-3);
+  font-variant-numeric: tabular-nums;
+}
+.stageBody { display: grid; gap: var(--sp-2); min-width: 0; }
+.stageName { font-size: 15px; font-weight: 600; color: var(--r-text); }
+.stageDoes { margin: 0; font-size: 14px; line-height: 1.6; color: var(--r-text-2); max-width: 80ch; }
+.gate {
+  margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text);
+  padding: var(--sp-2) var(--sp-3);
+  background: color-mix(in oklch, var(--cap-warn) 12%, transparent);
+  border-radius: var(--r-radius-sm); max-width: 80ch;
+}
+.gateL {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--cap-warn); margin-right: var(--sp-2);
+}
+
+.needs { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.need {
+  display: inline-flex; align-items: baseline; gap: var(--sp-2);
+  padding: 4px var(--sp-3); font-size: 12px; color: var(--r-text);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: 999px;
+}
+.needCost { color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+.needNone { font-size: 12px; font-style: italic; color: var(--r-text-3); }
+
+.efficacy {
+  display: grid; gap: var(--sp-3);
+  padding: var(--sp-6); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.efficacy p { margin: 0; font-size: 14px; line-height: 1.65; color: var(--r-text-2); max-width: 80ch; }
+.note { color: var(--r-text-3) !important; font-style: italic; }
+
+/* Efficacy is a claim about evidence: status colour, never a series colour, and
+   the word is always present so the colour is never the only signal. */
+.pill {
+  justify-self: start;
+  padding: 3px var(--sp-3); font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.05em;
+  border-radius: 999px; border: 1px solid currentColor;
+}
+.good { color: var(--cap-good); background: color-mix(in oklch, var(--cap-good) 12%, transparent); }
+.warn { color: var(--cap-warn); background: color-mix(in oklch, var(--cap-warn) 12%, transparent); }
+.serious { color: var(--cap-serious); background: color-mix(in oklch, var(--cap-serious) 12%, transparent); }
+.muted { color: var(--r-text-3); background: var(--r-surface-2); }
+
+.roleList { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.role {
+  padding: 3px var(--sp-3); font-size: 12px; color: var(--r-text-2);
+  background: var(--r-surface-2); border-radius: var(--r-radius-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- instruments -------------------------------------------------------- */
+.instWrap { display: grid; gap: var(--sp-8); }
+
+.ladderPanel {
+  display: grid; gap: var(--sp-4);
+  padding: var(--sp-8); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius-lg);
+}
+.h4 {
+  margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--r-text); text-wrap: balance;
+}
+.sub { margin: 0; font-size: 14px; line-height: 1.6; color: var(--r-text-2); max-width: 85ch; }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
+.legendItem {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: 12px; color: var(--r-text-2);
+}
+.swatch { width: 12px; height: 12px; border-radius: 3px; background: var(--r-text-3); }
+
+.ladder { display: grid; gap: 6px; overflow-x: auto; }
+.axis { position: relative; height: 16px; margin-left: 320px; margin-right: 150px; }
+@media (max-width: 900px) { .axis { margin-left: 0; margin-right: 0; } }
+.tick {
+  position: absolute; transform: translateX(-50%);
+  font-size: 11px; color: var(--r-text-3); font-variant-numeric: tabular-nums;
+}
+
+.rung {
+  display: grid; align-items: center; gap: var(--sp-3);
+  grid-template-columns: 300px minmax(120px, 1fr) 96px 66px;
+  min-height: 26px;
+}
+@media (max-width: 900px) {
+  .rung { grid-template-columns: minmax(0, 1fr) 90px; grid-template-areas: "n n" "t t" "c f"; }
+  .rungName { grid-area: n; } .track { grid-area: t; }
+  .rungCost { grid-area: c; } .rungFte { grid-area: f; }
+}
+.rungName {
+  font-size: 13px; color: var(--r-text); line-height: 1.35;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.track { position: relative; height: 14px; }
+.gridline {
+  position: absolute; top: 0; bottom: 0; width: 1px;
+  background: color-mix(in oklch, var(--r-text-3) 22%, transparent);
+}
+/* Lo-to-hi, because the number is a band. A bar from zero would claim a
+   precision these estimates do not have. */
+.dumbbell {
+  position: absolute; top: 3px; height: 8px; border-radius: 4px;
+  background: var(--r-text-3);
+}
+.dumbbell[data-f="genome"], .swatch[data-f="genome"] { background: var(--cap-genome); }
+.dumbbell[data-f="cell"], .swatch[data-f="cell"] { background: var(--cap-cell); }
+.dumbbell[data-f="molecule"], .swatch[data-f="molecule"] { background: var(--cap-molecule); }
+.dumbbell[data-f="patient"], .swatch[data-f="patient"] { background: var(--cap-patient); }
+.dumbbell[data-f="dose"], .swatch[data-f="dose"] { background: var(--cap-dose); }
+
+.rungCost, .rungFte {
+  font-size: 12px; text-align: right; color: var(--r-text-2);
+  font-variant-numeric: tabular-nums;
+}
+.rungFte { color: var(--r-text-3); }
+
+.cards {
+  display: grid; gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+}
+.card {
+  display: grid; gap: var(--sp-3); align-content: start; min-width: 0;
+  padding: var(--sp-6); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.card header { display: grid; gap: var(--sp-2); }
+.klass {
+  justify-self: start; padding: 2px var(--sp-3);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  border-radius: 999px; color: var(--r-brand-fg); background: var(--r-text-3);
+}
+.klass[data-f="genome"] { background: var(--cap-genome); }
+.klass[data-f="cell"] { background: var(--cap-cell); }
+.klass[data-f="molecule"] { background: var(--cap-molecule); }
+.klass[data-f="patient"] { background: var(--cap-patient); }
+.klass[data-f="dose"] { background: var(--cap-dose); }
+
+.cardTitle {
+  margin: 0; font-size: 16px; font-weight: 600; color: var(--r-text);
+  line-height: 1.35; text-wrap: balance;
+}
+.cardMoney {
+  display: flex; flex-wrap: wrap; gap: var(--sp-3);
+  font-size: 13px; color: var(--r-text-2); font-variant-numeric: tabular-nums;
+}
+.cardMoney b { color: var(--r-text); }
+.cardPhysics {
+  margin: 0; font-size: 14px; line-height: 1.65; color: var(--r-text);
+  padding-left: var(--sp-4); border-left: 2px solid var(--r-border-hi);
+}
+.cardRow { margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text-2); }
+.cardRow .label, .cheaper .label, .noCheaper .label, .dxChanges .label { margin-right: var(--sp-2); }
+.cheaper {
+  margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text);
+  padding: var(--sp-3); border-radius: var(--r-radius-sm);
+  background: color-mix(in oklch, var(--cap-good) 10%, transparent);
+}
+.noCheaper { margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text-3); }
+
+/* ---- diagnostics -------------------------------------------------------- */
+.dxWrap {
+  display: grid; gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fill, minmax(460px, 1fr));
+}
+.dx {
+  display: grid; gap: var(--sp-4); align-content: start; min-width: 0;
+  padding: var(--sp-6); background: var(--r-surface);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.dxHead { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: baseline; justify-content: space-between; }
+.dxCost {
+  font-size: 12px; color: var(--r-text-3); font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.dxCols { display: grid; gap: var(--sp-3); }
+.dxCols > div { display: grid; gap: var(--sp-1); }
+.dxCols p { margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text-2); }
+.dxMiss { padding-left: var(--sp-3); border-left: 2px solid var(--cap-patient); }
+.dxSharp { padding-left: var(--sp-3); border-left: 2px solid var(--cap-good); }
+.dxPhysics {
+  margin: 0; font-size: 13px; line-height: 1.65; color: var(--r-text);
+  padding: var(--sp-4); background: var(--r-surface-2); border-radius: var(--r-radius-sm);
+}
+.dxChanges { margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text-2); }
+
+/* ---- provenance --------------------------------------------------------- */
+.provenance {
+  margin: 0; max-width: 90ch;
+  padding: var(--sp-6); font-size: 13px; line-height: 1.7; color: var(--r-text-2);
+  background: var(--r-surface-2); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.provenance strong { color: var(--r-text); }
+
+/* ---- the arithmetic tab -------------------------------------------------- */
+.mathWrap { display: grid; gap: var(--sp-8); }
+
+.finding {
+  display: grid; gap: var(--sp-2); padding: var(--sp-8);
+  border: 1px solid var(--cap-good);
+  background: color-mix(in oklch, var(--cap-good) 9%, transparent);
+  border-radius: var(--r-radius-lg);
+}
+.findingL {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--cap-good);
+}
+.finding p { margin: 0; font-size: 15px; line-height: 1.7; color: var(--r-text); max-width: 90ch; }
+
+/* the one authored block on a derived tab — marked, not blended */
+.disputed {
+  display: grid; gap: var(--sp-4); padding: var(--sp-8);
+  border: 1px dashed var(--cap-serious);
+  background: color-mix(in oklch, var(--cap-serious) 7%, transparent);
+  border-radius: var(--r-radius-lg);
+}
+.dispGrid { display: grid; gap: var(--sp-6); grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.disp { display: grid; gap: var(--sp-2); align-content: start; }
+.disp p { margin: 0; font-size: 13px; line-height: 1.6; color: var(--r-text-2); }
+.dispName { font-size: 15px; font-weight: 600; color: var(--r-text); }
+.dispEffect {
+  color: var(--r-text) !important; font-weight: 500;
+  padding-top: var(--sp-2); border-top: var(--r-hairline);
+}
+
+.compare { display: grid; gap: var(--sp-3); }
+.cmpRow {
+  display: grid; align-items: center; gap: var(--sp-4);
+  grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) 90px;
+}
+@media (max-width: 760px) { .cmpRow { grid-template-columns: 1fr; } }
+.cmpL { font-size: 13px; color: var(--r-text-2); }
+.cmpTrack { display: block; height: 22px; }
+.cmpBar { display: block; height: 22px; border-radius: 5px; background: var(--r-text-3); }
+.cmpBar[data-f="patient"] { background: var(--cap-patient); }
+.cmpBar[data-f="cell"] { background: var(--cap-cell); }
+.cmpV {
+  font-size: 14px; font-weight: 600; text-align: right; color: var(--r-text);
+  font-variant-numeric: tabular-nums;
+}
+.cmpNote { margin: 0; font-size: 14px; line-height: 1.6; color: var(--r-text-2); max-width: 85ch; }
+.cmpNote strong { color: var(--r-text); }
+
+.shareGrid { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.share {
+  display: grid; gap: var(--sp-1); align-content: start;
+  padding: var(--sp-4); background: var(--r-surface-2);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.shareN {
+  justify-self: start; padding: 2px var(--sp-2); font-size: 11px; font-weight: 600;
+  color: var(--r-brand); background: var(--r-brand-tint); border-radius: 999px;
+}
+.shareName { font-size: 14px; font-weight: 600; color: var(--r-text); line-height: 1.35; }
+.shareWaste { font-size: 13px; color: var(--cap-serious); font-variant-numeric: tabular-nums; }
+.shareWho { font-size: 11px; line-height: 1.5; color: var(--r-text-3); }
+
+.queue { display: grid; gap: 1px; background: var(--r-border);
+  border: 1px solid var(--r-border); border-radius: var(--r-radius); overflow: hidden; }
+.qRow {
+  display: grid; align-items: baseline; gap: var(--sp-4);
+  grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) 180px;
+  padding: var(--sp-3) var(--sp-6); background: var(--r-surface);
+}
+@media (max-width: 820px) { .qRow { grid-template-columns: 1fr; gap: var(--sp-1); } }
+.qName { font-size: 14px; font-weight: 500; color: var(--r-text); }
+.qBottle { font-size: 13px; color: var(--r-text-2); }
+.qYears, .qYearsBad {
+  font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; color: var(--r-text-2);
+}
+.qYearsBad { color: var(--cap-serious); font-weight: 600; }
+
+.moves { display: grid; gap: var(--sp-2); }
+.move {
+  display: grid; align-items: baseline; gap: var(--sp-3);
+  grid-template-columns: minmax(200px, 1fr) 130px 18px 168px 86px 132px;
+  padding: var(--sp-3) var(--sp-4); background: var(--r-surface-2);
+  border-radius: var(--r-radius-sm);
+}
+@media (max-width: 1100px) {
+  .move { grid-template-columns: minmax(0, 1fr) auto; }
+  .moveArrow { display: none; }
+}
+.moveName { font-size: 13px; color: var(--r-text); }
+.moveCap, .moveAns, .moveUnit {
+  font-size: 12px; color: var(--r-text-3); font-variant-numeric: tabular-nums;
+}
+.moveArrow { font-size: 13px; color: var(--r-text-3); }
+.moveUp, .moveDown {
+  font-size: 12px; font-weight: 600; text-align: right; font-variant-numeric: tabular-nums;
+}
+.moveUp { color: var(--cap-good); }
+.moveDown { color: var(--cap-serious); }
+
+.assume {
+  display: grid; gap: var(--sp-3); padding: var(--sp-6);
+  background: var(--r-surface-2); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.assume p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--r-text-2); max-width: 90ch; }
+
+/* ---- the measured prevalence audit -------------------------------------- */
+.auditNums { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+.typeBars { display: grid; gap: 4px; }
+.typeRow {
+  display: grid; align-items: center; gap: var(--sp-3);
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) 72px;
+}
+@media (max-width: 700px) { .typeRow { grid-template-columns: minmax(0, 1fr) 72px; }
+  .typeTrack { display: none; } }
+.typeName { font-size: 13px; color: var(--r-text); }
+.typeTrack { display: block; height: 16px; }
+.typeBar { display: block; height: 16px; border-radius: 4px; background: var(--r-text-3); }
+.typeBar[data-f="cell"] { background: var(--cap-cell); }
+.typeBar[data-f="molecule"] { background: var(--cap-molecule); }
+.typeN { font-size: 12px; text-align: right; color: var(--r-text-2); font-variant-numeric: tabular-nums; }
+
+.watched { display: grid; gap: 1px; background: var(--r-border);
+  border: 1px solid var(--r-border); border-radius: var(--r-radius); overflow: hidden; }
+.wRow {
+  display: grid; align-items: baseline; gap: var(--sp-3);
+  grid-template-columns: minmax(160px, 230px) 84px minmax(0, 1fr) 250px;
+  padding: var(--sp-3) var(--sp-4); background: var(--r-surface);
+}
+@media (max-width: 1000px) { .wRow { grid-template-columns: minmax(0, 1fr) 84px; gap: var(--sp-1); }
+  .wTypes { grid-column: 1 / -1; } .wCohort { grid-column: 1 / -1; } }
+.wName { font-size: 13px; font-weight: 500; color: var(--r-text); }
+.wRecords { font-size: 12px; color: var(--cap-serious); font-variant-numeric: tabular-nums; }
+.wTypes { font-size: 12px; color: var(--r-text-3); }
+.wCohort { font-size: 12px; text-align: right; color: var(--r-text-2); font-variant-numeric: tabular-nums; }
+
+/* An unbounded band fades out instead of ending, so the edge is not read as a value. */
+.dumbbellOpen {
+  position: absolute; top: 3px; height: 8px; border-radius: 4px 0 0 4px;
+  background: linear-gradient(90deg, var(--cap-dose) 0%, var(--cap-dose) 55%,
+              color-mix(in oklch, var(--cap-dose) 15%, transparent) 100%);
+}
+
+/* ---- what the correction moved ------------------------------------------ */
+.moveList { display: grid; gap: var(--sp-2); }
+.moveRow {
+  display: grid; align-items: center; gap: var(--sp-3);
+  grid-template-columns: minmax(170px, 240px) minmax(0, 1fr) 20px minmax(0, 1.2fr) 130px;
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--r-surface-2); border-radius: var(--r-radius-sm);
+}
+@media (max-width: 1050px) {
+  .moveRow { grid-template-columns: minmax(0, 1fr); }
+  .mvArrow { display: none; }
+}
+.mvName { font-size: 13px; font-weight: 500; color: var(--r-text); }
+.mvOld, .mvNew { display: grid; gap: 1px; font-size: 13px; font-variant-numeric: tabular-nums; }
+.mvOld { color: var(--r-text-3); text-decoration: line-through; text-decoration-thickness: 1px; }
+.mvNew { color: var(--r-text); }
+.mvTag { font-size: 11px; color: var(--r-text-3); text-decoration: none; }
+.mvArrow { font-size: 14px; color: var(--r-text-3); text-align: center; }
+.mvFold { font-size: 13px; text-align: right; color: var(--cap-good); font-variant-numeric: tabular-nums; }
+
+/* ---- geography of measurement ------------------------------------------- */
+.geoCols { display: grid; gap: var(--sp-8); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.geoList { display: grid; gap: 4px; margin-top: var(--sp-3); }
+.geoRow {
+  display: grid; align-items: center; gap: var(--sp-3);
+  grid-template-columns: minmax(110px, 170px) minmax(0, 1fr) 62px;
+}
+.geoName { font-size: 13px; color: var(--r-text); }
+.geoTrack { display: block; height: 12px; }
+.geoBar { display: block; height: 12px; border-radius: 3px; background: var(--r-text-3); min-width: 2px; }
+.geoBar[data-f="patient"] { background: var(--cap-patient); }
+.geoBar[data-f="dose"] { background: var(--cap-dose); }
+.geoN { font-size: 12px; text-align: right; color: var(--r-text-2); font-variant-numeric: tabular-nums; }
+.absent {
+  margin: 0; padding: var(--sp-4); font-size: 13px; line-height: 1.65; color: var(--r-text);
+  background: color-mix(in oklch, var(--cap-serious) 9%, transparent);
+  border-radius: var(--r-radius-sm); max-width: 95ch;
+}

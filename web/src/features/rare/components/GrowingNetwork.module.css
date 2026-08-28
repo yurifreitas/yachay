@@ -1,0 +1,126 @@
+/* The growing network. Deterministic layout on purpose: a force simulation would move every
+   node whenever one is added, so no two states of the graph could be compared. */
+
+.root { display: grid; gap: var(--sp-6); min-width: 0; }
+.premise { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.7; color: var(--r-text-2); }
+.label {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--r-text-3);
+}
+
+.bar {
+  display: grid; gap: var(--sp-6); align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+}
+@media (max-width: 820px) { .bar { grid-template-columns: 1fr; } }
+
+.stats { display: flex; flex-wrap: wrap; gap: var(--sp-6); }
+.stat, .statDim { display: grid; gap: 2px; }
+.statV {
+  font-size: 26px; font-weight: 600; letter-spacing: -0.02em;
+  color: var(--r-text); font-variant-numeric: tabular-nums; line-height: 1;
+}
+.statDim .statV { color: var(--r-text-3); }
+.statL { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--r-text-3); }
+
+.search { position: relative; }
+.search input {
+  width: 100%; height: 40px; padding: 0 var(--sp-4);
+  font: inherit; font-size: 14px;
+  background: var(--r-surface); color: var(--r-text);
+  border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.matches {
+  position: absolute; z-index: 6; top: 44px; left: 0; right: 0;
+  display: grid; max-height: 260px; overflow: auto;
+  background: var(--r-surface); border: 1px solid var(--r-border-hi);
+  border-radius: var(--r-radius); box-shadow: var(--r-shadow);
+}
+.matches button {
+  display: flex; justify-content: space-between; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-4); font: inherit; font-size: 13px;
+  background: none; border: 0; cursor: pointer; text-align: left; color: var(--r-text);
+}
+.matches button:hover { background: var(--r-surface-2); }
+.mDeg { color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+
+.suggest { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.s, .sOn {
+  font: inherit; font-size: 12px; cursor: pointer;
+  padding: 4px var(--sp-3); border-radius: 999px;
+  border: var(--r-hairline); background: var(--r-surface); color: var(--r-text-2);
+  font-family: var(--mono, ui-monospace, monospace);
+}
+.sOn { background: var(--r-brand); border-color: var(--r-brand); color: var(--r-brand-fg); }
+
+/* ---- the canvas ---------------------------------------------------------- */
+.canvasWrap {
+  position: relative;
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-lg);
+  overflow: hidden;
+}
+.svg { display: block; width: 100%; height: auto; }
+
+.edge { stroke: color-mix(in oklch, var(--r-text-3) 28%, transparent); }
+.edgeHot { stroke: var(--r-brand); stroke-opacity: 0.85; }
+
+.node {
+  fill: var(--cap-genome); cursor: pointer;
+  transition: fill 120ms var(--r-ease);
+}
+.node:hover { fill: var(--r-brand); }
+.seed { fill: var(--cap-patient); cursor: pointer; stroke: var(--r-surface); stroke-width: 2; }
+.label2 {
+  fill: var(--r-text-2); font-size: 10px; pointer-events: none;
+  font-family: var(--mono, ui-monospace, monospace);
+}
+
+.tip {
+  position: absolute; right: var(--sp-4); top: var(--sp-4);
+  display: grid; gap: var(--sp-2); min-width: 210px;
+  padding: var(--sp-4); background: var(--r-surface-2);
+  border: 1px solid var(--r-border-hi); border-radius: var(--r-radius);
+  box-shadow: var(--r-shadow);
+}
+.tipName {
+  font-size: 15px; font-weight: 600; color: var(--r-text);
+  font-family: var(--mono, ui-monospace, monospace);
+}
+.tip dl { display: grid; gap: 3px; margin: 0; }
+.tip dl > div { display: flex; justify-content: space-between; gap: var(--sp-3); font-size: 12px; }
+.tip dt { color: var(--r-text-3); }
+.tip dd { margin: 0; color: var(--r-text); font-variant-numeric: tabular-nums; }
+
+.how { margin: 0; max-width: 95ch; font-size: 14px; line-height: 1.7; color: var(--r-text-2); }
+.how strong { color: var(--r-text); }
+.provenance {
+  margin: 0; max-width: 95ch; padding: var(--sp-5);
+  font-size: 13px; line-height: 1.7; color: var(--r-text-3);
+  background: var(--r-surface-2); border-radius: var(--r-radius);
+}
+
+/* ---- the states a fetched dataset actually has --------------------------- */
+.pending {
+  display: grid; gap: var(--sp-3); place-items: start;
+  padding: var(--sp-8); min-height: 260px;
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-lg);
+  font-size: 14px; color: var(--r-text-2);
+}
+.pendingBar {
+  display: block; width: 100%; height: 10px; border-radius: 5px;
+  background: linear-gradient(90deg, var(--r-surface-2) 0%, var(--r-border) 50%, var(--r-surface-2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s var(--r-ease) infinite;
+}
+@keyframes shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .pendingBar { animation: none; } }
+.failed {
+  padding: var(--sp-6); border-radius: var(--r-radius-lg);
+  border: 1px solid var(--cap-serious);
+  background: color-mix(in oklch, var(--cap-serious) 8%, transparent);
+  font-size: 14px; line-height: 1.7; color: var(--r-text); max-width: 92ch;
+}
+.failed code {
+  font-size: 12px; padding: 1px 5px; border-radius: 4px;
+  background: var(--r-surface); color: var(--r-text-2);
+}

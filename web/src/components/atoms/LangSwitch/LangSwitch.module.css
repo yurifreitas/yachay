@@ -1,0 +1,17 @@
+.wrap {
+  display: inline-flex; gap: 2px; padding: 2px;
+  background: var(--r-surface-2); border-radius: 999px;
+}
+.off, .on {
+  border: 0; cursor: pointer; font: inherit;
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: 999px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
+}
+.off { background: transparent; color: var(--r-text-3); }
+.off:hover { color: var(--r-text); }
+.on { background: var(--r-brand); color: var(--r-brand-fg); }
+.wrap button:focus-visible { outline: 2px solid var(--r-brand-hi); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { .off, .on { transition: none; } }

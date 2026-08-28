@@ -1,0 +1,106 @@
+/* The sparse-structure experiment. The null column is styled as prominently as the result,
+   because without it the result is only a statement that sparse matrices like being reordered. */
+
+.root { display: grid; gap: var(--sp-6); min-width: 0; }
+.premise { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.7; color: var(--r-text-2); }
+.sub { margin: 0; max-width: 90ch; font-size: 14px; line-height: 1.65; color: var(--r-text-2); }
+.h4 { margin: 0; font-size: 17px; font-weight: 600; color: var(--r-text); text-wrap: balance; }
+.kicker {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+  font-weight: 600; color: var(--r-brand);
+}
+.scrollX { overflow-x: auto; }
+
+.hypothesis {
+  display: grid; gap: var(--sp-2); padding: var(--sp-6);
+  border-left: 3px solid var(--r-brand); background: var(--r-brand-tint);
+  border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.hypothesis p { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.7; color: var(--r-text); }
+
+/* ---- the two graphs ------------------------------------------------------ */
+.sides { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.sideReal, .sideNull {
+  display: grid; gap: var(--sp-3); padding: var(--sp-6);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.sideReal { border-left: 3px solid var(--cap-cell); }
+.sideNull { border-left: 3px dashed var(--r-text-3); }
+.props { display: grid; gap: 2px; margin: 0; }
+.row, .rowHot {
+  display: flex; justify-content: space-between; gap: var(--sp-4);
+  padding: 3px 0; font-size: 13px;
+}
+.row dt, .rowHot dt { color: var(--r-text-3); }
+.row dd, .rowHot dd { margin: 0; color: var(--r-text); font-variant-numeric: tabular-nums; }
+.rowHot dd { color: var(--cap-cell); font-weight: 600; }
+.sideNote { margin: 0; max-width: 95ch; font-size: 13px; line-height: 1.7; color: var(--r-text-3); }
+
+.panel {
+  display: grid; gap: var(--sp-4); padding: var(--sp-8);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius-lg);
+}
+
+/* ---- the ordering table --------------------------------------------------- */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: left; padding: var(--sp-2) var(--sp-3);
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
+  color: var(--r-text-3); font-weight: 600; border-bottom: 1px solid var(--r-border-hi);
+  white-space: nowrap;
+}
+.table td {
+  padding: var(--sp-3); border-bottom: var(--r-hairline);
+  color: var(--r-text-2); vertical-align: top;
+}
+.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.table th.r { text-align: right; }
+.base td { background: var(--r-surface-2); }
+.oName {
+  display: block; font-size: 14px; font-weight: 600; color: var(--r-text);
+  font-family: var(--mono, ui-monospace, monospace);
+}
+.oNote { display: block; font-size: 11.5px; line-height: 1.5; color: var(--r-text-3); max-width: 42ch; }
+.good { color: var(--cap-good); font-variant-numeric: tabular-nums; text-align: right; }
+.bad { color: var(--cap-serious); font-variant-numeric: tabular-nums; text-align: right; }
+
+/* ---- the verdict --------------------------------------------------------- */
+.verdicts { display: grid; gap: var(--sp-2); }
+.vRow {
+  display: grid; align-items: center; gap: var(--sp-3);
+  grid-template-columns: 110px 74px 74px minmax(0, 1fr) 86px 150px;
+  padding: var(--sp-2) 0;
+}
+@media (max-width: 1000px) {
+  .vRow { grid-template-columns: 110px 74px 74px 86px; }
+  .vTrack, .vVerdict { display: none; }
+}
+.vName { font-size: 13px; color: var(--r-text); font-family: var(--mono, ui-monospace, monospace); }
+.vReal { font-size: 13px; color: var(--r-text); font-variant-numeric: tabular-nums; text-align: right; }
+.vNull { font-size: 13px; color: var(--r-text-3); font-variant-numeric: tabular-nums; text-align: right; }
+.vTrack { display: block; height: 12px; }
+.vBar { display: block; height: 12px; border-radius: 3px; background: var(--cap-good); }
+.vBarBad { display: block; height: 12px; border-radius: 3px; background: var(--cap-serious); }
+.vVerdict { font-size: 11.5px; color: var(--r-text-3); }
+
+.classical {
+  display: grid; gap: var(--sp-2); padding: var(--sp-8);
+  border: 1px dashed var(--cap-warn);
+  background: color-mix(in oklch, var(--cap-warn) 7%, transparent);
+  border-radius: var(--r-radius-lg);
+}
+.classical .kicker { color: var(--cap-warn); }
+.classical p { margin: 0; max-width: 92ch; font-size: 15px; line-height: 1.75; color: var(--r-text); }
+
+.finding {
+  margin: 0; max-width: 95ch; padding: var(--sp-6);
+  font-size: 15px; line-height: 1.75; color: var(--r-text);
+  border-left: 3px solid var(--cap-good);
+  background: color-mix(in oklch, var(--cap-good) 8%, transparent);
+  border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.provenance {
+  margin: 0; max-width: 95ch; padding: var(--sp-5);
+  font-size: 13px; line-height: 1.7; color: var(--r-text-3);
+  background: var(--r-surface-2); border-radius: var(--r-radius);
+}

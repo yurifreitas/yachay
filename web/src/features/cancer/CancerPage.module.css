@@ -1,0 +1,250 @@
+/* Cancer subgroups. Spacing comes off the 4px scale only; sections breathe at 64px, cards
+   pad at 24-28px. Colour is carried by the identity scale in lib/palette.ts and arrives
+   inline per mark — nothing here hardcodes a hue, so the 24-lineage and 37-subtype views
+   share one stylesheet. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 24px 96px;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.head { display: flex; flex-direction: column; gap: 12px; max-width: 72ch; }
+.eyebrow {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--r-text-3); margin: 0;
+}
+.head h2 { margin: 0; font-size: 32px; line-height: 1.15; letter-spacing: -0.02em; }
+.lede { margin: 0; color: var(--r-text-3); line-height: 1.6; }
+.error { color: var(--critical); line-height: 1.6; }
+
+/* ---------------------------------------------------------------- KPI row */
+
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.kpi {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 24px; border: 1px solid var(--r-border); border-radius: 10px;
+  background: var(--r-surface);
+}
+.kpiN { font-size: 32px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpiL { font-size: 14px; font-weight: 500; }
+.kpiNote { font-size: 12px; color: var(--r-text-3); line-height: 1.5; margin-top: 4px; }
+.kpi[data-tone="good"] .kpiN { color: var(--known); }
+.kpi[data-tone="warn"] .kpiN { color: var(--unknown); }
+
+/* ------------------------------------------------------- the cancellation finding */
+
+.finding {
+  padding: 32px; border: 1px solid var(--r-border); border-left: 3px solid var(--r-brand);
+  border-radius: 10px; background: var(--r-surface);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.findingTag {
+  margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--r-brand);
+}
+.finding h3 { margin: 0; font-size: 20px; line-height: 1.35; font-weight: 500; }
+.finding p { margin: 0; color: var(--r-text-3); line-height: 1.6; max-width: 74ch; }
+.splitRow { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 8px; }
+.splitCard {
+  display: flex; flex-direction: column; gap: 4px; flex: 1 1 260px; min-width: 0;
+  padding: 16px; border: 1px solid var(--r-border); border-radius: 8px;
+}
+.splitName { font-weight: 600; font-size: 14px; }
+.splitMeta { font-size: 12px; color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+.splitGenes {
+  font-family: var(--r-mono, ui-monospace, SFMono-Regular, monospace); font-size: 12px; margin-top: 4px;
+  color: var(--r-brand); overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------- mode switch */
+
+.modes { display: flex; gap: 8px; flex-wrap: wrap; }
+.mode, .modeOn {
+  display: flex; flex-direction: column; gap: 4px; align-items: flex-start;
+  flex: 1 1 260px; min-width: 0; padding: 16px 20px; min-height: 44px;
+  border: 1px solid var(--r-border); border-radius: 10px; background: transparent;
+  color: var(--r-text-3); text-align: left; cursor: pointer;
+  transition: background 150ms cubic-bezier(.2,.8,.2,1), border-color 150ms;
+}
+.mode:hover { background: var(--r-surface-2); }
+.modeOn { composes: mode; background: var(--r-surface); border-color: var(--r-brand);
+  color: var(--r-text); box-shadow: inset 0 0 0 1px var(--r-brand); }
+.mode:focus-visible, .modeOn:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+.modeLabel { font-size: 15px; font-weight: 600; color: var(--r-text); }
+.modeNote { font-size: 12px; color: var(--r-text-3); }
+
+/* ---------------------------------------------------------------- level switch */
+
+.levels { display: flex; flex-direction: column; gap: 12px; }
+.levelTabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tab, .tabOn {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--r-border);
+  background: transparent; color: var(--r-text-3); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background 150ms cubic-bezier(.2,.8,.2,1), color 150ms;
+  min-height: 40px;
+}
+.tab:hover { background: var(--r-surface-2); color: var(--r-text); }
+.tabOn { background: var(--r-brand); border-color: var(--r-brand); color: var(--r-brand-fg); }
+.staleNote {
+  margin: 0; min-height: 1.2em; font-size: 12.5px; color: var(--unknown); line-height: 1.4;
+}
+.levelNote { margin: 0; color: var(--r-text-3); font-size: 13px; line-height: 1.6; max-width: 78ch; }
+
+/* ---------------------------------------------------------------- panels */
+
+.panel { display: flex; flex-direction: column; gap: 16px; }
+.panel h3 {
+  margin: 0; font-size: 20px; letter-spacing: -0.01em; font-weight: 600;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.sub { margin: 0; color: var(--r-text-3); font-size: 13px; line-height: 1.65; max-width: 78ch; }
+.axisNote { margin: 0; font-size: 12px; color: var(--r-text-3); }
+.empty {
+  margin: 0; padding: 24px; border: 1px dashed var(--r-border); border-radius: 8px;
+  color: var(--r-text-3); line-height: 1.6; max-width: 74ch;
+}
+.badgeMoved {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: 999px;
+  border: 1px solid var(--unknown); color: var(--unknown);
+}
+.badge {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 4px 8px; border-radius: 999px; border: 1px solid var(--r-border);
+  color: var(--r-text-3);
+}
+
+/* ------------------------------------------------------ panel 1: power rows */
+
+.powerList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+
+.row, .rowOn {
+  display: grid; width: 100%; align-items: center; gap: 12px;
+  grid-template-columns: 12px minmax(120px, 1.4fr) minmax(80px, 2fr) 44px 52px 96px;
+  padding: 8px 12px; min-height: 44px;
+  border: 1px solid transparent; border-radius: 8px;
+  background: transparent; color: var(--r-text); text-align: left;
+  font-size: 13px; cursor: pointer;
+  transition: background 150ms cubic-bezier(.2,.8,.2,1);
+}
+.row:hover { background: var(--r-surface-2); }
+.rowOn { composes: row; background: var(--r-surface-2); border-color: var(--r-border); }
+.row:focus-visible, .rowOn:focus-visible {
+  outline: 2px solid var(--r-brand); outline-offset: 2px;
+}
+.swatch { width: 12px; height: 12px; border-radius: 3px; }
+.rowName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rowBarWrap { height: 8px; border-radius: 4px; background: var(--r-border); overflow: hidden; }
+.rowBar { display: block; height: 100%; border-radius: 4px; }
+.rowNum, .floorOk, .floorBad {
+  font-variant-numeric: tabular-nums; text-align: right; font-size: 12px;
+}
+.floorOk { color: var(--r-text-3); }
+.floorBad { color: var(--unknown); font-weight: 600; }
+.hits { font-size: 12px; font-weight: 600; color: var(--r-brand); text-align: right; }
+.hitsNone { font-size: 12px; color: var(--r-text-3); text-align: right; }
+
+/* ------------------------------------------------------ panel 2: dumbbells */
+
+.dumbbells { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.dumbbells > li {
+  display: grid; align-items: center; gap: 12px; min-height: 32px;
+  grid-template-columns: minmax(88px, 120px) 1fr 48px 84px;
+}
+.gene {
+  font-family: var(--r-mono, ui-monospace, SFMono-Regular, monospace); font-size: 13px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.track { position: relative; height: 20px; }
+.zero {
+  position: absolute; top: 0; bottom: 0; width: 0;
+  border-left: 1px dashed var(--r-border);
+}
+.link {
+  position: absolute; top: 50%; height: 2px; transform: translateY(-50%);
+  background: var(--r-border);
+}
+.dotOpen, .dotFull {
+  position: absolute; top: 50%; width: 10px; height: 10px; border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.dotOpen { border: 1.5px solid var(--r-text-3); background: var(--r-surface); }
+.dotFull { background: var(--r-brand); }
+.d, .q { font-variant-numeric: tabular-nums; font-size: 12px; text-align: right; }
+.d { font-weight: 600; }
+.q { color: var(--r-text-3); }
+
+/* ------------------------------------------------------ panel 3: shared genes */
+
+.shared { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.shared > li {
+  display: grid; gap: 12px; align-items: baseline;
+  grid-template-columns: minmax(88px, 120px) 1fr;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 4px; }
+/* THE IDENTITY HUE IS A MARK COLOUR, NOT A TEXT COLOUR. It is defined at a constant
+   lightness so 24 hues read as one family (lib/palette.ts), and that constant is chosen to
+   sit on a ground as a swatch — as 11px type it lands near 3.5:1 on the light surface, under
+   the 4.5:1 body-text floor. So the hue moves to the border and a dot, where its job is
+   identity, and the label goes back to a text token, where its job is being read. */
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; padding: 4px 8px; border-radius: 999px;
+  border: 1px solid currentColor; white-space: nowrap;
+  color: var(--r-text-2);
+}
+.chipDot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.chip b { font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------ panel 4: controls table */
+
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: left; font-weight: 500; font-size: 12px; color: var(--r-text-3);
+  padding: 8px 12px; border-bottom: 1px solid var(--r-border);
+}
+.table td { padding: 12px; border-bottom: 1px solid var(--r-border); }
+.got { color: var(--known); font-weight: 600; font-variant-numeric: tabular-nums; }
+.miss { color: var(--r-text-3); }
+
+/* ---------------------------------------------------------------- skeleton */
+
+.skelHead, .skelPanel, .skelKpis > div {
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--r-border) 25%, var(--r-surface-2) 50%, var(--r-border) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+.skelHead { height: 96px; max-width: 640px; }
+.skelKpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.skelKpis > div { height: 116px; }
+.skelPanel { height: 320px; }
+
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skelHead, .skelPanel, .skelKpis > div { animation: none; }
+  .row, .rowOn, .tab, .tabOn { transition: none; }
+}
+
+@media (max-width: 720px) {
+  .page { gap: 48px; padding: 24px 16px 64px; }
+  .row, .rowOn { grid-template-columns: 12px 1fr 44px 76px; }
+  .rowBarWrap, .floorOk, .floorBad { display: none; }
+  .dumbbells > li { grid-template-columns: minmax(72px, 96px) 1fr 44px; }
+  .q { display: none; }
+  .shared > li { grid-template-columns: 1fr; }
+}
+
+/* The subgroup picker. One line, aligned with the level switch above it, so the two scope
+   controls of this group read as a pair rather than as a panel and a stray label. */
+.pickerLabel {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: 12.5px; font-weight: 600; color: var(--r-text-2);
+}

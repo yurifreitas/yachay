@@ -1,0 +1,78 @@
+.root { display: flex; flex-direction: column; gap: var(--sp-12); width: 100%; }
+
+.premise {
+  margin: 0; padding: var(--sp-6);
+  border: var(--r-hairline); border-left: 3px solid var(--rare-p2);
+  border-radius: var(--r-radius); background: var(--r-surface);
+  font-size: 16px; line-height: 1.7; color: var(--r-text-2); max-width: 88ch;
+}
+.premise strong { color: var(--r-text); }
+.chain {
+  display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center;
+  margin-top: var(--sp-4); font-size: 13px;
+}
+.chainStep {
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2); border: var(--r-hairline);
+}
+.chainArrow { color: var(--r-text-3); }
+.chainEnd { border-color: color-mix(in oklch, var(--unknown) 55%, transparent); color: var(--unknown); }
+
+/* ---- eras: a stratigraphy, so read it as layers ------------------------------- */
+.eras { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--sp-4); }
+.era {
+  padding: var(--sp-6); border: var(--r-hairline); border-radius: var(--r-radius);
+  background: var(--r-surface); display: flex; flex-direction: column; gap: var(--sp-2);
+  border-top: 3px solid var(--rare-p3);
+}
+.eraSpan { font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 11.5px; color: var(--r-text-3); letter-spacing: .04em; }
+.eraName { font-size: 17px; font-weight: 600; letter-spacing: -0.01em; }
+.eraBasis { font-size: 13px; color: var(--r-brand); }
+.eraNote { font-size: 13.5px; line-height: 1.6; color: var(--r-text-2); }
+
+/* ---- roots: a reading key ------------------------------------------------------ */
+.roots { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 var(--sp-8); }
+.root_ {
+  display: grid; grid-template-columns: 92px 1fr; gap: var(--sp-3);
+  padding: var(--sp-3) 0; border-bottom: var(--r-hairline); align-items: baseline;
+}
+.part { font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 14px; font-weight: 600; color: var(--rare-p2); }
+.means { font-size: 13.5px; color: var(--r-text); }
+.origin { font-size: 11.5px; color: var(--r-text-3); }
+
+/* ---- cases --------------------------------------------------------------------- */
+.cases { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
+.case {
+  border: var(--r-hairline); border-radius: var(--r-radius-lg);
+  background: var(--r-surface); padding: var(--sp-8);
+  display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: var(--sp-8);
+}
+.caseFlag { border-color: color-mix(in oklch, var(--unknown) 55%, transparent); }
+@media (max-width: 1200px) { .case { grid-template-columns: 1fr; gap: var(--sp-4); } }
+
+.caseHead { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: baseline; margin-bottom: var(--sp-3); }
+.caseName { font-size: 20px; font-weight: 600; letter-spacing: -0.014em; }
+.verdict {
+  font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+  padding: 4px 9px; border-radius: 999px;
+  background: color-mix(in oklch, var(--absent) 20%, transparent); color: var(--r-text-2);
+}
+.verdictWarn { background: var(--unknown); color: var(--r-brand-fg); }
+.etym {
+  margin: 0 0 var(--sp-3); font-size: 14px; line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  color: var(--rare-p2); background: color-mix(in oklch, var(--rare-p2) 8%, transparent);
+  padding: var(--sp-3); border-radius: var(--r-radius-sm);
+}
+.story { margin: 0; font-size: 15px; line-height: 1.7; color: var(--r-text-2); }
+
+.consLabel { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--r-text-3); }
+.cons { margin: var(--sp-2) 0 0; font-size: 14.5px; line-height: 1.65; color: var(--r-text-2); }
+.cons strong { color: var(--r-text); }
+.confidence { margin-top: var(--sp-3); font-size: 12px; color: var(--r-text-3); }
+
+.provenance { margin: 0; padding-top: var(--sp-6); border-top: var(--r-hairline);
+  font-size: 13px; line-height: 1.65; color: var(--r-text-3); max-width: 96ch; }
+.provenance strong { color: var(--r-text-2); }

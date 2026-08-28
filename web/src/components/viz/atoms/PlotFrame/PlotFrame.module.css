@@ -1,0 +1,3 @@
+.svg { display: block; width: 100%; height: auto; overflow: visible; }
+/* Wide figures scroll in their own box; the page body never scrolls sideways. */
+.scroll { overflow-x: auto; overscroll-behavior-x: contain; }
