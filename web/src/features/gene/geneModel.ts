@@ -51,6 +51,9 @@ export type DiseaseLink = {
 };
 
 export type GeneRecord = {
+  /** What the public catalogues hold — see worldModel.ts. Folded in by gene_shards.py so a
+   *  gene is one fetch and not two. */
+  world?: import("./worldModel").WorldRecord;
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;
@@ -61,9 +64,16 @@ export type GeneRecord = {
   disTotal?: number;
 };
 
-export type GeneIndex = {
+/** The search payload: every symbol and one integer saying how many layers describe it.
+ *
+ *  185 kB, and it is the ONLY file loaded before someone types. The records themselves live
+ *  in 128 shards fetched one at a time — see `shard.ts` and `tools/gene_shards.py`. Loading
+ *  twenty megabytes so a reader can look up one symbol is how a page gets closed. */
+export type GeneSearchIndex = {
   generated: string;
+  shards: number;
   premise: string;
+  worldPremise: string;
   scope: {
     dependency: { genes: number; source?: string };
     cancer: { levels: string[]; subgroups: number };
@@ -71,9 +81,19 @@ export type GeneIndex = {
     network: { nodes: number; modularity?: number };
     disease: { pairs: number; genes: number; unnamed?: number };
     genes: number;
+    world?: {
+      protein?: { proteins: number };
+      constraint?: { genes: number };
+      expression?: { genes: number; cellTypes?: number; floor?: number };
+      clinvar?: { genes: number; rows?: number };
+    };
   };
-  genes: Record<string, GeneRecord>;
+  /** symbol -> how many of the six layers say anything. */
+  genes: Record<string, number>;
 };
+
+/** One shard: the full records for the ~140 symbols that hash into it. */
+export type GeneShard = Record<string, GeneRecord>;
 
 /** Which layers have anything to say about this gene, as DATA rather than as a sentence.
  *
@@ -85,13 +105,13 @@ export type GeneIndex = {
  *  "measured in 1,178 cell lines" under a Portuguese heading. Formatting belongs where the
  *  language is known; this returns the numbers and lets the component say them. */
 export type LayerState = {
-  id: "dependency" | "cancer" | "genotype" | "network" | "disease";
+  id: "dependency" | "cancer" | "genotype" | "network" | "disease" | "world";
   present: boolean;
   /** The numbers the sentence needs, whichever language it ends up in. */
   vars: Record<string, number>;
 };
 
-export function layersFor(rec: GeneRecord | undefined, scope: GeneIndex["scope"]): LayerState[] {
+export function layersFor(rec: GeneRecord | undefined, scope: GeneSearchIndex["scope"]): LayerState[] {
   const r = rec ?? {};
   return [
     { id: "dependency", present: !!r.dep,
@@ -105,6 +125,10 @@ export function layersFor(rec: GeneRecord | undefined, scope: GeneIndex["scope"]
               scope: scope.network.nodes } },
     { id: "disease", present: !!r.dis?.length,
       vars: { n: r.disTotal ?? 0, scope: scope.disease.genes } },
+    { id: "world", present: !!r.world,
+      vars: { n: r.world
+        ? [r.world.prot, r.world.con, r.world.exp, r.world.clin].filter(Boolean).length
+        : 0, scope: 4 } },
   ];
 }
 

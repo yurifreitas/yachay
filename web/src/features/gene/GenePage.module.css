@@ -175,3 +175,57 @@
 .skeleton { min-height: 60vh; border-radius: var(--r-radius); background: var(--r-surface-2); }
 
 @media (prefers-reduced-motion: reduce) { .seed { transition: none; } }
+
+/* ------------------------------------------------------ world: form and constraint */
+.protName {
+  margin: 0; font-size: 19px; font-weight: 600; line-height: 1.3; color: var(--r-text);
+  max-width: 60ch;
+}
+.protNote { margin: 0; max-width: 76ch; font-size: 14px; line-height: 1.65; color: var(--r-text-2); }
+
+/* The caution reads as prose, not as an alert: it is always true, and an always-on warning
+   colour teaches people to stop seeing it. */
+.caution {
+  margin: 0; max-width: 82ch; padding-left: var(--sp-4);
+  border-left: 2px solid var(--r-border-hi);
+  font-size: 12.5px; line-height: 1.6; color: var(--r-text-3);
+}
+
+/* ------------------------------------------------------ world: expression */
+.cells { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.cells li {
+  display: grid; grid-template-columns: minmax(140px, 220px) 1fr 64px;
+  align-items: center; gap: var(--sp-3);
+}
+.cellName { font-size: 12.5px; color: var(--r-text-2); }
+.cellTrack { height: 10px; background: var(--r-surface-2); border-radius: 999px; }
+.cellBar { display: block; height: 100%; border-radius: 999px; background: var(--r-brand); }
+.cellVal {
+  font-size: 11.5px; color: var(--r-text-3); text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------ world: variants */
+/* One bar, whole, in proportion. A pie would put these five numbers in the encoding people
+   read worst; stacked on a common baseline the uncertain block cannot be missed. */
+.stack {
+  display: flex; height: 26px; width: 100%; overflow: hidden;
+  border-radius: var(--r-radius-sm); background: var(--r-surface-2);
+}
+.stack > span { display: block; height: 100%; }
+.segPath { background: var(--critical); }
+.segVus { background: var(--unknown); }
+.segConf { background: var(--warning); }
+.segBenign { background: var(--known); }
+.segOther { background: var(--absent); }
+
+.vus {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6); border-left: 3px solid var(--unknown);
+  background: var(--r-surface-2); border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+.vusHead {
+  margin: 0; font-size: 19px; font-weight: 620; line-height: 1.3; color: var(--r-text);
+  max-width: 40ch;
+}
+.vusBody { margin: 0; max-width: 78ch; font-size: 13px; line-height: 1.65; color: var(--r-text-2); }

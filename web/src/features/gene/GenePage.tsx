@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRemoteData } from "../../lib/useRemoteData";
 import { useHashParam } from "../../lib/useHashParam";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
@@ -6,7 +6,11 @@ import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { useT, fill } from "../../i18n";
 import { GENE } from "../../i18n/gene";
 import { fmt, fmtInt, pct } from "../../lib/scale";
-import { layersFor, searchGenes, type GeneIndex, type GeneRecord } from "./geneModel";
+import { layersFor, searchGenes, type GeneSearchIndex, type GeneRecord,
+         type GeneShard } from "./geneModel";
+import { shardOf } from "./shard";
+import { WORLD } from "../../i18n/world";
+import { ConstraintPanel, ExpressionPanel, Form, VariantsPanel } from "./WorldPanels";
 import css from "./GenePage.module.css";
 
 /** ONE GENE, EVERY LAYER — the view this site was missing.
@@ -27,12 +31,20 @@ import css from "./GenePage.module.css";
  */
 
 const GROUPS: NavGroupDef[] = [
+  /* WHAT IT IS COMES FIRST. A reader who does not yet know what the protein does cannot
+     weigh a dependency score, and the screen results are meaningless without it. The order
+     is: what it is, what breaking it costs, what our screen found, what it is linked to. */
+  { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
   { id: "context", label: GENE.gContext, question: GENE.qContext },
   { id: "clinic", label: GENE.gClinic, question: GENE.qClinic },
 ];
 
 const SECTIONS: NavSectionDef[] = [
+  { id: "form", label: WORLD.sForm, group: "world" },
+  { id: "constraint", label: WORLD.sConstraint, group: "world" },
+  { id: "expression", label: WORLD.sExpression, group: "world" },
+  { id: "variants", label: WORLD.sVariants, group: "world" },
   { id: "dependency", label: GENE.sDependency, group: "screen" },
   { id: "cancer", label: GENE.sCancer, group: "screen" },
   { id: "genotype", label: GENE.sGenotype, group: "screen" },
@@ -43,12 +55,31 @@ const SECTIONS: NavSectionDef[] = [
 export default function GenePage() {
   const t = useT();
   const { section } = useSectionNav({
-    owner: "gene", groups: GROUPS, sections: SECTIONS, initial: "dependency",
+    owner: "gene", groups: GROUPS, sections: SECTIONS, initial: "form",
   });
   const [symbol, setSymbol] = useHashParam("g", "");
   const [query, setQuery] = useState("");
 
-  const idx = useRemoteData<GeneIndex>("data/gene_index.json");
+  /* TWO FETCHES, NOT ONE FILE. The search index is 185 kB and loads up front; the records
+     live in 128 shards and only the one holding the chosen symbol is ever fetched. The
+     alternative was a 20 MB download before a reader could type a single letter. */
+  const idx = useRemoteData<GeneSearchIndex>("data/gene/idx.json");
+  const [shard, setShard] = useState<{ id: string; data: GeneShard } | null>(null);
+  const [shardError, setShardError] = useState(false);
+
+  const wanted = symbol ? shardOf(symbol) : null;
+  useEffect(() => {
+    if (!wanted || shard?.id === wanted) return;
+    let live = true;
+    setShardError(false);
+    fetch(`data/gene/${wanted}.json`)
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((data: GeneShard) => { if (live) setShard({ id: wanted, data }); })
+      .catch(() => { if (live) setShardError(true); });
+    // `live` guards the case a reader types faster than the network answers: an older
+    // shard resolving after a newer one would overwrite the gene actually on screen.
+    return () => { live = false; };
+  }, [wanted, shard?.id]);
 
   const symbols = useMemo(
     () => (idx.state === "ready" ? Object.keys(idx.data.genes) : []),
@@ -70,7 +101,9 @@ export default function GenePage() {
   }
 
   const data = idx.data;
-  const rec: GeneRecord | undefined = symbol ? data.genes[symbol] : undefined;
+  const rec: GeneRecord | undefined =
+    symbol && shard?.id === wanted ? shard.data[symbol] : undefined;
+  const loadingGene = !!symbol && !shardError && shard?.id !== wanted;
   const layers = layersFor(rec, data.scope);
 
   return (
@@ -101,8 +134,7 @@ export default function GenePage() {
           {matches.length > 0 && (
             <ul className={css.results}>
               {matches.map((s) => {
-                const r = data.genes[s];
-                const has = layersFor(r, data.scope).filter((x) => x.present).length;
+                const has = data.genes[s] ?? 0;
                 return (
                   <li key={s}>
                     <button
@@ -113,8 +145,8 @@ export default function GenePage() {
                       <span className={css.sym}>{s}</span>
                       {/* How many layers speak about this gene, before it is opened. A
                           result list that does not say this makes every row look equal. */}
-                      <span className={css.layers} aria-label={`${has} of 5 layers`}>
-                        {[0, 1, 2, 3, 4].map((i) => (
+                      <span className={css.layers} aria-label={`${has} of 6 layers`}>
+                        {[0, 1, 2, 3, 4, 5].map((i) => (
                           <i key={i} className={i < has ? css.pipOn : css.pip} />
                         ))}
                       </span>
@@ -136,9 +168,13 @@ export default function GenePage() {
             <ul className={css.layerBar}>
               {layers.map((l) => (
                 <li key={l.id} className={l.present ? css.layerOn : css.layerOff}>
-                  <span className={css.layerName}>{t(GENE.layer[l.id as never])}</span>
+                  <span className={css.layerName}>
+                    {l.id === "world" ? t(WORLD.layerWorld) : t(GENE.layer[l.id as never])}
+                  </span>
                   <span className={css.layerDetail}>
-                    {fill(t(l.present ? GENE.layerHas[l.id] : GENE.layerNone[l.id]),
+                    {fill(t(l.id === "world"
+                              ? (l.present ? WORLD.layerWorldHas : WORLD.layerWorldNone)
+                              : (l.present ? GENE.layerHas[l.id] : GENE.layerNone[l.id])),
                           Object.fromEntries(Object.entries(l.vars)
                             .map(([k, v]) => [k, fmtInt(v)])))}
                   </span>
@@ -149,16 +185,28 @@ export default function GenePage() {
 
           <SectionHeading />
 
-          {section === "dependency" && <Dependency rec={rec} scope={data.scope} />}
-          {section === "cancer" && <Cancer rec={rec} scope={data.scope} />}
-          {section === "genotype" && <Genotype rec={rec} scope={data.scope} />}
-          {section === "network" && <Network rec={rec} scope={data.scope} />}
-          {section === "disease" && <Diseases rec={rec} />}
+          {loadingGene ? (
+            <div className={css.skeleton} role="status" aria-live="polite" />
+          ) : shardError ? (
+            <p className={css.absentPanel}>{t(GENE.loadFailed)}</p>
+          ) : (
+            <>
+              {section === "form" && <Form world={rec?.world} scope={data.scope} />}
+              {section === "constraint" && <ConstraintPanel world={rec?.world} scope={data.scope} />}
+              {section === "expression" && <ExpressionPanel world={rec?.world} scope={data.scope} />}
+              {section === "variants" && <VariantsPanel world={rec?.world} scope={data.scope} />}
+              {section === "dependency" && <Dependency rec={rec} scope={data.scope} />}
+              {section === "cancer" && <Cancer rec={rec} scope={data.scope} />}
+              {section === "genotype" && <Genotype rec={rec} scope={data.scope} />}
+              {section === "network" && <Network rec={rec} scope={data.scope} />}
+              {section === "disease" && <Diseases rec={rec} />}
+            </>
+          )}
         </>
       )}
 
       <p className={css.provenance}>
-        {data.premise} <code>{data.generated}</code>
+        {data.premise} {data.worldPremise} <code>{data.generated}</code>
       </p>
     </section>
   );
@@ -166,7 +214,7 @@ export default function GenePage() {
 
 /* ------------------------------------------------------------------- panels */
 
-type PanelProps = { rec?: GeneRecord; scope: GeneIndex["scope"] };
+type PanelProps = { rec?: GeneRecord; scope: GeneSearchIndex["scope"] };
 
 function Dependency({ rec, scope }: PanelProps) {
   const t = useT();
@@ -352,7 +400,7 @@ function Diseases({ rec }: { rec?: GeneRecord }) {
 
 /* -------------------------------------------------------------------- parts */
 
-function Empty({ scope, onPick }: { scope: GeneIndex["scope"]; onPick: (s: string) => void }) {
+function Empty({ scope, onPick }: { scope: GeneSearchIndex["scope"]; onPick: (s: string) => void }) {
   const t = useT();
   // Openings, not a random sample: one gene per kind of story this page can tell, so the
   // first click teaches what the page is for.
