@@ -56,10 +56,13 @@ jobs:
 
       - run: npm ci
 
-      # `npm run build` is `check && data && tsc -b && vite build`. The data step is a no-op
-      # when out/ is absent — it emits the committed fallbacks — but the check step is not,
-      # and that is the gate worth having in CI.
-      - run: npm run build
+      # `build:ci`, not `build`. The difference is one step: `npm run data`, which converts
+      # out/*.manifest.json into the web payload and REFUSES to run when out/ is absent —
+      # "refusing to build an empty explorer", which is exactly the right behaviour on an
+      # analyst's machine and exactly the wrong one here, where the payload is already
+      # committed and out/ can never exist. Every gate still runs: contrast, palette, the viz
+      # arithmetic checks, and the full type-check.
+      - run: npm run build:ci
 
       - uses: actions/configure-pages@v5
 
