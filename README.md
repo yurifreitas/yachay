@@ -1,6 +1,22 @@
-# sieve
+# yachay
 
-**Turn a large, noisy, confounded screen into a defensible shortlist for expensive validation.**
+> **yachay** — Quechua: *to know*, and the knowledge itself. A language still spoken by
+> several million people across the Andes.
+>
+> The name is the whole intention. Knowledge about what keeps people alive should be free to
+> use, and it is most often missing exactly where there is nobody to demand it: the diseases
+> too rare to fund, the patients with no advocate, the professional who needs a number and
+> finds an empty field. This repository is years of reading, distilled into something a
+> person can check, argue with, and reuse.
+
+**Turn a large, noisy, confounded screen into a defensible shortlist for expensive validation
+— and say plainly where the evidence stops.**
+
+The Python package inside is `sieve`: the ten-stage method. `yachay` is the project — the
+method, the screens it has been run on, the rare-disease atlas built with it, and the
+explorer that publishes every number.
+
+**Explorer:** <https://yurifreitas.github.io/yachay/> · English and Portuguese.
 
 ## The problem class
 
