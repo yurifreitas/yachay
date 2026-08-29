@@ -243,7 +243,9 @@ def audit_rows() -> list[dict]:
 def adr_rows() -> list[dict]:
     rows = []
     for f in sorted((ROOT / "docs" / "adr").glob("[0-9]*.md")):
-        head = f.read_text(encoding="utf-8")[:600]
+        # 20 lines, not 600 bytes: the repository header was added above Nygard's
+        # Status line on 2026-08-29 and a byte window can now clip it.
+        head = "\n".join(f.read_text(encoding="utf-8").splitlines()[:20])
         m = re.search(r"^\*\*Status:\*\*\s*(\w+)", head, re.M)
         title = re.search(r"^#\s*(.+)", head, re.M)
         rows.append({"file": f.name, "status": m.group(1) if m else "unknown",
@@ -266,7 +268,10 @@ def doc_rows() -> list[dict]:
     """Docs, and whether they carry the header `.claude/skills/sieve-doc` mandates."""
     rows = []
     for f in sorted((ROOT / "docs").rglob("*.md")):
-        head = f.read_text(encoding="utf-8", errors="replace")[:400]
+        # The header is two lines, but a Role paragraph can run long enough to push
+        # "Last revised" past a byte window - which had this check reporting 16 of 38
+        # non-conforming when the real number was 11. Count LINES, not bytes.
+        head = "\n".join(f.read_text(encoding="utf-8", errors="replace").splitlines()[:14])
         rows.append({
             "file": str(f.relative_to(ROOT)).replace("\\", "/"),
             "hasRole": "**Role:**" in head,
