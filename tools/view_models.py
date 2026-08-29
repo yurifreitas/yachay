@@ -230,6 +230,163 @@ def knowledge_void() -> dict:
     }
 
 
+# --------------------------------------------------------------- the calibration field
+
+def calibration_field() -> dict:
+    """The library's whole thesis as a surface: what a raw score MEANS depends on n.
+
+    A screen ranks on the raw score. This says the same score sits at a different place in
+    the null depending on how many observations produced it — so the field is z over
+    (score, n), and the genes are drawn on top of their own coordinate system.
+
+    Drawn as a field rather than as the usual score-against-z scatter because the scatter
+    hides the axis that does the work. On a scatter, n is a colour nobody reads; here it is a
+    dimension, and the iso-lines bend, which is the argument.
+    """
+    genes_csv = ROOT / "out" / "depmap_genes.csv"
+    null_csv = ROOT / "out" / "depmap_null.csv"
+    if not genes_csv.exists() or not null_csv.exists():
+        return {}
+
+    import csv as _csv
+    nulls = []
+    with null_csv.open(encoding="utf-8") as fh:
+        for row in _csv.DictReader(fh):
+            nulls.append({"n": int(row["n"]), "mean": float(row["null_mean"]),
+                          "sd": float(row["null_sd"])})
+    nulls.sort(key=lambda r: r["n"])
+
+    rows = []
+    with genes_csv.open(encoding="utf-8") as fh:
+        for row in _csv.DictReader(fh):
+            try:
+                rows.append({
+                    "score": float(row["score"]), "n": int(row["n"]),
+                    "z": float(row["z"]),
+                    "ess": row["is_common_essential"] == "True",
+                })
+            except (ValueError, KeyError):
+                continue
+    if not rows:
+        return {}
+
+    SX, SY = 40, 14
+    lo_s = min(r["score"] for r in rows)
+    hi_s = max(r["score"] for r in rows)
+    lo_n = min(r["n"] for r in rows)
+    hi_n = max(r["n"] for r in rows)
+
+    def sx(v: float) -> int:
+        return min(SX - 1, max(0, int((v - lo_s) / (hi_s - lo_s) * SX)))
+
+    def sy(v: float) -> int:
+        return min(SY - 1, max(0, int((v - lo_n) / (hi_n - lo_n) * SY)))
+
+    grid = [[{"n": 0, "ess": 0, "z": 0.0} for _ in range(SX)] for _ in range(SY)]
+    for r in rows:
+        cell = grid[sy(r["n"])][sx(r["score"])]
+        cell["n"] += 1
+        cell["ess"] += 1 if r["ess"] else 0
+        cell["z"] += r["z"]
+    for row in grid:
+        for cell in row:
+            if cell["n"]:
+                cell["z"] = round(cell["z"] / cell["n"], 3)
+
+    return {
+        "grid": grid, "cols": SX, "rows_n": SY,
+        "score_range": [round(lo_s, 3), round(hi_s, 3)],
+        "n_range": [lo_n, hi_n],
+        "null_curve": nulls,
+        "genes": len(rows),
+        "reading": ("x is the raw score, y is how many cell lines produced it, shade is how "
+                    "many genes land there and the ring marks where pan-essential genes "
+                    "concentrate. The same score is a different z at a different n — that "
+                    "bend is the whole reason this library exists"),
+    }
+
+
+# --------------------------------------------------------------- what calibration moved
+
+def rank_shift() -> dict:
+    """Raw rank against calibrated rank, for the genes the raw ranking put on top.
+
+    A bump chart, because the finding is a REORDERING and a bar chart of either ranking
+    cannot show a reordering at all. Pan-essential genes are marked: the claim this figure
+    carries is that the raw maximum is toxicity, and the toxic genes are the ones that fall.
+    """
+    genes_csv = ROOT / "out" / "depmap_genes.csv"
+    if not genes_csv.exists():
+        return {}
+    import csv as _csv
+    rows = []
+    with genes_csv.open(encoding="utf-8") as fh:
+        for row in _csv.DictReader(fh):
+            try:
+                rows.append({
+                    "gene": row["entity"],
+                    "raw": int(row["rank_raw"]), "cal": int(row["rank_cal"]),
+                    "n": int(row["n"]),
+                    "ess": row["is_common_essential"] == "True",
+                })
+            except (ValueError, KeyError):
+                continue
+    top = sorted(rows, key=lambda r: r["raw"])[:60]
+    for r in top:
+        r["moved"] = r["cal"] - r["raw"]
+    fell = [r for r in top if r["moved"] > 0]
+    return {
+        "rows": top,
+        "of_which_essential": sum(1 for r in top if r["ess"]),
+        "fell": len(fell),
+        "essential_among_fallen": sum(1 for r in fell if r["ess"]),
+        "reading": ("each line joins a gene's rank before calibration to its rank after. A "
+                    "line that falls is a gene the raw metric over-rewarded; the marked ones "
+                    "are known pan-essential, which is toxicity rather than selectivity"),
+    }
+
+
+# --------------------------------------------------------------- lineage x gene
+
+def lineage_matrix() -> dict:
+    """Which dependencies are lineage-specific and which recur, as a seriated matrix.
+
+    Rows are cancer lineages, columns are the genes any of them nominated, ordered so genes
+    shared by several lineages sit together and the specific ones fan out. A per-lineage bar
+    chart would answer "what did Lung find" and hide the question that matters — whether
+    anything found in Lung was found anywhere else.
+    """
+    path = ROOT / "out" / "cancer_subgroups_lineage.json"
+    if not path.exists():
+        return {}
+    src = json.loads(path.read_text(encoding="utf-8"))
+    results = src.get("results", [])
+    if not results:
+        return {}
+
+    per_group = {}
+    freq: dict[str, int] = {}
+    for g in results:
+        hits = {c["gene"]: c["d"] for c in (g.get("candidates") or [])[:12]}
+        if hits:
+            per_group[g["subgroup"]] = hits
+            for gene in hits:
+                freq[gene] = freq.get(gene, 0) + 1
+
+    genes = sorted(freq, key=lambda x: (-freq[x], x))[:44]
+    rows = sorted(per_group, key=lambda k: -len(per_group[k]))
+    return {
+        "rows": rows,
+        "cols": genes,
+        "shared": {g: freq[g] for g in genes},
+        "cells": [[round(per_group[r].get(g, 0.0), 3) for g in genes] for r in rows],
+        "reading": ("rows are lineages, columns are the genes they nominated, ordered so the "
+                    "genes several lineages share sit left. A column with one mark is a "
+                    "lineage-specific dependency; a column with many is a gene the metric "
+                    "likes everywhere"),
+    }
+
+
 def main() -> int:
     argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
 
@@ -239,6 +396,9 @@ def main() -> int:
         "knowledge_pcp": knowledge_pcp(),
         "conflict_grid": conflict_grid(),
         "knowledge_void": knowledge_void(),
+        "calibration_field": calibration_field(),
+        "rank_shift": rank_shift(),
+        "lineage_matrix": lineage_matrix(),
     }
     payload = {
         "generated": date.today().isoformat(),

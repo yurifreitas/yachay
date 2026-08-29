@@ -238,3 +238,33 @@ contradiction — is a single length on a common baseline.
 **Interaction is reordering, never recomputation.** Sorting the organ systems and picking a
 language change what is drawn and nothing else; no statistic is computed in the browser. That
 is what keeps `tools/verify_claims.py` able to fail the build when prose and artefact drift.
+
+
+---
+
+## The run dashboard, and the dimension each view puts back
+
+Added 2026-08-29. The DepMap sections had the numbers and drew them one dimension at a time,
+which is how a claim about *comparability across n* ends up rendered as a bar chart of scores.
+Three views, each restoring the axis that carries the argument.
+
+**The calibration field.** z over (raw score, observation count). On the usual
+score-against-z scatter, n is a colour nobody reads; here it is an axis, and the shape bends —
+which is the entire reason the library exists. Pan-essential density is drawn as a **ring**
+rather than a second fill, because it is a warning about what the metric rewards and not a
+second quantity of the same kind.
+
+**The bump.** Raw rank against calibrated rank for the raw top sixty. A reordering cannot be
+shown by a bar chart of either ranking — only by the lines between them. Of those sixty,
+**35 are pan-essential, 55 fell, and 33 of the 55 that fell are pan-essential**: the claim
+that the raw maximum is toxicity, drawn rather than asserted. Pan-essential lines carry the
+accent because they are the finding.
+
+**The lineage matrix.** 23 lineages against the 44 genes they nominated, ordered so the genes
+several lineages share sit left. A per-lineage bar chart answers *what did Lung find* and
+hides the only question worth asking — whether anything Lung found was found anywhere else.
+**27 of the 44 were nominated by more than one lineage**, which is the single-point-of-failure
+risk Stage 7 exists to catch, made visible.
+
+All three read `out/rare/view_models.json` — the same solved layouts the rare group fetches,
+so a reader who has visited either pays the 53 kB once.

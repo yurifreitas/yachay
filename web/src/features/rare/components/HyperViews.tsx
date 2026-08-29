@@ -54,6 +54,21 @@ type Models = {
     generated?: string; provenance?: string; says?: string; limits?: string[];
     governed_by?: string; neighbour_rule?: string;
   };
+  calibration_field?: {
+    grid: { n: number; ess: number; z: number }[][];
+    cols: number; rows_n: number;
+    score_range: [number, number]; n_range: [number, number];
+    null_curve: { n: number; mean: number; sd: number }[];
+    genes: number; reading: string;
+  };
+  rank_shift?: {
+    rows: { gene: string; raw: number; cal: number; n: number; ess: boolean; moved: number }[];
+    of_which_essential: number; fell: number; essential_among_fallen: number; reading: string;
+  };
+  lineage_matrix?: {
+    rows: string[]; cols: string[]; shared: Record<string, number>;
+    cells: number[][]; reading: string;
+  };
   conflict_grid?: {
     rows: string[]; cols: string[]; cells: (number | null)[][];
     marginal: (number | null)[]; reading: string;
@@ -77,6 +92,9 @@ export function prefetchViewModels(): Promise<Models> {
   }
   return inflight;
 }
+
+/** Exported so the run dashboard can read the same solved layouts without a second fetch. */
+export function useViewModels() { return useModels(); }
 
 function useModels() {
   const [models, setModels] = useState<Models | null>(cache);

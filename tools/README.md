@@ -1,6 +1,6 @@
 # `tools/` — 63 scripts, grouped by what they are for
 
-> **Role:** the map of this directory. It grew to 21,023 lines without any declared
+> **Role:** the map of this directory. It grew to 21,191 lines without any declared
 > structure, and a flat listing of 63 filenames is not a structure — it is an inventory
 > pretending to be one.
 > **Last revised:** 2026-08-29 · **State:** complete for the 63 files on disk. The groups
@@ -71,7 +71,7 @@ uncomfortable findings.
 | `pipeline_state.py` | 123 | publishes staleness, so freshness is not a terminal-only fact |
 | `gap_taxonomy.py` | 262 | MONDO, HPO, Orphanet | five kinds of hole told apart by what would close each: of **42,645** field gaps, **6,874** are interoperability — both halves already on this disk and the join is what failed |
 | `knowledge_void.py` | 283 | knowledge_shape | the void as an object: **318 of 1,024** cells occupied, z **−270.51** against independence, **95 %** of occupied cells on the frontier — a filament, not a blob — and **232 anti-forms** holding 4,286 expected diseases and none real |
-| `view_models.py` | 234 | the artefacts above | layouts solved in Python so the browser only draws: a seriated 14×23 matrix, a slopegraph of the scale inversion, binned parallel coordinates over 12,994 diseases, and the conflict gradient as a grid |
+| `view_models.py` | 427 | the artefacts above | layouts solved in Python so the browser only draws: a seriated 14×23 matrix, a slopegraph of the scale inversion, binned parallel coordinates over 12,994 diseases, and the conflict gradient as a grid |
 | `attention_burden.py` | 310 | gene2pubmed, HPO, Orphanet | attention against burden: **+0.331** with prevalence, **+0.254** once gene popularity is removed — and the severity arm **refuses to report**, because every ORPHA-coded disease has zero evidenced signs |
 | `index_check.py` | 145 | every artefact, tool, stage, source and ADR against the document that claims to enumerate it — A36, and its first run found **sixteen of eighteen** ingested sources named in no index |
 | `verify_claims.py` | 246 | every published number against the artefact that produced it — F1, and it found stale docs on its first run |

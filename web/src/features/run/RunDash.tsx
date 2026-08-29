@@ -16,7 +16,7 @@
  *  A summary computed on a sample and presented as if it were the population is the same
  *  mistake this whole project is about.
  */
-import { useMemo } from "react";
+import { lazy, useMemo } from "react";
 import type { Run } from "../../lib/dataTypes";
 import { runs } from "../../lib/data/runs";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
@@ -25,6 +25,11 @@ import { RUN } from "../../i18n/strings";
 import CountVariation from "../overview/CountVariation";
 import ControlCalibration from "../nullfloor/ControlCalibration";
 import RankShift from "../ranking/RankShift";
+// The hyperdimensional views of the same run. Lazy and fetched: they read the solved layouts
+// in view_models.json, which the rare group may already have pulled.
+const CalibrationField = lazy(() => import("./CrisprViews").then((m) => ({ default: m.CalibrationField })));
+const RankBump = lazy(() => import("./CrisprViews").then((m) => ({ default: m.RankBump })));
+const LineageMatrix = lazy(() => import("./CrisprViews").then((m) => ({ default: m.LineageMatrix })));
 import NullRidgeline from "../nullfloor/NullRidgeline";
 import { NoiseFloor, Movers, Headline } from "./panels";
 import { Shortlist, Populations, Selectivity, Base, FlagOverlap } from "./Substance";
@@ -57,7 +62,10 @@ const TABS: NavSectionDef[] = [
   { id: "floor", label: RUN.sFloor, group: "null" },
   { id: "ridge", label: RUN.sRidge, group: "null" },
   { id: "control", label: RUN.sControl, group: "null" },
+  { id: "field", label: RUN.sField, group: "null" },
   { id: "shift", label: RUN.sShift, group: "effect" },
+  { id: "bump", label: RUN.sBump, group: "effect" },
+  { id: "lineages", label: RUN.sLineages, group: "effect" },
   { id: "movers", label: RUN.sMovers, group: "effect" },
   { id: "overlap", label: RUN.sOverlap, group: "effect" },
   { id: "base", label: RUN.sBase, group: "state" },
@@ -254,6 +262,33 @@ export default function RunDash({ runId }: { runId: string }) {
                     finding, it is a broken null — and that is exactly what a pooled resample
                     produced before the null was drawn block-shaped.">
           <ControlCalibration runId={run.id} />
+        </Block>
+      )}
+
+      {section === "field" && (
+        <Block title="The same score is a different result at a different n"
+               sub="The library's claim as a surface rather than as a sentence: raw score on
+                    one axis, how many cell lines produced it on the other, and where the
+                    pan-essential genes concentrate marked on top.">
+          <CalibrationField />
+        </Block>
+      )}
+
+      {section === "bump" && (
+        <Block title="Where the raw top sixty went"
+               sub="A reordering cannot be drawn as a bar chart of either ranking. The lines
+                    that fall are the genes the raw metric over-rewarded, and the marked ones
+                    are known pan-essential.">
+          <RankBump />
+        </Block>
+      )}
+
+      {section === "lineages" && (
+        <Block title="One lineage, or all of them"
+               sub="Rows are cancer lineages, columns the genes they nominated. A column with
+                    one mark is a lineage-specific dependency; a column with many is a gene
+                    the metric likes everywhere, which is the failure mode Stage 7 exists for.">
+          <LineageMatrix />
         </Block>
       )}
 

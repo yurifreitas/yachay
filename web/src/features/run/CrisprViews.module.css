@@ -1,0 +1,79 @@
+.figure { margin: 0; display: flex; flex-direction: column; gap: var(--sp-6); }
+.caption { margin: 0; max-width: 78ch; font-size: 13px; line-height: 1.7; color: var(--r-text-2); }
+.caption strong { color: var(--r-text); }
+
+.skeleton {
+  border-radius: var(--r-radius);
+  background: linear-gradient(100deg, var(--r-surface-2) 30%, var(--r-surface) 50%, var(--r-surface-2) 70%);
+  background-size: 300% 100%; animation: shimmer 1400ms cubic-bezier(.2,.8,.2,1) infinite;
+}
+@keyframes shimmer { to { background-position: -150% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; background: var(--r-surface-2); } }
+
+/* ------------------------------------------------------------------ the field */
+.fieldWrap { display: grid; grid-template-columns: 56px 1fr; gap: var(--sp-3); }
+.fieldY {
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;
+  font-size: 10.5px; color: var(--r-text-3); padding: 2px 0;
+}
+.field { display: grid; gap: 1px; }
+.fieldCell { position: relative; aspect-ratio: 1; cursor: crosshair; }
+.fieldFill { position: absolute; inset: 0; border-radius: 1px; background: var(--unknown); }
+/* Pan-essential density is a RING: it is a warning about what the metric rewards, not a
+   second quantity of the same kind. */
+.fieldEss {
+  position: absolute; inset: 2px; border-radius: 999px;
+  border: 1.5px solid var(--r-text); background: none;
+}
+.fieldCell[data-hot] { outline: 2px solid var(--r-text); outline-offset: 1px; z-index: 1; }
+.fieldX {
+  display: flex; justify-content: space-between; padding-left: 60px;
+  font-size: 10.5px; color: var(--r-text-3);
+}
+
+/* ------------------------------------------------------------------ the bump */
+.svg { width: 100%; height: auto; overflow: visible; }
+.axis { stroke: var(--r-border-hi); stroke-width: 1; }
+.axisLabel { fill: var(--r-text-3); font-size: 10px; letter-spacing: 0.04em; }
+.bump line { stroke: var(--r-border-hi); stroke-width: 1.1; }
+.bump circle { fill: var(--r-border-hi); }
+/* A pan-essential gene carries the accent because it is the finding: the raw maximum is
+   toxicity, and these are the lines that fall. */
+.bumpEss line { stroke: var(--unknown); stroke-width: 1.5; }
+.bumpEss circle { fill: var(--unknown); }
+.bump { cursor: crosshair; }
+.bump[data-on] line { stroke: var(--r-text); stroke-width: 2.4; }
+.bump[data-on] circle { fill: var(--r-text); }
+.bumpLabel { fill: var(--r-text); font-size: 11px; }
+
+/* ------------------------------------------------------------------ the matrix */
+.matrixScroll { overflow-x: auto; }
+.matrix { display: grid; gap: 2px; min-width: 760px; align-items: center; }
+.matrixColHead {
+  font-size: 9px; color: var(--r-text-3); text-align: center;
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  height: 88px; white-space: nowrap; overflow: hidden;
+}
+.matrixColHead[data-shared] { color: var(--r-text); font-weight: 600; }
+.matrixRowHead {
+  font-size: 12px; color: var(--r-text-2); padding-right: var(--sp-3); text-align: right;
+}
+.matrixCell {
+  position: relative; height: 22px; display: flex; align-items: center; justify-content: center;
+  background: var(--r-surface-2); border-radius: 2px; cursor: crosshair;
+}
+.matrixCell[data-hot] { outline: 2px solid var(--r-text); outline-offset: 1px; }
+.matrixDot { width: 10px; height: 10px; border-radius: 999px; background: var(--unknown); }
+
+/* ------------------------------------------------------------------ shared */
+.readout { min-height: 22px; font-size: 12.5px; color: var(--r-text-2); font-variant-numeric: tabular-nums; }
+.readoutVal { color: var(--r-text); font-weight: 600; }
+.readoutHint { color: var(--r-text-3); }
+.essNote { color: var(--r-text); }
+.legend { display: flex; flex-wrap: wrap; gap: var(--sp-6); font-size: 12px; color: var(--r-text-2); }
+.legend span { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.key { width: 14px; height: 14px; border-radius: 3px; flex: none; }
+.keyFill { background: var(--unknown); }
+.keyEss { border: 1.5px solid var(--r-text); border-radius: 999px; }
+
+@media (max-width: 720px) { .matrix { min-width: 680px; } }
