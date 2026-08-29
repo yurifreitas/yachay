@@ -93,6 +93,9 @@ CONFLICT_DECOMPOSITION = RARE / "conflict_decomposition.json"
 # The shape of what is known, per disease, across five axes. A negative result: the
 # prediction fails and the vector largely measures which registry a disease lives in.
 KNOWLEDGE_SHAPE = RARE / "knowledge_shape.json"
+# Attention against burden: is what the field studies explained by who the disease reaches?
+ATTENTION_BURDEN = RARE / "attention_burden.json"
+GENE2PUBMED = DATA / "ontology" / "gene2pubmed.gz"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"
 HPO_TRANSLATIONS = DATA / "ontology" / "hpo-translations.tar.gz"
 STRING_INFO = DATA / "ontology" / "9606.protein.info.v12.0.txt.gz"

@@ -339,6 +339,16 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="attention_burden",
+    summary=("Research attention against disease burden, with the gene-popularity confound "
+             "measured in a second arm rather than disclaimed."),
+    inputs=(paths.GENE2PUBMED, paths.GENES_TO_DISEASE, paths.HPOA, paths.ORPHA_PREVALENCE),
+    outputs=(paths.ATTENTION_BURDEN,),
+    code=sources("tools/attention_burden.py"),
+    run=lambda: _run_tool("attention_burden"),
+))
+
+_add(Stage(
     name="references",
     summary="Encode the reference map and compute which communities actually share a rung.",
     outputs=(paths.REFERENCES,),

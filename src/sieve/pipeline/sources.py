@@ -110,6 +110,17 @@ SOURCES: tuple[Source, ...] = (
         redistributable=True,
     ),
     Source(
+        key="gene2pubmed",
+        name="NCBI gene2pubmed",
+        url="https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene2pubmed.gz",
+        filename="gene2pubmed.gz",
+        approx_mb=40.0,
+        gives="Which papers cite which gene. The attention axis - what the field has chosen "
+              "to study - set against the burden axis it is supposed to follow.",
+        licence="US public domain (NCBI)",
+        redistributable=True,
+    ),
+    Source(
         key="orpha_genes",
         name="Orphanet gene associations",
         url="https://www.orphadata.com/data/xml/en_product6.xml",

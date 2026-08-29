@@ -67,11 +67,12 @@ coverage — the second being what a reader actually meets, and the one that fou
 at 42.9% with a 69.6-point spread across organ systems.
 
 
-### The ingested catalogues, all eighteen
+### The ingested catalogues, all nineteen
 
 Downloaded by `python tools/ingest.py` into `data/ontology/` (gitignored). This table is
 checked by `python tools/index_check.py`, which fails when a registered source appears in no
-index — its first run found sixteen of these eighteen named nowhere at all.
+index — its first run found sixteen of the then eighteen named nowhere at all, and it caught
+the nineteenth on the day it was added.
 
 | file | source | size | what it gives us | licence |
 |---|---|---|---|---|
@@ -80,6 +81,7 @@ index — its first run found sixteen of these eighteen named nowhere at all.
 | `hp.obo` | HPO ontology | 11 MB | The phenotype vocabulary itself, so a term id can be given a name and a position in the hierarchy. | HPO licence (permissive, attribution) |
 | `hpo-translations.tar.gz` | HPO language profiles | 7 MB | The phenotype vocabulary in fourteen languages besides English, as Babelon TSV. Ingested because this project publishes in two languages and had no way to say what a reader loses in either. | HPO licence (permissive, attribution) |
 | `submission_summary.txt.gz` | ClinVar submissions | 387 MB | Each submitter's classification BESIDE the condition it was made against. The aggregate file cannot separate a contradiction from two claims about two different conditions; this one can. | US public domain (NCBI) |
+| `gene2pubmed.gz` | NCBI gene2pubmed | 40 MB | Which papers cite which gene. The attention axis - what the field has chosen to study - set against the burden axis it is supposed to follow. | US public domain (NCBI) |
 | `en_product6.xml` | Orphanet gene associations | 22 MB | Orphanet's own gene-disease associations, with the association type (disease-causing, modifier, candidate) that HPO's flat file loses. | CC BY-ND 4.0 — no derivatives may be redistributed · **not redistributable** |
 | `en_product9_prev.xml` | Orphanet prevalence | 16 MB | Prevalence class and geographic scope per disease — the only place the rare/ultra-rare boundary can be drawn from data rather than assumed. | CC BY-ND 4.0 — no derivatives may be redistributed · **not redistributable** |
 | `en_product9_ages.xml` | Orphanet age of onset | 14 MB | Average age of onset and age of death per disease — the closest thing to a human-impact axis that comes from data rather than judgement. | CC BY-ND 4.0 — no derivatives may be redistributed · **not redistributable** |

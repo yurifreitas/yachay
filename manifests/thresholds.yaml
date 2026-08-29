@@ -340,3 +340,19 @@ thresholds:
       Draws behind the independence null. The null's own sd came out at
       0.00047 against an effect of 0.009, so the comparison is limited by
       the effect and not by the draws; more would move no digit.
+
+  # ---- tools/attention_burden.py -------------------------------------
+  - id: COMMON_GENE_CITATIONS
+    module: tools/attention_burden.py
+    value: 1000
+    fixed_at: 2026-08-29
+    target_contact: true
+    pre_registered: false
+    justification: empirical
+    reason: >-
+      Above this a gene is treated as a common-disease gene and the rare
+      disorders carrying it leave the restricted arm. HONESTLY MARKED
+      target_contact: the citation distribution was inspected first. The
+      headline is reported on BOTH arms — all diseases and restricted — so
+      no published number depends on where the cut sits, and the two arms
+      agreeing (+0.331 against +0.254) is itself the robustness check.
