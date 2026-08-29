@@ -45,13 +45,24 @@ def test_every_declared_threshold_matches_the_source():
             mismatches.append(f"{row['id']}: {module} does not exist")
             continue
         text = path.read_text(encoding="utf-8")
-        m = re.search(rf"^{re.escape(row['id'])}\s*=\s*([0-9.]+)", text, re.M)
+        # Two kinds of threshold literal. Numeric is the original case; a CATEGORICAL
+        # threshold - `TRANSLATION_STATUS = "OFFICIAL"`, the status a translation must carry
+        # to count as delivered - is still a threshold, and reporting it as "not defined"
+        # would have pushed it out of the manifest rather than into it. Both are matched
+        # exactly; neither branch is looser than the other.
+        m = re.search(rf"^{re.escape(row['id'])}\s*=\s*([0-9.]+|\"[^\"]*\"|'[^']*')",
+                      text, re.M)
         if not m:
             mismatches.append(f"{row['id']}: not defined in {module}")
             continue
-        if abs(float(m.group(1)) - float(row["value"])) > 1e-12:
+        literal = m.group(1)
+        if literal[0] in "\"'":
+            if literal[1:-1] != str(row["value"]):
+                mismatches.append(
+                    f"{row['id']}: manifest says {row['value']!r}, {module} says {literal}")
+        elif abs(float(literal) - float(row["value"])) > 1e-12:
             mismatches.append(
-                f"{row['id']}: manifest says {row['value']}, {module} says {m.group(1)}")
+                f"{row['id']}: manifest says {row['value']}, {module} says {literal}")
     assert not mismatches, "\n  ".join(["threshold manifest disagrees with the code:"]
                                        + mismatches)
 
