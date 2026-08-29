@@ -385,3 +385,18 @@ thresholds:
       absence is unremarkable at this sample size. The count of anti-forms
       moves with this number and the artefact reports the threshold beside
       the count so the two cannot be read apart.
+
+  # ---- tools/gap_taxonomy.py -----------------------------------------
+  - id: COHORT_FLOOR
+    module: tools/gap_taxonomy.py
+    value: 5
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      Curated patients below which a missing frequency is read as a
+      population gap rather than an epistemic one. Follows from what a
+      frequency IS: below five individuals a proportion carries no
+      information a clinician can act on, which is the same floor the
+      patient layers already use when they refuse to quote a rate.

@@ -1,9 +1,9 @@
-# `tools/` — 62 scripts, grouped by what they are for
+# `tools/` — 63 scripts, grouped by what they are for
 
-> **Role:** the map of this directory. It grew to 20,634 lines without any declared
-> structure, and a flat listing of 62 filenames is not a structure — it is an inventory
+> **Role:** the map of this directory. It grew to 21,023 lines without any declared
+> structure, and a flat listing of 63 filenames is not a structure — it is an inventory
 > pretending to be one.
-> **Last revised:** 2026-08-29 · **State:** complete for the 62 files on disk. The groups
+> **Last revised:** 2026-08-29 · **State:** complete for the 63 files on disk. The groups
 > below are a reading order, not directories: renaming or moving a file would break the
 > pipeline's source tracking (`sieve.pipeline.stages` hashes each tool's path to decide
 > staleness), so the organisation is documentary and deliberately so.
@@ -69,6 +69,7 @@ uncomfortable findings.
 | `interactome_string.py` | 218 | our own weakest published claim against an independent graph — it survived |
 | `ecosystem.py` | 283 | which libraries are installed and unused, and which sources are named and not ingested |
 | `pipeline_state.py` | 123 | publishes staleness, so freshness is not a terminal-only fact |
+| `gap_taxonomy.py` | 262 | MONDO, HPO, Orphanet | five kinds of hole told apart by what would close each: of **42,645** field gaps, **6,874** are interoperability — both halves already on this disk and the join is what failed |
 | `knowledge_void.py` | 283 | knowledge_shape | the void as an object: **318 of 1,024** cells occupied, z **−270.51** against independence, **95 %** of occupied cells on the frontier — a filament, not a blob — and **232 anti-forms** holding 4,286 expected diseases and none real |
 | `view_models.py` | 234 | the artefacts above | layouts solved in Python so the browser only draws: a seriated 14×23 matrix, a slopegraph of the scale inversion, binned parallel coordinates over 12,994 diseases, and the conflict gradient as a grid |
 | `attention_burden.py` | 310 | gene2pubmed, HPO, Orphanet | attention against burden: **+0.331** with prevalence, **+0.254** once gene popularity is removed — and the severity arm **refuses to report**, because every ORPHA-coded disease has zero evidenced signs |

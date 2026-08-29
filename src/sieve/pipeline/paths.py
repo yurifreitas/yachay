@@ -98,6 +98,8 @@ ATTENTION_BURDEN = RARE / "attention_burden.json"
 # Solved layouts for the hyperdimensional views. No measurement of its own: a seriation is
 # an argument, and one computed inside a component is an argument nobody can audit.
 KNOWLEDGE_VOID = RARE / "knowledge_void.json"
+# Five kinds of hole, told apart by what would CLOSE each one.
+GAP_TAXONOMY = RARE / "gap_taxonomy.json"
 VIEW_MODELS = RARE / "view_models.json"
 GENE2PUBMED = DATA / "ontology" / "gene2pubmed.gz"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"

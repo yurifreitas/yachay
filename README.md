@@ -152,7 +152,7 @@ story, not evidence you can check here.
 **The library.** Four modules implemented and tested in `src/sieve/` — Null, Power, Design,
 Target — plus the data contracts. Six of the ten stages have no implementation.
 
-**The atlas, which is the larger half.** 62 tools, 39 registered pipeline stages, 38 artefacts
+**The atlas, which is the larger half.** 63 tools, 40 registered pipeline stages, 39 artefacts
 in `out/rare/`, 18 ingested public sources (~1.3 GB). Almost every measured finding in this
 repository comes from here.
 
@@ -199,7 +199,7 @@ thresholds registered, five of them honestly marked as chosen after seeing the d
 | `docs/references/visualization.md` · `visualization-canon.md` | the diagnostic figures, and where each chart form comes from — with the caution each carries |
 | `docs/references/deep/` | the five-lane adversarial review — each lane briefed to break its subject |
 | `docs/adr/` | decisions with context and consequences, written before the change where possible |
-| `tools/README.md` | the 62 scripts grouped by purpose: ingest, catalogue, patient, gene, self-audit, authored, statistics |
+| `tools/README.md` | the 63 scripts grouped by purpose: ingest, catalogue, patient, gene, self-audit, authored, statistics |
 | `archive/MANIFEST.md` | dead ends, each with the number that killed it |
 | `CITATION.cff` | how to cite the software, annotated with the claim each reference supports |
 | `paper/` | the manuscript standard: advanced LaTeX, a bibliography with mandatory annotations, and **numbers generated from the analysis so they cannot drift** |

@@ -228,6 +228,14 @@ CLAIMS = [
     ("knowledge shape z", "out/rare/knowledge_shape.json", ["headline", "z_vs_null"], fmt_raw,
      ["docs/references/rare-layers.md", "tools/README.md"]),
 
+    ("field-level gaps", "out/rare/gap_taxonomy.json", ["scale", "field_gaps"], fmt_int,
+     ["docs/references/rare-layers.md", "tools/README.md"]),
+    ("interoperability gaps", "out/rare/gap_taxonomy.json",
+     ["totals", "interoperability"], fmt_int,
+     ["docs/references/rare-layers.md", "tools/README.md"]),
+    ("interoperability share", "out/rare/gap_taxonomy.json",
+     ["shares", "interoperability"], fmt_pct1, ["docs/references/rare-layers.md"]),
+
     ("across-condition share, umbrellas removed", "out/rare/conflict_decomposition.json",
      ["sensitivity_umbrella_removed", "result", "across_condition_share"], fmt_pct1,
      ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",

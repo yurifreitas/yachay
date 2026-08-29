@@ -360,6 +360,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="gap_taxonomy",
+    summary=("Type every missing field by what would close it: a study, an ingestion, a "
+             "join, or a cohort."),
+    inputs=(paths.MONDO, paths.GENES_TO_DISEASE, paths.HPOA, paths.ORPHA_PREVALENCE,
+            paths.ORPHA_AGES),
+    outputs=(paths.GAP_TAXONOMY,),
+    code=sources("tools/gap_taxonomy.py"),
+    run=lambda: _run_tool("gap_taxonomy"),
+))
+
+_add(Stage(
     name="view_models",
     summary=("Solve the orderings, bins and ribbon counts the hyperdimensional views need, "
              "so the browser draws and never computes."),
