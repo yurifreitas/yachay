@@ -21,6 +21,7 @@ import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { RARE } from "../../i18n/strings";
 import { TROP } from "../../i18n/tropical";
+import { MEAS } from "../../i18n/measured";
 import { useT } from "../../i18n";
 import { StatusDot } from "../../components/atoms/StatusDot";
 import { Chip } from "../../components/atoms/Chip";
@@ -49,6 +50,11 @@ const Ancestry = lazy(() => import("./components/Ancestry").then((m) => ({ defau
 const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ default: m.SelfAudit })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
+// The ADR 0007 layer. Lazy like the rest: a reader who never opens the group pays nothing.
+const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
+const LanguageCoverage = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.LanguageCoverage })));
+const ConflictContext = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ConflictContext })));
+const KnowledgeShape = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.KnowledgeShape })));
 const PatientEvidence = lazy(() => import("./components/PatientEvidence").then((m) => ({ default: m.PatientEvidence })));
 
 
@@ -70,6 +76,7 @@ const GROUPS: NavGroupDef[] = [
   { id: "cause", label: RARE.gCause, question: RARE.qCause },
   { id: "case", label: RARE.gCase, question: RARE.qCase },
   { id: "decide", label: RARE.gDecide, question: RARE.qDecide },
+  { id: "measured", label: MEAS.group, question: MEAS.question },
   { id: "argument", label: RARE.gArgument, question: RARE.qArgument },
 ];
 
@@ -100,7 +107,15 @@ const SECTIONS: NavSectionDef[] = [
   { id: "choose", label: RARE.sChoose, group: "decide" },
   { id: "dims", label: RARE.sDims, group: "decide" },
 
-  // 5. The argument and its provenance — a thesis and its bibliography are one thing.
+  // 5. What was measured under ADR 0007 — the four results with a null and an interval,
+  //    and the one of them that failed. Grouped apart from the catalogue layers because the
+  //    epistemic standing is different, and a reader is entitled to know which is which.
+  { id: "scale", label: MEAS.sScale, group: "measured" },
+  { id: "language", label: MEAS.sLang, group: "measured" },
+  { id: "conflict", label: MEAS.sConflict, group: "measured" },
+  { id: "shape", label: MEAS.sShape, group: "measured" },
+
+  // 6. The argument and its provenance — a thesis and its bibliography are one thing.
   { id: "thesis", label: RARE.sThesis, group: "argument" },
   { id: "selfaudit", label: RARE.sSelfAudit, group: "argument" },
   { id: "refmap", label: RARE.sRefmap, group: "argument" },
@@ -186,6 +201,46 @@ export default function RarePage() {
       <SectionHeading />
 
       <Suspense key={section} fallback={<SectionSkeleton />}>
+
+      {section === "scale" && (
+        <section className={css.block}>
+          <div>
+            <h3 className={css.h3}>{tt(MEAS.scaleHeading)}</h3>
+            <p className={css.sub}>{tt(MEAS.scaleSub)}</p>
+          </div>
+          <ScaleLoss />
+        </section>
+      )}
+
+      {section === "language" && (
+        <section className={css.block}>
+          <div>
+            <h3 className={css.h3}>{tt(MEAS.langHeading)}</h3>
+            <p className={css.sub}>{tt(MEAS.langSub)}</p>
+          </div>
+          <LanguageCoverage />
+        </section>
+      )}
+
+      {section === "conflict" && (
+        <section className={css.block}>
+          <div>
+            <h3 className={css.h3}>{tt(MEAS.conflictHeading)}</h3>
+            <p className={css.sub}>{tt(MEAS.conflictSub)}</p>
+          </div>
+          <ConflictContext />
+        </section>
+      )}
+
+      {section === "shape" && (
+        <section className={css.block}>
+          <div>
+            <h3 className={css.h3}>{tt(MEAS.shapeHeading)}</h3>
+            <p className={css.sub}>{tt(MEAS.shapeSub)}</p>
+          </div>
+          <KnowledgeShape />
+        </section>
+      )}
 
       {section === "tropical" && (
         <section className={css.block}>

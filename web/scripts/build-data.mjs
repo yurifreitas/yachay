@@ -64,6 +64,16 @@ const PROJECT = {
     // 13,528 per-gene rows are read by sieve.stages.target from disk, never by the browser.
     drop: ["vusByGene.all"],
   },
+  knowledge_shape: {
+    // 12,994 per-disease vectors are the pipeline's output, not the interface's. The page
+    // renders the headline, the correlation matrix and the depth table, all of which are
+    // summaries already in the payload.
+    drop: ["diseases"],
+  },
+  language_coverage: {
+    // The per-organ-system map inside every language row is 23 keys x 14 languages and is
+    // read only for the two extremes, which the payload already names.
+  },
   ancestry_geography: {
     // NOTHING IS TRIMMED, deliberately, and the note is here so the next person does not
     // "optimise" it. The 386 discordant rows ARE the interface: it ranks, filters and
@@ -353,6 +363,15 @@ emit("figures", figures);
   // JSON file is publishing that result nowhere (audit A29).
   // gap_patterns: the co-occurrence measurement behind the UpSet, written by
   // tools/gap_patterns.py. It is the answer to visualization-canon.md §7b's third row.
+  // THE ADR 0007 LAYER. Four constructs promoted from docs/references/theory-atlas.md, each
+  // with a null and an interval, and none of them rendered anywhere until now — which is the
+  // same failure the comment above names, committed again on newer work.
+  for (const name of ["scale_information", "language_coverage", "evidence_conflict",
+                      "conflict_decomposition", "knowledge_shape"]) {
+    const f = join(REPO, "out", "rare", `${name}.json`);
+    emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   for (const name of ["patient_frequencies", "patient_variants", "genotype_phenotype",
                       "intervals", "gap_patterns", "tropical_gap"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
