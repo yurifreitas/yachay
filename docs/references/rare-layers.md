@@ -79,6 +79,7 @@ grades below are read from those fields, not assigned here.
 | `language_coverage.json` | `language_coverage.py` | **measured** | What a reader loses by not reading English, over 19,836 HPO terms, 285,598 annotations and 14 non-English profiles. Portuguese — this project's own second language — covers **42.9 %** of the annotated phenotype with a **69.6-point** spread across organ systems. |
 | `evidence_conflict.json` | `evidence_conflict.py` | **measured** | Whether recorded disagreement is contradiction or context, over 4,488,337 GRCh38 variants. Conflict rate rises **2.14×** from one condition to four or more, and the rise survives every submitter stratum. |
 | `conflict_decomposition.json` | `conflict_decomposition.py` | **measured** | The split the aggregate could not do, from 6,428,687 per-submission rows: **57.2 %** [56.9, 57.5] of variant-level conflicts are across-condition only, **48.6 %** once panel indications are removed. About half of recorded disagreement is context. |
+| `knowledge_shape.json` | `knowledge_shape.py` | **measured** | The shape of what is known per disease over five axes — and a NEGATIVE result: knowledge is **less** concentrated than independence would give (z **−19.0**), the anisotropy statistic tracks how many axes are populated rather than their shape, and the residual structure is the OMIM/ORPHA registry boundary. Kept because a catalogue where every idea works is a catalogue nobody tested. |
 
 ---
 

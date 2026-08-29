@@ -13,7 +13,7 @@
 > the fifteenth put an interval on every headline — closing **A6**, the oldest open finding
 > here — the sixteenth surveyed the author's own prior projects and found the ancestor this
 > repository never credited, and the seventeenth transferred two practices from them.
-> **37 findings**, 28 closed. **A27 is the one to read first**: it restates A15 and it is an
+> **37 findings**, 29 closed. **A27 is the one to read first**: it restates A15 and it is an
 > attribution debt, not a bug. **A28 is the one that stings**: five of this project's nineteen
 > thresholds were chosen after looking at the data they gate. The backlog is ordered in
 > [`roadmap.md`](roadmap.md).
@@ -1504,11 +1504,17 @@ them, which is the practice A1 asked for, but their existence in the layer map w
 **What was done.** Every count above corrected against the filesystem and `out/status.json`;
 the eight unmapped artefacts added to `rare-layers.md` with grades; this entry written.
 
-**What is still open, and it is the useful half.** A checker that enumerates `out/rare/*.json`
-and fails when one of them appears in no index would have caught all of it. It is the
-list-shaped sibling of `verify_claims.py` and does not exist. Filed here rather than fixed,
-because writing it in the same sweep that found the need is how A28's thresholds came to be
-calibrated against data already seen.
+**Closed the next day by `tools/index_check.py`.** The checker described below now exists: it
+enumerates artefacts, tools, stages, sources and ADRs and fails when one appears in no index.
+**Its first run found sixteen of the eighteen ingested sources named nowhere at all** — not a
+stale count but a whole table that had never been written. That is the same shape as
+`verify_claims.py`, which also found drift on its first run, and it is the argument for
+building the control rather than promising to be careful.
+
+**What it cannot do, and this half stays open.** It checks PRESENCE, never accuracy. A stale
+sentence beside a present filename is a real defect and only a reader can see it. The tool
+prints that limitation with its own result rather than letting a green line imply more than
+it means.
 
 
 ---
@@ -1537,5 +1543,12 @@ repository cannot lie about itself, and here it does: it says nobody has looked 
 file that a shipped tool reads. "We have never opened this" is the finding that provokes work,
 so an under-report in this direction is the expensive kind.
 
-**Open, with the next step named.** Write a test that asserts the detector finds the reader of
-a known-read file, then fix against the test rather than against the count.
+**The test now exists** — `tests/test_read_site_detector.py`. Four cases pass, including the
+one that matters most: a path that is merely NAMED must not count as read, which is the
+property any permissive "fix" would destroy and the reason the last attempt made things worse.
+**Two cases are marked xfail with the reason**, so the defect stays visible in the suite
+without turning it red — a skip would have hidden it, and a red suite trains people to ignore
+red. A fifth case asserts this finding is still recorded here, because an xfail is invisible
+in a passing run and that is exactly how a defect becomes permanent.
+
+**Still open:** the fix itself. The test is the instrument, not the repair.

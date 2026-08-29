@@ -289,13 +289,15 @@ unless the same permutation null is applied to barcodes.
 
 ### 5.10 The two controls this repository owes itself
 
-**A36** — a checker that enumerates `out/rare/*.json` and fails when an artefact appears in no
-index. `verify_claims.py` protects a number; nothing protects a list, and six indexes drifted
-in one day because of it. **Cost: low, and it pays immediately.**
+~~**A36** — a checker that enumerates `out/rare/*.json` and fails when an artefact appears in
+no index.~~ ✅ **done 2026-08-29** — `tools/index_check.py`, five index families, and its first
+run found **sixteen of eighteen ingested sources** named in no index at all. It pays exactly as
+predicted, and it cost an afternoon.
 
-**A37** — a test that asserts the read-site detector finds the reader of a known-read file,
-then a fix against that test. The obvious fix was tried and made the count worse, which means
-the diagnosis is wrong and a test is the only way through.
+**A37** — ~~a test that asserts the read-site detector finds the reader of a known-read file~~
+✅ the test exists (`tests/test_read_site_detector.py`, four passing and two xfail with the
+reason). **The fix is still open**, and it should be made against the test rather than against
+the count — that is what the last attempt got wrong.
 
 ---
 
