@@ -153,6 +153,74 @@ export const MEAS = {
     + "catálogo que ninguém testou.",
   ),
 
+  // --------------------------------------------------------------- turing
+  turing: bi("A prediction from 1952", "Uma previsão de 1952"),
+  turingSub: bi(
+    "Turing's morphogenesis says form comes from a field with a geometry and a time. A "
+    + "Reactome pathway is an inventory of reactions, so it should lose more where the "
+    + "abnormality is a structure that formed wrongly than where it is a process running "
+    + "wrongly. Split the twenty organ systems that way and it does.",
+    "A morfogênese de Turing diz que a forma vem de um campo com geometria e tempo. Uma via "
+    + "do Reactome é um inventário de reações, então ela deveria perder mais onde a anomalia "
+    + "é uma estrutura que se formou errado do que onde é um processo rodando errado. Divida "
+    + "os vinte sistemas orgânicos assim e é o que acontece.",
+  ),
+  turingCaveat: bi(
+    "⚠ The retentions were already visible when the classification was written. This is a "
+    + "description with a p-value, not a pre-registered test, and it is labelled that way in "
+    + "the artefact too.",
+    "⚠ As retenções já estavam visíveis quando a classificação foi escrita. Isto é uma "
+    + "descrição com p-valor, não um teste pré-registrado, e está marcado assim no artefato "
+    + "também.",
+  ),
+
+  // --------------------------------------------------------------- association arm
+  assoc: bi("Before the decomposition, the association",
+            "Antes da decomposição, a associação"),
+  assocSub: bi(
+    "The aggregate file cannot separate a contradiction from two claims about two conditions, "
+    + "but it can say whether conflict TRAVELS with carrying more conditions. Held inside "
+    + "submitter strata, because review depth drives both sides. The association survives "
+    + "every stratum — and the gradient is the finding: where evidence is thin, conflict looks "
+    + "like disagreement; where it is thick, it looks like context.",
+    "O arquivo agregado não separa uma contradição de duas afirmações sobre duas condições, "
+    + "mas diz se o conflito ANDA JUNTO com carregar mais condições. Segurado dentro de faixas "
+    + "de submissores, porque profundidade de revisão empurra os dois lados. A associação "
+    + "sobrevive a toda faixa — e o gradiente é o achado: onde a evidência é fina, conflito "
+    + "parece discordância; onde é grossa, parece contexto.",
+  ),
+  assocRR: bi("risk ratio, 4+ conditions against 1", "razão de risco, 4+ condições contra 1"),
+  submitters: bi("submitters", "submissores"),
+  conditions: bi("conditions", "condições"),
+
+  // --------------------------------------------------------------- controls
+  sortBy: bi("Sort by", "Ordenar por"),
+  sortPathway: bi("pathway retention", "retenção da via"),
+  sortCell: bi("cell-type retention", "retenção celular"),
+  sortSize: bi("diseases", "doenças"),
+  pickLanguage: bi("Coverage by organ system, for", "Cobertura por sistema orgânico, em"),
+  examples: bi("Real cases, from the archive", "Casos reais, do arquivo"),
+  examplesSub: bi(
+    "Each of these is one variant classified consistently within every condition it was "
+    + "submitted against — and recorded as conflicting only because the conditions were "
+    + "pooled.",
+    "Cada uma destas é uma variante classificada de forma consistente dentro de cada condição "
+    + "contra a qual foi submetida — e registrada como conflitante só porque as condições "
+    + "foram jogadas juntas.",
+  ),
+  axesDefs: bi("What each axis counts", "O que cada eixo conta"),
+  dominant: bi("Which axis dominates", "Qual eixo domina"),
+
+  // --------------------------------------------------------------- provenance
+  prov: bi("Provenance, and what this does not say",
+           "Proveniência, e o que isto não diz"),
+  provRead: bi("Read from", "Lido de"),
+  provMethod: bi("How it was computed", "Como foi computado"),
+  provSays: bi("What it says", "O que diz"),
+  provLimits: bi("Limits", "Limites"),
+  provGenerated: bi("Generated", "Gerado em"),
+  provOpen: bi("Show provenance", "Ver proveniência"),
+
   // --------------------------------------------------------------- shared
   nullLabel: bi("null", "nulo"),
   ci: bi("95 % CI", "IC 95 %"),
