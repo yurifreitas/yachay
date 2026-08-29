@@ -149,6 +149,48 @@ def main() -> int:
     null_sd = (sum((x - null_mean) ** 2 for x in null_filled) / max(len(null_filled) - 1, 1)) ** 0.5
     z = (filled - null_mean) / null_sd if null_sd else None
 
+    # --- an interval on every headline ---------------------------------------------------
+    # docs/references/standards.md 4 (GUM) asks for an uncertainty on any published number,
+    # and the first version of this file shipped three headlines with none. The unit that
+    # could have been sampled differently is the DISEASE, so the resample is over diseases
+    # and the three counts are recomputed on each draw. A count of occupied cells is biased
+    # downward by resampling with replacement — a draw holds ~63% of the distinct diseases —
+    # so the interval is reported as the point plus the bootstrap's own spread rather than
+    # as raw percentiles, the same correction scale_information needed for the same reason.
+    # Its own generator. Sharing `rng` with the permutation null couples an added statistic
+    # to an existing published one — it moved knowledge_shape's z from -19.0 to -20.37 in
+    # exactly that way, and verify_claims caught it. Every statistic gets its own stream.
+    boot_rng = random.Random(SEED + 1)
+
+    def resample_counts(draws: int = 120):
+        occ, front, anti = [], [], []
+        for _ in range(draws):
+            sample = [vectors[boot_rng.randrange(len(vectors))] for _ in range(len(vectors))]
+            c = occupancy(sample)
+            occ.append(len(c))
+            front.append(sum(1 for x in c if any(nb not in c for nb in neighbours(x))))
+            marg = []
+            for i in range(len(axes)):
+                cnt = collections.Counter(band(v[i]) for v in sample)
+                marg.append([cnt.get(b, 0) / len(sample) for b in range(BINS_PER_AXIS)])
+            n_anti = 0
+            for cell in itertools.product(range(BINS_PER_AXIS), repeat=len(axes)):
+                if cell in c:
+                    continue
+                p_ = 1.0
+                for i, b in enumerate(cell):
+                    p_ *= marg[i][b]
+                if p_ * len(sample) >= ANTIFORM_EXPECTED:
+                    n_anti += 1
+            anti.append(n_anti)
+        return occ, front, anti
+
+    def spread(vals: list[float]) -> float:
+        m = sum(vals) / len(vals)
+        return (sum((x - m) ** 2 for x in vals) / max(len(vals) - 1, 1)) ** 0.5
+
+    boot_occ, boot_front, boot_anti = resample_counts()
+
     # --- the shape of what is occupied ---------------------------------------------------
     frontier = [c for c in cells if any(nb not in cells for nb in neighbours(c))]
     interior = filled - len(frontier)
@@ -219,6 +261,13 @@ def main() -> int:
             "null_mean": round(null_mean, 1),
             "null_sd": round(null_sd, 2),
             "z_vs_null": round(z, 2) if z is not None else None,
+            "se": round(spread(boot_occ), 1),
+            "ci95": [round(filled - 1.96 * spread(boot_occ), 1),
+                     round(filled + 1.96 * spread(boot_occ), 1)],
+            "interval": ("point +- 1.96 SE from a 120-draw bootstrap over diseases; the "
+                         "bootstrap gives the DISPERSION only, because a count of distinct "
+                         "occupied cells is biased downward when a draw holds only ~63% of "
+                         "the distinct diseases"),
             "reading": ("the null shuffles each axis independently, so the marginals survive "
                         "and the entanglement does not. Fewer cells than the null means the "
                         "void has structure the marginals do not explain"),
@@ -227,6 +276,9 @@ def main() -> int:
             "frontier_cells": len(frontier),
             "interior_cells": interior,
             "frontier_share": round(len(frontier) / filled, 4) if filled else None,
+            "frontier_se": round(spread(boot_front), 1),
+            "frontier_ci95": [round(len(frontier) - 1.96 * spread(boot_front), 1),
+                              round(len(frontier) + 1.96 * spread(boot_front), 1)],
             "reading": ("an occupied cell with at least one empty neighbour is on the edge of "
                         "what is known. A compact region has few frontier cells for its "
                         "volume; a filament is nearly all frontier"),
@@ -234,6 +286,9 @@ def main() -> int:
         "antiforms": {
             "threshold_expected": ANTIFORM_EXPECTED,
             "count": len(antiforms),
+            "count_se": round(spread(boot_anti), 1),
+            "count_ci95": [round(len(antiforms) - 1.96 * spread(boot_anti), 1),
+                           round(len(antiforms) + 1.96 * spread(boot_anti), 1)],
             "diseases_expected_in_them": round(sum(a["expected"] for a in antiforms), 1),
             "cells": antiforms[:40],
             "reading": ("empty cells where the five marginals, taken independently, predict "

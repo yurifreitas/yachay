@@ -70,3 +70,35 @@ Format — copy this:
   enforced by `tests/test_ranking_scope.py`, which asserts the ranking is preserved under
   equal counts. The narrower claim is the defensible one.
 - **What would revive the broad claim:** nothing. It was wrong as stated.
+
+
+---
+
+### Anisotropy as a measure of the shape of knowledge · **killed 2026-08-29**
+
+**The idea.** What matters about a rare disease is not how much is known but the SHAPE of it:
+a vector over genetics, phenotype, cellular, natural history and population, summarised as
+`1 - normalised entropy` so that a disease bright on one axis and dark on the rest scores high.
+It was the most unusual proposal in `docs/references/theory-atlas.md`.
+
+**The number that killed it.** Two, and the second is the decisive one.
+
+Mean anisotropy **0.2633** against an independence null of **0.2723** — *z = −19.0*. The
+catalogue is LESS concentrated than independence would give, so the premise is backwards: the
+axes rise and fall together.
+
+And the statistic tracks the count of populated axes almost arithmetically: **0.590** at two
+live axes, 0.346 at three, 0.160 at four, **0.021** at five. It answers "how broad is the
+coverage", not "what shape is the knowledge". A measure that is a monotone function of a
+denominator is not a measure of shape.
+
+**What replaced it.** The co-occurrence question — *which axes move together* — which found
+that the two strongest couplings were artefacts of construction and that the residual
+structure is the OMIM/ORPHA registry boundary. And then `tools/knowledge_void.py`, which asks
+the shape question of the OCCUPIED SPACE rather than of each disease, and gets an answer:
+318 of 1,024 cells filled [312.5, 323.5], 95 % of them on the frontier, 232 anti-forms.
+
+**Not deleted.** `tools/knowledge_shape.py` still runs and still ships, with the failure
+stated in its own `verdict` field and drawn in the neutral on the site. This entry exists so
+the idea is not re-proposed as new, and so the *replacement* is traceable to the thing it
+replaced.

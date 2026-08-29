@@ -35,7 +35,7 @@ These read an ingested file and compute. Nothing in this group is authored.
 | `evidence_atlas.py` | 272 | HPO | only **39.7 %** of diseases have one sign from a real series |
 | `nongene_measure.py` | 257 | HPO | six of ten authored non-gene classes have a footprint of **zero** |
 | `interactome_sparse.py` | 459 | HPO | modularity **0.861** against **0.162** for a degree-matched null |
-| `knowledge_shape.py` | 406 | HPO, ClinVar, HPA, Orphanet | the shape of what is known, per disease — and the finding that **the prediction fails**: knowledge is less concentrated than independence (z = −19.0) and the residual structure is the OMIM/ORPHA registry boundary |
+| `knowledge_shape.py` | 406 | HPO, ClinVar, HPA, Orphanet | the shape of what is known, per disease — and the finding that **the prediction fails**: knowledge is less concentrated than independence (z = −19.04) and the residual structure is the OMIM/ORPHA registry boundary |
 | `scale_information.py` | 657 | HPO, Reactome, HPA, STRING | what a change of scale costs: 181-fold compression onto 29 pathways keeps **22 %** of the information genes carry about organ system; onto 154 cell types, **31 %** |
 | `conflict_decomposition.py` | 377 | ClinVar submissions | the decomposition: **57.2 %** of variant-level conflicts are across-condition only, 48.6 % with panel indications removed — about half of recorded disagreement is context, not contradiction |
 | `evidence_conflict.py` | 255 | ClinVar | whether recorded conflict is contradiction or context: conflict rate rises **2.14x** with the number of conditions, and the rise survives every submitter stratum |
@@ -69,7 +69,7 @@ uncomfortable findings.
 | `interactome_string.py` | 218 | our own weakest published claim against an independent graph — it survived |
 | `ecosystem.py` | 283 | which libraries are installed and unused, and which sources are named and not ingested |
 | `pipeline_state.py` | 123 | publishes staleness, so freshness is not a terminal-only fact |
-| `knowledge_void.py` | 283 | knowledge_shape | the void as an object: **318 of 1,024** cells occupied, z **−270** against independence, **95 %** of occupied cells on the frontier — a filament, not a blob — and **232 anti-forms** holding 4,286 expected diseases and none real |
+| `knowledge_void.py` | 283 | knowledge_shape | the void as an object: **318 of 1,024** cells occupied, z **−270.51** against independence, **95 %** of occupied cells on the frontier — a filament, not a blob — and **232 anti-forms** holding 4,286 expected diseases and none real |
 | `view_models.py` | 234 | the artefacts above | layouts solved in Python so the browser only draws: a seriated 14×23 matrix, a slopegraph of the scale inversion, binned parallel coordinates over 12,994 diseases, and the conflict gradient as a grid |
 | `attention_burden.py` | 310 | gene2pubmed, HPO, Orphanet | attention against burden: **+0.331** with prevalence, **+0.254** once gene popularity is removed — and the severity arm **refuses to report**, because every ORPHA-coded disease has zero evidenced signs |
 | `index_check.py` | 145 | every artefact, tool, stage, source and ADR against the document that claims to enumerate it — A36, and its first run found **sixteen of eighteen** ingested sources named in no index |

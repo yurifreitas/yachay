@@ -49,7 +49,19 @@ def fmt_int(v) -> list[str]:
 
 
 def fmt_raw(v) -> list[str]:
-    return [str(v)]
+    return _with_typographic_minus(str(v))
+
+
+# THE MINUS SIGN IS TYPOGRAPHY, NOT PRECISION. Repository prose uses U+2212 MINUS SIGN
+# because it aligns and reads correctly; Python writes U+002D HYPHEN-MINUS. The first run of
+# the void claims failed on exactly that, and the note above this file's formatters already
+# settled the principle: a verifier that fails on typography teaches people to disable it.
+# Precision is still enforced — -19.04 and -19.0 do not both match.
+def _with_typographic_minus(rendering: str) -> list[str]:
+    out = [rendering]
+    if rendering.startswith("-"):
+        out.append("−" + rendering[1:])
+    return out
 
 
 # A FORMATTER RETURNS EVERY ACCEPTABLE RENDERING, NOT ONE.
@@ -68,15 +80,15 @@ def fmt_pct0(v) -> list[str]:
 
 
 def fmt_2dp(v) -> list[str]:
-    return [f"{float(v):.2f}"]
+    return _with_typographic_minus(f"{float(v):.2f}")
 
 
 def fmt_3dp(v) -> list[str]:
-    return [f"{float(v):.3f}"]
+    return _with_typographic_minus(f"{float(v):.3f}")
 
 
 def fmt_4dp(v) -> list[str]:
-    return [f"{float(v):.4f}"]
+    return _with_typographic_minus(f"{float(v):.4f}")
 
 
 # ---------------------------------------------------------------------------------------
@@ -204,6 +216,18 @@ CLAIMS = [
      ["headline", "across_condition_share"], fmt_pct1,
      ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
       "tools/README.md", "README.md"]),
+    # --- the void, and attention against burden ------------------------------------------
+    ("occupied cells", "out/rare/knowledge_void.json", ["occupied", "cells"], fmt_int,
+     ["docs/references/rare-layers.md", "tools/README.md"]),
+    ("void z against independence", "out/rare/knowledge_void.json",
+     ["occupied", "z_vs_null"], fmt_raw, ["docs/references/rare-layers.md"]),
+    ("anti-forms", "out/rare/knowledge_void.json", ["antiforms", "count"], fmt_int,
+     ["docs/references/rare-layers.md", "tools/README.md"]),
+    ("frontier share", "out/rare/knowledge_void.json", ["shape", "frontier_share"], fmt_pct0,
+     ["docs/references/rare-layers.md", "tools/README.md"]),
+    ("knowledge shape z", "out/rare/knowledge_shape.json", ["headline", "z_vs_null"], fmt_raw,
+     ["docs/references/rare-layers.md", "tools/README.md"]),
+
     ("across-condition share, umbrellas removed", "out/rare/conflict_decomposition.json",
      ["sensitivity_umbrella_removed", "result", "across_condition_share"], fmt_pct1,
      ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",

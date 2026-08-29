@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useT } from "../../../i18n";
 import { MEAS } from "../../../i18n/measured";
+import { Provenance } from "./Provenance";
 import css from "./HyperViews.module.css";
 
 /** THE HYPERDIMENSIONAL VIEWS — four forms a bar chart cannot carry.
@@ -50,6 +51,8 @@ type Models = {
     antiforms: { count: number; diseases_expected_in_them: number; threshold_expected: number };
     top_antiforms: { expected: number; reads_as: Record<string, string> }[];
     reading: string;
+    generated?: string; provenance?: string; says?: string; limits?: string[];
+    governed_by?: string; neighbour_rule?: string;
   };
   conflict_grid?: {
     rows: string[]; cols: string[]; cells: (number | null)[][];
@@ -399,6 +402,16 @@ export function KnowledgeVoid() {
           </div>
         ))}
       </div>
+
+      <Provenance
+        generated={m.generated}
+        provenance={m.provenance}
+        method={{ "neighbour rule": m.neighbour_rule ?? "",
+                  "anti-form threshold": `independence expects >= ${m.antiforms.threshold_expected} diseases` }}
+        says={m.says}
+        limits={m.limits}
+        governedBy={m.governed_by}
+      />
     </figure>
   );
 }

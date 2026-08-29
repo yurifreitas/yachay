@@ -234,6 +234,23 @@ def main() -> int:
 
     observed = sum(r["anisotropy"] for r in rows) / len(rows)
 
+    # An interval on the headline. standards.md 4 asks for one on any published number and
+    # the first version of this file shipped the mean with a z and no dispersion of its own.
+    # A mean is unbiased under resampling, so the percentile interval is used directly.
+    #
+    # ITS OWN GENERATOR, AND THAT IS THE POINT. Drawing these from `rng` consumed numbers
+    # ahead of the permutation null below and moved a PUBLISHED figure: z went from -19.0 to
+    # -20.37 without a single line of the null's own code changing. tools/verify_claims.py
+    # caught it on the next run. A stream shared between an added statistic and an existing
+    # one couples them, so every statistic here takes a generator seeded for itself.
+    boot_rng = random.Random(SEED + 1)
+    boot_means = []
+    for _ in range(400):
+        boot_means.append(sum(rows[boot_rng.randrange(len(rows))]["anisotropy"]
+                              for _ in range(len(rows))) / len(rows))
+    boot_means.sort()
+    mean_ci = [round(boot_means[9], 5), round(boot_means[-10], 5)]
+
     # Null: shuffle each axis independently across diseases, preserving every marginal. What
     # survives is the CO-OCCURRENCE structure - whether the axes rise and fall together.
     nulls = []
@@ -328,6 +345,7 @@ def main() -> int:
                   "min_axes": MIN_AXES},
         "headline": {
             "mean_anisotropy": round(observed, 4),
+            "mean_ci95": mean_ci,
             "null_mean": round(null_mean, 4),
             "null_sd": round(null_sd, 5),
             "z_vs_null": round(z, 2) if z is not None else None,

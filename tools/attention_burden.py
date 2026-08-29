@@ -48,6 +48,7 @@ import gzip
 import json
 import math
 import pathlib
+import random
 import sys
 from datetime import date
 from xml.etree import ElementTree as ET
@@ -170,8 +171,12 @@ def spearman(xs: list[float], ys: list[float]) -> float:
     return num / (dx * dy) if dx and dy else 0.0
 
 
+SEED = 20260829
+
+
 def main() -> int:
     argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
+    rng = random.Random(SEED)
 
     print("reading ...")
     citations = gene_citations()
@@ -203,6 +208,19 @@ def main() -> int:
         print("  nothing joined — is Orphanet prevalence ingested?")
         return 1
 
+    def boot_ci(subset: list[dict], f, draws: int = 400) -> list[float]:
+        """Percentile interval over diseases, which is the unit that could have been
+        sampled differently. Spearman is a rank statistic and a resample with replacement
+        does not bias it the way mutual information was biased in scale_information, so the
+        percentile interval is the right one here and is used directly."""
+        vals = []
+        boot_rng = random.Random(SEED + 1)
+        for _ in range(draws):
+            sample = [subset[boot_rng.randrange(len(subset))] for _ in range(len(subset))]
+            vals.append(f(sample))
+        vals.sort()
+        return [round(vals[int(0.025 * draws)], 4), round(vals[int(0.975 * draws) - 1], 4)]
+
     def arm(subset: list[dict], label: str) -> dict:
         att = [math.log10(r["citations"]) for r in subset]
         prev = [r["log_prevalence"] for r in subset]
@@ -211,6 +229,10 @@ def main() -> int:
             "label": label,
             "diseases": len(subset),
             "attention_vs_prevalence": round(spearman(att, prev), 4),
+            "attention_vs_prevalence_ci95": boot_ci(
+                subset,
+                lambda ss: spearman([math.log10(r["citations"]) for r in ss],
+                                    [r["log_prevalence"] for r in ss])),
             "median_citations": sorted(r["citations"] for r in subset)[len(subset) // 2],
         }
         # A CORRELATION AGAINST A CONSTANT IS NOT A CORRELATION OF ZERO. The first run of

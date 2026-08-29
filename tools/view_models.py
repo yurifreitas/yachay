@@ -219,6 +219,14 @@ def knowledge_void() -> dict:
         "antiforms": {k: v for k, v in src["antiforms"].items() if k != "cells"},
         "top_antiforms": src["antiforms"]["cells"][:6],
         "reading": (src.get("faces") or {}).get("reading", ""),
+        # The epistemic fields travel with the view. A figure whose limits live in another
+        # file is a figure whose limits nobody reads.
+        "generated": src.get("generated"),
+        "provenance": src.get("provenance"),
+        "says": src.get("says"),
+        "limits": src.get("limits"),
+        "governed_by": src.get("governed_by"),
+        "neighbour_rule": src["lattice"]["neighbour_rule"],
     }
 
 
