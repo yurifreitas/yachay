@@ -1,6 +1,6 @@
 # Standards — the external canon this repository answers to
 
-> **Role:** the global standards and engineering traditions `sieve` is held to, each with
+> **Role:** the global standards and engineering traditions yachay is held to, each with
 > **what it demands of this repository** — not a reading list.
 > **Last revised:** 2026-08-26 · **State:** mapped; conformance is partial and marked per row.
 >

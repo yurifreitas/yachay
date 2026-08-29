@@ -1,5 +1,8 @@
 # 0004 — Fit nulls on blocks, not rows
 
+> **Role:** the decision to fit nulls on blocks rather than on rows.
+> **Last revised:** 2026-08-29 · **State:** accepted; its prediction was scored correct.
+
 **Status:** accepted · written 2026-08-26 before the work; **prediction scored correct the same day**
 **Supersedes:** nothing. Amends the implementation under 0001.
 

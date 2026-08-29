@@ -1,5 +1,8 @@
 # 0003 — A failed positive control blocks the shortlist
 
+> **Role:** the decision that a failed positive control blocks the shortlist.
+> **Last revised:** 2026-08-29 · **State:** accepted, ⚠️ back-filled.
+
 **Status:** accepted · ⚠️ back-filled 2026-08-26, the same day it first fired
 **Supersedes:** nothing
 

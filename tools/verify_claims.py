@@ -71,6 +71,14 @@ def fmt_2dp(v) -> list[str]:
     return [f"{float(v):.2f}"]
 
 
+def fmt_3dp(v) -> list[str]:
+    return [f"{float(v):.3f}"]
+
+
+def fmt_4dp(v) -> list[str]:
+    return [f"{float(v):.4f}"]
+
+
 # ---------------------------------------------------------------------------------------
 # THE REGISTRY. One row per load-bearing number: where it comes from, how it is written in
 # prose, and which documents quote it. A claim with no document listed is not a claim this
@@ -141,6 +149,65 @@ CLAIMS = [
      ["docs/references/patient-data.md", "docs/audit.md"]),
     ("genotype-phenotype powered", "out/rare/genotype_phenotype.json",
      ["scale", "powered"], fmt_raw, ["docs/references/patient-data.md", "docs/audit.md"]),
+
+    # --- ADR 0007: the promoted constructs. Registered the day they were published, which
+    # --- is the point - A1 and A11 both happened because a figure was published first and
+    # --- protected later.
+    ("gene-scale excess information", "out/rare/scale_information.json",
+     ["scales", "gene", "excess_bits"], fmt_4dp,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md"]),
+    ("pathway retention", "out/rare/scale_information.json",
+     ["scales", "pathway", "retained_vs_gene"], fmt_pct0,
+     ["docs/references/theory-atlas.md", "docs/references/deep/foundations.md", "README.md"]),
+    ("cell-type retention", "out/rare/scale_information.json",
+     ["scales", "cell_type", "retained_vs_gene"], fmt_pct0,
+     ["docs/references/theory-atlas.md", "README.md"]),
+    ("gene-scale asymmetry ratio", "out/rare/scale_information.json",
+     ["scales", "gene", "asymmetry_ratio"], fmt_2dp,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
+      "README.md"]),
+    ("morphogenetic retention", "out/rare/scale_information.json",
+     ["morphogenesis_prediction", "morphogenetic", "mean_pathway_retention"], fmt_3dp,
+     ["docs/references/theory-atlas.md", "docs/references/deep/foundations.md"]),
+    ("physiological retention", "out/rare/scale_information.json",
+     ["morphogenesis_prediction", "physiological", "mean_pathway_retention"], fmt_3dp,
+     ["docs/references/theory-atlas.md", "docs/references/deep/foundations.md"]),
+    ("morphogenesis difference", "out/rare/scale_information.json",
+     ["morphogenesis_prediction", "difference"], fmt_3dp,
+     ["docs/references/theory-atlas.md", "docs/references/deep/foundations.md"]),
+    ("morphogenesis p-value", "out/rare/scale_information.json",
+     ["morphogenesis_prediction", "permutation_p_one_sided"], fmt_raw,
+     ["docs/references/theory-atlas.md", "docs/references/deep/foundations.md"]),
+
+    # --- the language axis ----------------------------------------------------------------
+    ("portuguese annotation coverage", "out/rare/language_coverage.json",
+     ["by_language", "pt", "annotation_coverage"], fmt_pct1,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
+      "tools/README.md", "README.md"]),
+    ("portuguese system spread", "out/rare/language_coverage.json",
+     ["by_language", "pt", "system_spread"], fmt_pct1,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
+      "tools/README.md", "README.md"]),
+
+    # --- conflict against context ----------------------------------------------------------
+    ("conflicting variants in clinvar", "out/rare/evidence_conflict.json",
+     ["totals", "conflicting"], fmt_int,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md"]),
+    ("conflict risk ratio", "out/rare/evidence_conflict.json",
+     ["marginal_risk_ratio_4plus_vs_1"], fmt_2dp,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
+      "tools/README.md"]),
+    ("variants in conflict", "out/rare/conflict_decomposition.json",
+     ["counts", "variants_in_conflict"], fmt_int,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md"]),
+    ("across-condition share", "out/rare/conflict_decomposition.json",
+     ["headline", "across_condition_share"], fmt_pct1,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
+      "tools/README.md", "README.md"]),
+    ("across-condition share, umbrellas removed", "out/rare/conflict_decomposition.json",
+     ["sensitivity_umbrella_removed", "result", "across_condition_share"], fmt_pct1,
+     ["docs/references/theory-atlas.md", "docs/references/deep/multiscale-formalism.md",
+      "tools/README.md", "README.md"]),
 ]
 
 

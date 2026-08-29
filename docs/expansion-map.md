@@ -1,5 +1,8 @@
 # Expansion map — where else this applies
 
+> **Role:** where the method should apply outside biology, drawn from work already in this workspace.
+> **Last revised:** 2026-08-29 · **State:** inventory; no entry has been executed.
+
 A method validated on one screen has not been validated. This is the honest inventory of
 where `sieve` should apply next, drawn from work that already exists in this workspace
 rather than from imagined use cases. Each entry states **the entity, the observation, the

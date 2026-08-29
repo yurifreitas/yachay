@@ -20,6 +20,11 @@
 #   conventional  fixed by fiat or by an external convention, chosen blind.
 #                 Arbitrary, but arbitrary BEFORE looking, which is the only
 #                 kind of arbitrary that can be defended.
+#
+# A threshold may be NUMERIC or CATEGORICAL. TRANSLATION_STATUS = "OFFICIAL"
+# is a threshold in every sense that matters — it decides what counts as
+# delivered — and the conformance test was widened on 2026-08-29 to hold a
+# quoted literal to the same exact match it already held a number to.
 # =====================================================================
 
 version: 1
@@ -229,3 +234,82 @@ thresholds:
       restating "this line is hypermutated" and is FLAGGED, never dropped —
       because for a mismatch-repair gene that separation is the mechanism,
       not an artefact.
+
+  # ---- tools/scale_information.py (ADR 0007) -------------------------
+  - id: CELL_TYPE_ENRICHMENT
+    module: tools/scale_information.py
+    value: 0.5
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      A gene is placed in a cell type when its expression there is at least
+      half its own maximum across the 154 HPA cell types. Fixed by fiat
+      BEFORE the first run, and deliberately not HPA's own enriched/enhanced
+      call — that field is curated, and using it would make the cell-type
+      scale a measurement of curation rather than of expression. A different
+      fraction is a different measurement, not a robustness check, and would
+      need its own entry here.
+
+  - id: SCALE_PERMUTATIONS
+    module: tools/scale_information.py
+    value: 25
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      Permutation draws behind the null that the excess is measured against.
+      The null's own spread at this catalogue size is two orders of magnitude
+      below the smallest excess reported (0.0611 bits), so more draws would
+      move no published digit.
+
+  # ---- tools/language_coverage.py ------------------------------------
+  - id: TRANSLATION_STATUS
+    module: tools/language_coverage.py
+    value: OFFICIAL
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      Only Babelon rows a translation project itself marks OFFICIAL are
+      counted as delivered. External convention, chosen before the first
+      run, and it cuts both ways: a language is not credited for drafts
+      and not penalised for having them. Counting drafts would move Dutch
+      from 453 labels to most of a 6 MB file and would be a measurement of
+      work in progress rather than of what a reader can read today.
+
+  # ---- tools/evidence_conflict.py ------------------------------------
+  - id: MIN_CELL
+    module: tools/evidence_conflict.py
+    value: 200
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      Smallest cell reported in the submitter x condition table. At 200
+      variants a Wilson interval on a rate near 0.2 is about +-6 points,
+      which is narrow enough for a cell to carry a comparison; below it the
+      interval is wider than the effect being compared. Follows from the
+      interval width, not from the data.
+
+  # ---- tools/conflict_decomposition.py -------------------------------
+  - id: UMBRELLA_SUBMISSIONS
+    module: tools/conflict_decomposition.py
+    value: 50000
+    fixed_at: 2026-08-29
+    target_contact: true
+    pre_registered: false
+    justification: empirical
+    reason: >-
+      Submissions above which a condition is treated as a panel indication
+      rather than a disease, for the sensitivity arm only. HONESTLY MARKED
+      target_contact: the distribution was inspected before the number was
+      chosen. It is the gap in that distribution - "Inborn genetic diseases"
+      362k, "Hereditary cancer-predisposing syndrome" 257k, "Cardiovascular
+      phenotype" 95k, then nothing until 36k - so any cut between 40k and 90k
+      drops the same three terms. The headline is reported WITHOUT this cut
+      and the cut is reported beside it, so no published number depends on it.

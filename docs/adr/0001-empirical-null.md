@@ -1,5 +1,8 @@
 # 0001 — Fit the null empirically from controls, not parametrically
 
+> **Role:** the decision to fit the null from real controls rather than from a distributional assumption.
+> **Last revised:** 2026-08-29 · **State:** accepted, ⚠️ back-filled.
+
 **Status:** accepted · ⚠️ back-filled 2026-08-26 from a decision taken earlier
 **Supersedes:** nothing
 

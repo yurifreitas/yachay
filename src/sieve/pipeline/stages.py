@@ -286,6 +286,48 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="scale_information",
+    summary=("Measure what a change of scale costs: information about organ systems kept "
+             "when genes are coarse-grained onto pathways and onto cell types."),
+    inputs=(paths.GENES_TO_DISEASE, paths.HPOA, paths.HP_OBO, paths.REACTOME_PATHWAYS,
+            paths.REACTOME_HIERARCHY, paths.HPA_SINGLE_CELL, paths.STRING_ALIASES,
+            paths.STRING_INFO),
+    outputs=(paths.SCALE_INFORMATION,),
+    code=sources("tools/scale_information.py"),
+    run=lambda: _run_tool("scale_information"),
+))
+
+_add(Stage(
+    name="language_coverage",
+    summary=("What a reader loses by not reading English: term coverage against "
+             "annotation-weighted coverage, per language and per organ system."),
+    inputs=(paths.HPO_TRANSLATIONS, paths.HPOA, paths.HP_OBO),
+    outputs=(paths.LANGUAGE_COVERAGE,),
+    code=sources("tools/language_coverage.py"),
+    run=lambda: _run_tool("language_coverage"),
+))
+
+_add(Stage(
+    name="evidence_conflict",
+    summary=("Whether recorded disagreement travels with carrying more conditions - "
+             "the sheaf question, asked of ClinVar and stratified by review depth."),
+    inputs=(paths.CLINVAR,),
+    outputs=(paths.EVIDENCE_CONFLICT,),
+    code=sources("tools/evidence_conflict.py"),
+    run=lambda: _run_tool("evidence_conflict"),
+))
+
+_add(Stage(
+    name="conflict_decomposition",
+    summary=("Split recorded disagreement into contradiction and context, using each "
+             "submitter's classification beside the condition it was made against."),
+    inputs=(paths.CLINVAR_SUBMISSIONS,),
+    outputs=(paths.CONFLICT_DECOMPOSITION,),
+    code=sources("tools/conflict_decomposition.py"),
+    run=lambda: _run_tool("conflict_decomposition"),
+))
+
+_add(Stage(
     name="references",
     summary="Encode the reference map and compute which communities actually share a rung.",
     outputs=(paths.REFERENCES,),

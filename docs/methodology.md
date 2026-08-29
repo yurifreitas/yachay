@@ -1,5 +1,8 @@
 # The methodology
 
+> **Role:** the ten stages, and what skipping each one cost. Explanation, with a worked example.
+> **Last revised:** 2026-08-29 · **State:** ⚠️ still mixes Diátaxis modes (audit A4, open); the case study it points at was never written.
+
 Ten stages. Each one exists because skipping it cost something real, and each entry
 below names what it cost. The worked example is the obesity screen — a public
 competition where the method was developed, and where every number quoted here was

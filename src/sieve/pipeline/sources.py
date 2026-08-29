@@ -86,6 +86,30 @@ SOURCES: tuple[Source, ...] = (
         redistributable=True,
     ),
     Source(
+        key="hpo_translations",
+        name="HPO language profiles",
+        url="https://codeload.github.com/obophenotype/hpo-translations/tar.gz/refs/heads/main",
+        filename="hpo-translations.tar.gz",
+        approx_mb=7.4,
+        gives="The phenotype vocabulary in fourteen languages besides English, as Babelon "
+              "TSV. Ingested because this project publishes in two languages and had no way "
+              "to say what a reader loses in either.",
+        licence="HPO licence (permissive, attribution)",
+        redistributable=True,
+    ),
+    Source(
+        key="clinvar_submissions",
+        name="ClinVar submissions",
+        url="https://ftp.ncbi.nlm.nih.gov/pub/clinvar/tab_delimited/submission_summary.txt.gz",
+        filename="submission_summary.txt.gz",
+        approx_mb=387.0,
+        gives="Each submitter's classification BESIDE the condition it was made against. The "
+              "aggregate file cannot separate a contradiction from two claims about two "
+              "different conditions; this one can.",
+        licence="US public domain (NCBI)",
+        redistributable=True,
+    ),
+    Source(
         key="orpha_genes",
         name="Orphanet gene associations",
         url="https://www.orphadata.com/data/xml/en_product6.xml",

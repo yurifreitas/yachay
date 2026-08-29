@@ -3,7 +3,7 @@
 > **Role:** the ordered backlog. Every item names the question, what would answer it, what it
 > costs, and **what would make it not worth doing** — because a plan without that last column
 > is a wish list.
-> **Last revised:** 2026-08-28 · **State:** written after eleven audit sweeps in one day.
+> **Last revised:** 2026-08-29 · **State:** written after eleven audit sweeps in one day.
 > Everything here is derived from an open finding in [`audit.md`](audit.md) or a stated
 > falsifier in `references/`; nothing was invented for this file.
 >
@@ -17,13 +17,13 @@
 
 | | |
 |---|---|
-| library (`src/sieve/`) | **4 of 10 stages** implemented (Null, Power, Shortlist, Design) |
-| tooling (`tools/`) | 33 scripts, 11,790 lines |
+| library (`src/sieve/`) | **4 modules** implemented (Null, Power, Design, Target); six of the ten stages have no implementation |
+| tooling (`tools/`) | 57 scripts, 19,165 lines |
 | tools that call the library | **3** (`dossier.py`, `genotype_phenotype.py`, `sieve.cli`) |
-| ingested sources | 14, ~899 MB |
-| sources ingested and unread | **3** (Reactome ×2, gnomAD) |
-| pipeline stages | 29 |
-| audit findings | 26, of which 20 closed |
+| ingested sources | 18, ~1,339 MB |
+| sources ingested and unread | **3** (Orphanet gene associations, Orphanet age of onset, phenopacket-store) — gnomAD is read by `tools/gene_world.py`, Reactome by `tools/scale_information.py` |
+| pipeline stages | 35 |
+| audit findings | 35, of which 28 closed |
 | authored layers tested | 2 of 9 |
 
 The structural finding (A15) remains the one that decides everything else: the periphery is
@@ -40,7 +40,7 @@ resolution.
 diversified over *signalling modules* rather than genes, because ten genes from one module is
 one hypothesis with ten labels. Nothing has tested it.
 
-**What answers it.** Reactome is on disk (118 MB, unread). Map genes to pathways, then run
+**What answers it.** Reactome is on disk and **now read** — `tools/scale_information.py` maps genes onto its 29 top-level pathways and measures what the collapse costs. What is still not done is the retrospective below (118 MB). Map genes to pathways, then run
 the retrospective the document itself names: on DepMap or NF2, does a module-diversified
 shortlist outperform a gene-diversified one?
 
@@ -87,11 +87,12 @@ That is the next low-cost item and it is a change to that tool, not to `interval
 
 ---
 
-## Tier 2 — the data that is on disk and unread
+## Tier 2 — the data that is on disk and under-used
 
 ### 2.1 gnomAD constraint as a Stage 6 prior
 
-95 MB, ingested, unread. `references/rare-disease-scale.md` §4 argues for it and
+95 MB, ingested, and **read** — `tools/gene_world.py` uses it. What is unbuilt is the use this
+item exists for: a Stage 6 prior. `references/rare-disease-scale.md` §4 argues for it and
 `references/rare-disease-ancestry.md` §3 warns that its panel is not ancestry-neutral.
 Ingesting it made both testable; neither has been tested. **Cost: low.** The specific
 deliverable is a prior that *carries its panel composition in the manifest*, next to
@@ -153,9 +154,10 @@ Not scheduled. Listed so the cost is visible before anyone starts.
 
 ## The one thing that is not on this list
 
-**More aggregate catalogues.** The project ingested six sources in one day and the marginal
-value of a seventh is low: three of the six are still unread, and the two patient-level
-sources produced more findings in a day than the aggregate layers produced in a month. Depth
+**More aggregate catalogues.** The project has ingested eighteen sources and the marginal
+value of a nineteenth is low: three of them are still unread, the two added on 2026-08-29 were
+read the same day and each produced a headline, and the two patient-level sources produced more
+findings in a day than the aggregate layers produced in a month. Depth
 now comes from *joining what is here*, not from adding to it — which is what
 [`references/patient-data.md`](references/patient-data.md) §3c argues and what the last three
 sweeps demonstrated.

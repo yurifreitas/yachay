@@ -79,7 +79,24 @@ INTERVALS = RARE / "intervals.json"
 # The first DYNAMICAL component: where a disease's perturbation spreads on a real
 # interactome, against a degree-matched null. The Interactome rung of the thesis ladder.
 TWIN_PROPAGATION = RARE / "twin_propagation.json"
+# The first CROSS-SCALE measurement: how much of what a disease's genes say about its
+# organ systems survives a coarse-graining onto pathways or cell types. ADR 0007.
+SCALE_INFORMATION = RARE / "scale_information.json"
+# What a reader loses by not reading English: HPO's thirteen language profiles against the
+# annotations diseases actually carry. Language as a subgroup axis, beside ancestry.
+LANGUAGE_COVERAGE = RARE / "language_coverage.json"
+# Whether a recorded scientific conflict is a contradiction or two statements about
+# different conditions. The empirical question the sheaf formalism has to answer first.
+EVIDENCE_CONFLICT = RARE / "evidence_conflict.json"
+# The decomposition the association could not do: contradiction against context.
+CONFLICT_DECOMPOSITION = RARE / "conflict_decomposition.json"
+CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"
+HPO_TRANSLATIONS = DATA / "ontology" / "hpo-translations.tar.gz"
 STRING_INFO = DATA / "ontology" / "9606.protein.info.v12.0.txt.gz"
+STRING_ALIASES = DATA / "ontology" / "9606.protein.aliases.v12.0.txt.gz"
+REACTOME_PATHWAYS = DATA / "ontology" / "UniProt2Reactome_All_Levels.txt"
+REACTOME_HIERARCHY = DATA / "ontology" / "ReactomePathwaysRelation.txt"
+HPA_SINGLE_CELL = DATA / "ontology" / "rna_single_cell_type.tsv.zip"
 CLINVAR = DATA / "ontology" / "variant_summary.txt.gz"
 PHENOPACKETS = DATA / "ontology" / "all_phenopackets.zip"
 # The audit of an AUTHORED layer against the ingested catalogues. Depends on the layer it

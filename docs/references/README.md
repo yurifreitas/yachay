@@ -1,7 +1,7 @@
 # References
 
-> **Role:** everything `sieve` leans on, in one place — data, method, domain.
-> **Last revised:** 2026-08-26 · **State:** inventory complete, link-checking pending.
+> **Role:** everything yachay leans on, in one place — data, method, domain.
+> **Last revised:** 2026-08-29 · **State:** inventory complete, link-checking pending.
 >
 > Companion files: `CITATION.cff` carries the same references in machine-readable form, each
 > with a `notes:` line naming the claim it supports; [`../lineage.md`](../lineage.md) states
@@ -16,6 +16,14 @@ different weight:
   says "this is a known correction", the citation lives here.
 - **Domain** — biology and clinical background for the disease adapters. Currently
   focused on **NF2 / NF2-related schwannomatosis**: see [`nf2.md`](nf2.md).
+
+Two files sit outside those three kinds and say so. [`deep/foundations.md`](deep/foundations.md)
+holds the mid-century work these approaches descend from — Turing, Shannon, von Neumann,
+Ashby, Wiener, Waddington, Kolmogorov — each tied to a measurement or an open problem here,
+and two of them tested against their own predictions (Turing's held; von Neumann's did not).
+And [`theory-atlas.md`](theory-atlas.md)
+catalogues the mathematics *proposed* for the multiscale atlas, graded measured / buildable /
+analogy under ADR 0007. Nothing in it may be cited until it has a number.
 
 > Verification status: entries below are recorded from working knowledge and are
 > **not yet link-checked**. Accession numbers, file names, and release versions are the
@@ -39,15 +47,24 @@ check, so nothing here scrapes it). Downloaded by `python tasks.py fetch` into
 | `AchillesCommonEssentialControls.csv` | the known pan-essential confound, for Stage 3 | present |
 | `AchillesHighVarianceGeneControls.csv` | high-variance controls | present |
 | `AchillesScreenQCReport.csv` | per-screen QC, a Stage 3 covariate source | present |
-| `Model.csv` | cell line annotation — lineage, disease, sex, age | ⚠️ **not downloaded** |
-| `OmicsSomaticMutations.csv` | mutation calls, needed to define an NF2-null subgroup | ⚠️ **not downloaded** |
-| `OmicsCNGene.csv` | copy number, needed because NF2 is lost by deletion as often as by point mutation | ⚠️ **not downloaded** |
+| `Model.csv` | cell line annotation — lineage, disease, sex, age | present |
+| `OmicsSomaticMutationsMatrixDamaging.csv` | damaging mutation matrix, defines the NF2-null subgroup | present |
+| `OmicsCNGene.csv` | copy number, because NF2 is lost by deletion as often as by point mutation | present |
 
-The last three are the blocker for the NF2 work: without genotype and lineage there is no
-subgroup to contrast against. Adding them to `tasks.py fetch` is the first task.
+All three were added to `tasks.py fetch_nf2` on 2026-08-27, and the NF2 subgroup contrast
+runs. Kept in the table because the sign convention below depends on knowing which files a
+run actually read.
 
 Sign convention: dependency is **negative** in DepMap, so `load_matrix` flips it. Every
 stage in this library assumes larger is better.
+
+### HPO language profiles — the language axis
+
+`hpo-translations.tar.gz` (7.4 MB, Babelon TSV, from `obophenotype/hpo-translations`),
+fetched by `python tools/ingest.py`. Fourteen languages besides English. Read by
+`tools/language_coverage.py`, which reports term coverage against **annotation-weighted**
+coverage — the second being what a reader actually meets, and the one that found Portuguese
+at 42.9% with a 69.6-point spread across organ systems.
 
 ### Planned data, not yet fetched
 
@@ -106,7 +123,7 @@ ends.
 
 ---
 
-## Rare disease — the three-document layer
+## Rare disease — the nine-document layer
 
 Added 2026-08-27. They are separated because they answer different questions and carry
 different evidence, and merging them would hide which is which.
@@ -117,7 +134,7 @@ different evidence, and merging them would hide which is which.
 | [`rare-disease-mechanisms.md`](rare-disease-mechanisms.md) | why do thousands of disorders collapse onto a few pathways? | **borrowed** — the module grouping is the field's; only the Stage 7 consequence is ours, and it is untested |
 | [`rare-disease-equity.md`](rare-disease-equity.md) | which social facts become confounders? | **mixed** — external survey figures with intervals, over two internal layers explicitly marked as authored |
 | [`rare-disease-ancestry.md`](rare-disease-ancestry.md) | whose numbers are these, and which population are they about? | **measured here** — `tools/ancestry_geography.py`, over the Orphanet geography field no layer had opened |
-| [`rare-layers.md`](rare-layers.md) | which of these twenty artefacts did anyone actually measure? | the map of `out/rare/`: producer, grade and load-bearing number for each, with provenance quoted from the payloads |
+| [`rare-layers.md`](rare-layers.md) | which of these thirty-four artefacts did anyone actually measure? | the map of `out/rare/`: producer, grade and load-bearing number for each, with provenance quoted from the payloads |
 | [`patient-data.md`](patient-data.md) | what do individual patients say, and what data can we actually get? | **measured** on 10,377 individuals — plus the access plan for the tiers that are not open |
 | [`target-model.md`](target-model.md) | which editing strategy does a gene's evidence admit? | the how-to for `sieve target` — the one part of the project meant to be run by other people |
 | [`prior-work.md`](prior-work.md) | which ancestors does this project have, and did it credit them? | the local lineage — `nominator`, `climate`, `adia`, `knee` — and the one it never mentioned |
@@ -143,7 +160,7 @@ see [`../audit.md`](../audit.md) A5 and F2.
 References are not only papers. These are the neighbouring campaigns whose practice is
 already load-bearing here, each with what it contributes and where it lives.
 
-| project | what `sieve` takes from it | where |
+| project | what yachay takes from it | where |
 |---|---|---|
 | `knee` (RSNA knee MRI, Kaggle 2026) | the **documentation apparatus**: role/last-revised/state header on every doc, an annotated `CITATION.cff` where each reference carries the claim it supports, a lineage file that says what our measurement DOES to the ancestor's claim, and an `archive/` of dead ends each with the number that killed it | `F:\CODE\knee` |
 | `agentComp` (ARC-AGI-3) | the methodological laws `knee` inherited, above all "a wrong premise costs more than wrong code" — which is Stage 0 | via `knee/docs/METHOD.md` |
@@ -156,8 +173,8 @@ Three practices from `knee` are adopted here deliberately, and it is worth namin
    decoration; `CITATION.cff` refuses it by convention.
 2. **Findings live in the citation header.** `knee` puts its measured numbers at the top of
    `CITATION.cff` so the claim and its number cannot drift apart. Done here too.
-3. **Dead ends are archived with the number that killed them.** Not yet implemented in this
-   repository — `archive/MANIFEST.md` does not exist. That is a gap, not a difference.
+3. **Dead ends are archived with the number that killed them.** Adopted:
+   `archive/MANIFEST.md` records each with the measurement that ended it.
 
 ---
 

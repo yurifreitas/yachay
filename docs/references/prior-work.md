@@ -32,7 +32,7 @@ mention it.** Same thesis, same ten stages, one insertion:
 | 8 | Honest reporting | 8 · Report |
 | 9 | Reproducibility engineering | 9 · Repro |
 
-`sieve`'s README presents the ten stages as its own frame. Nine of them are `nominator`'s,
+yachay's README presents the ten stages as its own frame. Nine of them are `nominator`'s,
 renumbered by the insertion of Stage 1. **What `sieve` genuinely contributed is the Null
 stage** — and that is a real contribution, since it is the stage that produced every headline
 result this repository has. But the frame it sits in was inherited, and
