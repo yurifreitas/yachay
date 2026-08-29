@@ -64,6 +64,7 @@ def main() -> int:
     dom_path = OUT / "gene_domains.json"
     rel_path = OUT / "gene_related.json"
     ds_path = OUT / "gene_datasheet.json"
+    ins_path = OUT / "gene_insights.json"
 
     def _load(path, label):
         if path.exists():
@@ -77,6 +78,7 @@ def main() -> int:
     dom = _load(dom_path, "gene_domains.json")
     rel = _load(rel_path, "gene_related.json")
     ds = _load(ds_path, "gene_datasheet.json")
+    ins = _load(ins_path, "gene_insights.json")
 
     symbols = sorted(
         set(index["genes"]) | set(world["genes"]) | set(geo["genes"]) | set(dom["genes"]))
@@ -107,6 +109,9 @@ def main() -> int:
         sheet = ds["genes"].get(sym)
         if sheet:
             rec["ds"] = sheet
+        obs = ins["genes"].get(sym)
+        if obs:
+            rec["ins"] = obs
         buckets.setdefault(shard_of(sym), {})[sym] = rec
 
         # The search payload: how many of the six layers say anything. One integer per gene,
@@ -126,7 +131,8 @@ def main() -> int:
         "shards": SHARDS,
         "scope": {**index.get("scope", {}), "world": world.get("scope", {}),
                   "geo": geo.get("scope", {}), "dom": dom.get("scope", {}),
-                  "rel": rel.get("scope", {}), "ds": ds.get("scope", {})},
+                  "rel": rel.get("scope", {}), "ds": ds.get("scope", {}),
+                  "ins": ins.get("scope", {})},
         "premise": index.get("premise", ""),
         "worldPremise": world.get("premise", ""),
         "geoCaution": geo.get("caution", ""),
@@ -134,6 +140,9 @@ def main() -> int:
         "domKinds": dom.get("kinds", {}),
         "relRoutes": rel.get("routes", {}),
         "dsConvention": ds.get("convention", ""),
+        "insRules": ins.get("rules", {}),
+        "insCaution": ins.get("caution", ""),
+        "insThresholds": ins.get("thresholds", {}),
         "genes": thin,
     }, separators=(",", ":")), encoding="utf-8")
 

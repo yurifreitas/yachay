@@ -1,0 +1,63 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-8); }
+.lede { margin: 0; max-width: 84ch; font-size: 13.5px; line-height: 1.7; color: var(--r-text-2); }
+.none { margin: 0; max-width: 76ch; font-size: 13.5px; line-height: 1.65; color: var(--r-text-2); }
+
+.obs, .obsOn {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-6);
+  border-left: 3px solid var(--r-border);
+  background: var(--r-surface-2);
+  border-radius: 0 var(--r-radius) var(--r-radius) 0;
+}
+/* Each rule keeps its own hue, so a reader who has met "organismal" once recognises it on
+   the next gene without reading the heading again. Category, not order. */
+.obsOn { composes: obs; }
+.obsOn[data-rule="selective"] { border-left-color: var(--known); }
+.obsOn[data-rule="organismal"] { border-left-color: var(--partial); }
+.obsOn[data-rule="unreadable"] { border-left-color: var(--unknown); }
+.obsOn[data-rule="broadButSelective"] { border-left-color: var(--series-3); }
+.obsOn[data-rule="damageInDomains"] { border-left-color: var(--seq-500); }
+.obsOn[data-rule="cultureArtefact"] { border-left-color: var(--warning); }
+
+.obsHead {
+  display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+.claim { margin: 0; max-width: 60ch; font-size: 15px; font-weight: 600; line-height: 1.4;
+  color: var(--r-text); }
+/* How often the rule fires across the whole corpus, next to the claim. A rule that catches
+   one gene in three is a different kind of statement from one that catches one in a hundred,
+   and the reader is entitled to know which they are looking at. */
+.freq {
+  flex: none; font-size: 11.5px; color: var(--r-text-3); font-variant-numeric: tabular-nums;
+}
+.reading { margin: 0; max-width: 84ch; font-size: 13px; line-height: 1.7; color: var(--r-text-2); }
+
+.rule {
+  margin: 0; max-width: 84ch;
+  font-size: 11.5px; line-height: 1.6; color: var(--r-text-3);
+  font-family: var(--mono);
+}
+.ruleLabel {
+  font-family: var(--sans); font-weight: 600; letter-spacing: 0.04em;
+  text-transform: uppercase; font-size: 10px; color: var(--r-text-3);
+}
+
+.notFired { display: flex; flex-direction: column; gap: var(--sp-3); }
+.notFiredTitle {
+  margin: 0; font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--r-text-3);
+}
+.notFiredList { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.notFiredList li {
+  display: flex; flex-direction: column; gap: 2px;
+  padding-left: var(--sp-4); border-left: 1px dashed var(--r-border-hi);
+}
+.notFiredClaim { font-size: 12.5px; color: var(--r-text-3); }
+.notFiredRule { font-family: var(--mono); font-size: 11px; color: var(--r-border-hi); }
+
+.caution {
+  margin: 0; max-width: 84ch; padding-left: var(--sp-4);
+  border-left: 2px solid var(--r-border-hi);
+  font-size: 12px; line-height: 1.65; color: var(--r-text-3);
+}

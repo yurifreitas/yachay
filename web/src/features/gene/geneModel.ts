@@ -68,6 +68,8 @@ export type GeneRecord = {
     };
     exp?: { types: number; min: number; median: number; max: number; ratio: number | null };
   };
+  /** Which cross-layer rules fired for this gene. */
+  ins?: string[];
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;
@@ -89,6 +91,8 @@ export type GeneSearchIndex = {
   premise: string;
   worldPremise: string;
   geoCaution: string;
+  insRules: Record<string, { claim: string; reading: string; rule: string }>;
+  insCaution: string;
   scope: {
     dependency: { genes: number; source?: string };
     cancer: { levels: string[]; subgroups: number };
@@ -97,6 +101,11 @@ export type GeneSearchIndex = {
     disease: { pairs: number; genes: number; unnamed?: number };
     genes: number;
     geo?: { genes: number; withPositions?: number; withPathways?: number };
+    ins?: {
+      genes: number; withAny: number;
+      byRule: Record<string, number>;
+      eligible: Record<string, number>;
+    };
     world?: {
       protein?: { proteins: number };
       constraint?: { genes: number };

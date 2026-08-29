@@ -15,6 +15,8 @@ import { Needle, Pathways, Routes } from "./GeometryPanels";
 import { GeneBrowse } from "./GeneBrowse";
 import { RelatedGenes } from "./RelatedGenes";
 import { Datasheet } from "./Datasheet";
+import { Insights } from "./Insights";
+import { INS } from "../../i18n/insights";
 import { DS } from "../../i18n/datasheet";
 import { REL } from "../../i18n/related";
 import { GEO } from "../../i18n/geometry";
@@ -45,6 +47,10 @@ const GROUPS: NavGroupDef[] = [
      on one page, with every number's conditions beside it. A reader who wants the summary
      should not have to assemble it from nine sections. */
   { id: "sheet", label: DS.group, question: DS.question },
+  /* SECOND, and deliberately before the layer-by-layer groups. The datasheet is the whole
+     component on one page; this is what two of its rows mean when read together, which is
+     the question a reader has after the table and before the detail. */
+  { id: "observed", label: INS.group, question: INS.question },
   { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
   { id: "shape", label: GEO.gShape, question: GEO.qShape },
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
@@ -58,6 +64,7 @@ const GROUPS: NavGroupDef[] = [
 
 const SECTIONS: NavSectionDef[] = [
   { id: "datasheet", label: DS.section, group: "sheet" },
+  { id: "insights", label: INS.section, group: "observed" },
   { id: "form", label: WORLD.sForm, group: "world" },
   { id: "constraint", label: WORLD.sConstraint, group: "world" },
   { id: "expression", label: WORLD.sExpression, group: "world" },
@@ -217,6 +224,10 @@ export default function GenePage() {
           ) : (
             <>
               {section === "datasheet" && <Datasheet rec={rec} />}
+              {section === "insights" && (
+                <Insights found={rec?.ins} scope={data.scope}
+                          rules={data.insRules ?? {}} caution={data.insCaution ?? ""} />
+              )}
               {section === "form" && <Form world={rec?.world} scope={data.scope} />}
               {section === "constraint" && <ConstraintPanel world={rec?.world} scope={data.scope} />}
               {section === "expression" && <ExpressionPanel world={rec?.world} scope={data.scope} />}
