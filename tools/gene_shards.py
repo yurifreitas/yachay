@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import shutil
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / "out"
@@ -65,6 +64,7 @@ def main() -> int:
     rel_path = OUT / "gene_related.json"
     ds_path = OUT / "gene_datasheet.json"
     ins_path = OUT / "gene_insights.json"
+    att_path = OUT / "gene_attention.json"
 
     def _load(path, label):
         if path.exists():
@@ -79,15 +79,18 @@ def main() -> int:
     rel = _load(rel_path, "gene_related.json")
     ds = _load(ds_path, "gene_datasheet.json")
     ins = _load(ins_path, "gene_insights.json")
+    att = _load(att_path, "gene_attention.json")
 
     symbols = sorted(
         set(index["genes"]) | set(world["genes"]) | set(geo["genes"]) | set(dom["genes"]))
 
-    if DEST.exists():
-        # Rebuilt from scratch: a stale shard from a previous run is a gene whose record
-        # silently disagrees with the index, which is worse than a missing one.
-        shutil.rmtree(DEST)
+    # ONLY THE FILES THIS TOOL OWNS. It used to rmtree the directory — which took
+    # space.json with it, an artefact a different tool writes into the same folder, and the
+    # page that read it got a 404 with no clue why. A stale shard is still worse than a
+    # missing one, so the shards themselves are cleared; siblings are left alone.
     DEST.mkdir(parents=True, exist_ok=True)
+    for old in DEST.glob("[0-9][0-9][0-9].json"):
+        old.unlink()
 
     buckets: dict[str, dict] = {}
     thin: dict[str, int] = {}
@@ -112,6 +115,9 @@ def main() -> int:
         obs = ins["genes"].get(sym)
         if obs:
             rec["ins"] = obs
+        a = att["genes"].get(sym)
+        if a:
+            rec["att"] = a
         buckets.setdefault(shard_of(sym), {})[sym] = rec
 
         # The search payload: how many of the six layers say anything. One integer per gene,
@@ -132,7 +138,8 @@ def main() -> int:
         "scope": {**index.get("scope", {}), "world": world.get("scope", {}),
                   "geo": geo.get("scope", {}), "dom": dom.get("scope", {}),
                   "rel": rel.get("scope", {}), "ds": ds.get("scope", {}),
-                  "ins": ins.get("scope", {})},
+                  "ins": ins.get("scope", {}),
+                  "att": att.get("scope", {})},
         "premise": index.get("premise", ""),
         "worldPremise": world.get("premise", ""),
         "geoCaution": geo.get("caution", ""),
@@ -143,6 +150,9 @@ def main() -> int:
         "insRules": ins.get("rules", {}),
         "insCaution": ins.get("caution", ""),
         "insThresholds": ins.get("thresholds", {}),
+        "attDeciles": att.get("deciles", []),
+        "attCaution": att.get("caution", ""),
+        "attBaseline": att.get("baseline", ""),
         "genes": thin,
     }, separators=(",", ":")), encoding="utf-8")
 

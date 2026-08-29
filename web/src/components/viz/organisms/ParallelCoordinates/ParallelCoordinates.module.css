@@ -1,0 +1,45 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* Everything, faint. At 18,000 polylines the ground is a density field rather than a set of
+   lines, which is what makes one class drawn over it readable at all. */
+.ground path {
+  fill: none; stroke: var(--r-text-3); stroke-width: 0.5; stroke-opacity: 0.035;
+}
+.lit path {
+  fill: none; stroke: var(--r-brand); stroke-width: 1; stroke-opacity: 0.42;
+  cursor: pointer;
+}
+.hovered {
+  fill: none; stroke: var(--r-text); stroke-width: 2; pointer-events: none;
+}
+
+.axis { stroke: var(--r-border-hi); stroke-width: 1; }
+.axisName { font-size: 11.5px; fill: var(--r-text-2); font-weight: 500; }
+.axisEnd { font-size: 9.5px; fill: var(--r-text-3); }
+
+.reorder { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-2); }
+.reorderLabel {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.chip {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  padding: var(--sp-1) var(--sp-2);
+  border: var(--r-hairline); border-radius: 999px;
+  font-size: 11.5px; color: var(--r-text-2);
+}
+.chip button {
+  border: 0; background: transparent; cursor: pointer; padding: 0 2px;
+  font: inherit; font-size: 11px; color: var(--r-text-3); line-height: 1;
+}
+.chip button:hover:not(:disabled) { color: var(--r-brand); }
+.chip button:disabled { opacity: 0.3; cursor: default; }
+
+.readout {
+  margin: 0; min-height: 1.6em;
+  display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: baseline;
+  font-size: 12px; color: var(--r-text-3); font-variant-numeric: tabular-nums;
+}
+.sym { font-family: var(--mono); font-size: 13px; color: var(--r-text); }
+.pair b { color: var(--r-text-2); font-weight: 600; }
+.hint { color: var(--r-text-3); }

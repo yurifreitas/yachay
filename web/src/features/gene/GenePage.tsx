@@ -16,6 +16,8 @@ import { GeneBrowse } from "./GeneBrowse";
 import { RelatedGenes } from "./RelatedGenes";
 import { Datasheet } from "./Datasheet";
 import { Insights } from "./Insights";
+import { Attention } from "./Attention";
+import { ATT } from "../../i18n/attention";
 import { INS } from "../../i18n/insights";
 import { DS } from "../../i18n/datasheet";
 import { REL } from "../../i18n/related";
@@ -51,6 +53,7 @@ const GROUPS: NavGroupDef[] = [
      component on one page; this is what two of its rows mean when read together, which is
      the question a reader has after the table and before the detail. */
   { id: "observed", label: INS.group, question: INS.question },
+  { id: "attention", label: ATT.group, question: ATT.question },
   { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
   { id: "shape", label: GEO.gShape, question: GEO.qShape },
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
@@ -65,6 +68,7 @@ const GROUPS: NavGroupDef[] = [
 const SECTIONS: NavSectionDef[] = [
   { id: "datasheet", label: DS.section, group: "sheet" },
   { id: "insights", label: INS.section, group: "observed" },
+  { id: "attention", label: ATT.section, group: "attention" },
   { id: "form", label: WORLD.sForm, group: "world" },
   { id: "constraint", label: WORLD.sConstraint, group: "world" },
   { id: "expression", label: WORLD.sExpression, group: "world" },
@@ -224,6 +228,13 @@ export default function GenePage() {
           ) : (
             <>
               {section === "datasheet" && <Datasheet rec={rec} />}
+              {section === "attention" && (
+                <Attention rec={rec} scope={data.scope}
+                           deciles={data.attDeciles ?? []}
+                           caution={data.attCaution ?? ""}
+                           baseline={data.attBaseline ?? ""}
+                           onPick={(g) => { setSymbol(g); setQuery(""); }} />
+              )}
               {section === "insights" && (
                 <Insights found={rec?.ins} scope={data.scope}
                           rules={data.insRules ?? {}} caution={data.insCaution ?? ""} />

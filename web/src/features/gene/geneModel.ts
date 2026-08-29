@@ -70,6 +70,8 @@ export type GeneRecord = {
   };
   /** Which cross-layer rules fired for this gene. */
   ins?: string[];
+  /** Indexed papers, and how far the VUS share sits from its paper decile's median. */
+  att?: { papers: number; vusResidual?: number };
   dep?: GeneDependency;
   cancer?: CancerHit[];
   cancerTotal?: number;
@@ -93,6 +95,10 @@ export type GeneSearchIndex = {
   geoCaution: string;
   insRules: Record<string, { claim: string; reading: string; rule: string }>;
   insCaution: string;
+  attDeciles: { decile: number; papersFrom: number; papersTo: number; genes: number;
+                medianVus: number }[];
+  attCaution: string;
+  attBaseline: string;
   scope: {
     dependency: { genes: number; source?: string };
     cancer: { levels: string[]; subgroups: number };
@@ -101,6 +107,7 @@ export type GeneSearchIndex = {
     disease: { pairs: number; genes: number; unnamed?: number };
     genes: number;
     geo?: { genes: number; withPositions?: number; withPathways?: number };
+    att?: { genes: number; median: number; p90: number; max: number; withResidual: number };
     ins?: {
       genes: number; withAny: number;
       byRule: Record<string, number>;
