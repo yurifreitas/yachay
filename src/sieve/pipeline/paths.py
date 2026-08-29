@@ -100,6 +100,8 @@ ATTENTION_BURDEN = RARE / "attention_burden.json"
 KNOWLEDGE_VOID = RARE / "knowledge_void.json"
 # Five kinds of hole, told apart by what would CLOSE each one.
 GAP_TAXONOMY = RARE / "gap_taxonomy.json"
+# One gene from the residue to the organ system, with the cost of each step where one is known.
+GENE_LADDER = RARE / "gene_ladder.json"
 VIEW_MODELS = RARE / "view_models.json"
 GENE2PUBMED = DATA / "ontology" / "gene2pubmed.gz"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"

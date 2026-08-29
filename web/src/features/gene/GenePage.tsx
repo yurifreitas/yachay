@@ -1,5 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+
+// The multiscale ladder. Lazy and fetched: 78 kB read by one section, and the connectors
+// between rungs are the argument, so it is worth its own view rather than a panel.
+const GeneLadder = lazy(() => import("./GeneLadder"));
 import { useRemoteData } from "../../lib/useRemoteData";
+import { LADDER } from "../../i18n/ladder";
 import { useHashParam } from "../../lib/useHashParam";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
@@ -56,6 +61,7 @@ const GROUPS: NavGroupDef[] = [
   { id: "attention", label: ATT.group, question: ATT.question },
   { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
   { id: "shape", label: GEO.gShape, question: GEO.qShape },
+  { id: "ladder", label: LADDER.rProtein, question: LADDER.lede1 },
   { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
   { id: "context", label: GENE.gContext, question: GENE.qContext },
   { id: "clinic", label: GENE.gClinic, question: GENE.qClinic },
@@ -73,6 +79,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "constraint", label: WORLD.sConstraint, group: "world" },
   { id: "expression", label: WORLD.sExpression, group: "world" },
   { id: "variants", label: WORLD.sVariants, group: "world" },
+  { id: "ladder", label: LADDER.rResidue, group: "ladder" },
   { id: "needle", label: GEO.sNeedle, group: "shape" },
   { id: "routes", label: GEO.sRoutes, group: "shape" },
   { id: "pathways", label: GEO.sPathways, group: "shape" },
@@ -227,6 +234,11 @@ export default function GenePage() {
             <p className={css.absentPanel}>{t(GENE.loadFailed)}</p>
           ) : (
             <>
+              {section === "ladder" && (
+                <Suspense fallback={null}>
+                  <GeneLadder gene={symbol || undefined} />
+                </Suspense>
+              )}
               {section === "datasheet" && <Datasheet rec={rec} />}
               {section === "attention" && (
                 <Attention rec={rec} scope={data.scope}

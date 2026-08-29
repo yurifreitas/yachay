@@ -371,6 +371,19 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="gene_ladder",
+    summary=("Join every scale of one gene into a single object, and state what each step "
+             "between two scales costs - or that nobody measured it."),
+    inputs=(paths.GENES_TO_DISEASE, paths.HPOA, paths.HP_OBO, paths.STRING_LINKS,
+            paths.STRING_INFO, paths.STRING_ALIASES, paths.REACTOME_PATHWAYS,
+            paths.REACTOME_HIERARCHY, paths.HPA_SINGLE_CELL),
+    outputs=(paths.GENE_LADDER,),
+    needs=("scale_information",),
+    code=sources("tools/gene_ladder.py"),
+    run=lambda: _run_tool("gene_ladder"),
+))
+
+_add(Stage(
     name="view_models",
     summary=("Solve the orderings, bins and ribbon counts the hyperdimensional views need, "
              "so the browser draws and never computes."),

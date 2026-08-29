@@ -1,0 +1,121 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.skeleton {
+  border-radius: var(--r-radius);
+  background: linear-gradient(100deg, var(--r-surface-2) 30%, var(--r-surface) 50%, var(--r-surface-2) 70%);
+  background-size: 300% 100%; animation: shimmer 1400ms cubic-bezier(.2,.8,.2,1) infinite;
+}
+@keyframes shimmer { to { background-position: -150% 0; } }
+@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; background: var(--r-surface-2); } }
+
+.controls { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; margin-bottom: var(--sp-4); }
+.controlK {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3); margin-right: var(--sp-2);
+}
+.chipBtn {
+  min-height: 32px; padding: 0 var(--sp-3);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: 999px;
+  font-size: 12px; color: var(--r-text-2); cursor: pointer;
+}
+.chipBtn:hover { color: var(--r-text); }
+.chipBtn:focus-visible { outline: 2px solid var(--unknown); outline-offset: 2px; }
+.chipOn { background: var(--unknown); border-color: transparent; color: var(--r-surface); font-weight: 600; }
+
+.lede { margin: 0 0 var(--sp-4); max-width: 76ch; font-size: 13.5px; line-height: 1.7; color: var(--r-text-2); }
+.lede strong { color: var(--r-text); }
+.ledeCount { color: var(--r-text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------------ a rung */
+.rung {
+  display: flex; flex-direction: column; gap: var(--sp-4);
+  padding: var(--sp-6);
+  background: var(--r-surface); border: var(--r-hairline); border-radius: var(--r-radius);
+}
+.rungHead { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-4); }
+.rungK {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.rungN { font-size: 20px; font-weight: 620; color: var(--r-text); font-variant-numeric: tabular-nums; }
+
+/* ------------------------------------------------------------------ the connector */
+/* THE STEP CARRIES THE NUMBER OR THE ADMISSION. A measured step is drawn in the accent and an
+   unmeasured one in the neutral, so a reader scanning the column sees at a glance that most
+   of this ladder has never been measured by anybody. */
+.step {
+  display: grid; grid-template-columns: 20px auto 1fr; align-items: center; gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-6);
+}
+.stepLine { justify-self: center; width: 2px; height: 34px; background: var(--r-border-hi); border-radius: 2px; }
+.step[data-measured] .stepLine { background: var(--unknown); width: 3px; }
+.stepVal { font-size: 15px; font-weight: 620; color: var(--unknown); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stepVal em { font-style: normal; font-size: 11px; font-weight: 500; color: var(--r-text-2); }
+.stepNone {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3); white-space: nowrap;
+}
+.stepWhy { font-size: 12px; line-height: 1.55; color: var(--r-text-3); max-width: 72ch; }
+
+/* ------------------------------------------------------------------ residue anatomy */
+.residue { display: flex; flex-direction: column; gap: var(--sp-2); }
+.protein {
+  position: relative; height: 26px; border-radius: 4px;
+  background: var(--r-surface-2); border: var(--r-hairline);
+}
+.feature { position: absolute; top: 3px; bottom: 3px; border-radius: 2px; }
+.dom { background: var(--unknown); }
+.mem { background: var(--r-text); opacity: 0.55; }
+.mot { background: var(--unknown); opacity: 0.5; }
+.act { background: var(--r-text); }
+.bind { background: var(--r-text); opacity: 0.35; }
+
+.hist { display: flex; align-items: flex-end; gap: 1px; height: 96px; }
+.histCol {
+  flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+  cursor: crosshair;
+}
+.histCol[data-hot] { outline: 1px solid var(--r-text); outline-offset: 1px; }
+.histSeg { display: block; width: 100%; }
+.pathogenic { background: var(--unknown); }
+.uncertain { background: var(--r-border-hi); }
+.benign { background: var(--r-surface-2); }
+.conflicting { background: var(--r-text); opacity: 0.4; }
+
+.residueFoot {
+  display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center;
+  min-height: 20px; font-size: 12px; color: var(--r-text-2); font-variant-numeric: tabular-nums;
+}
+.hint { color: var(--r-text-3); }
+.chip { display: inline-flex; align-items: center; gap: var(--sp-2); }
+.dot { width: 9px; height: 9px; border-radius: 2px; }
+
+/* ------------------------------------------------------------------ contents of a rung */
+.constraint { display: flex; flex-wrap: wrap; gap: var(--sp-6); }
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat em { font-style: normal; font-size: 17px; font-weight: 620; color: var(--r-text); font-variant-numeric: tabular-nums; }
+.stat span { font-size: 10.5px; color: var(--r-text-3); }
+.note { margin: 0; max-width: 76ch; font-size: 12.5px; line-height: 1.65; color: var(--r-text-2); }
+.saysNote {
+  margin: var(--sp-6) 0 0; max-width: 78ch; font-size: 12.5px; line-height: 1.7;
+  color: var(--r-text-2); padding-left: var(--sp-4); border-left: var(--r-hairline);
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.partner, .chipFlat {
+  padding: 3px var(--sp-3); border-radius: 999px; font-size: 12px;
+  background: var(--r-surface-2); color: var(--r-text-2);
+}
+.partner { background: var(--unknown); color: var(--r-surface); }
+.empty { font-size: 12.5px; color: var(--r-text-3); }
+
+.systems { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.system {
+  display: inline-flex; align-items: baseline; gap: var(--sp-2);
+  padding: 3px var(--sp-3); border-radius: 6px;
+  background: var(--r-surface-2); font-size: 12px; color: var(--r-text-2);
+}
+.system em {
+  font-style: normal; font-size: 11px; font-weight: 600; color: var(--unknown);
+  font-variant-numeric: tabular-nums;
+}
