@@ -328,6 +328,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="knowledge_shape",
+    summary=("The shape of what is known per disease across five axes - and the measured "
+             "finding that the shape is mostly a registry boundary."),
+    inputs=(paths.GENES_TO_DISEASE, paths.HPOA, paths.HPA_SINGLE_CELL, paths.CLINVAR,
+            paths.ORPHA_PREVALENCE, paths.ORPHA_AGES),
+    outputs=(paths.KNOWLEDGE_SHAPE,),
+    code=sources("tools/knowledge_shape.py"),
+    run=lambda: _run_tool("knowledge_shape"),
+))
+
+_add(Stage(
     name="references",
     summary="Encode the reference map and compute which communities actually share a rung.",
     outputs=(paths.REFERENCES,),

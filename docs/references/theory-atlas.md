@@ -8,7 +8,8 @@
 > [`deep/multiscale-formalism.md`](deep/multiscale-formalism.md); the mid-century work it
 > descends from, with the two of those ancestors whose predictions were tested here, is in
 > [`deep/foundations.md`](deep/foundations.md).
-> **Last revised:** 2026-08-29 · **State:** 3 measured (8 findings), 9 buildable, the rest
+> **Last revised:** 2026-08-29 · **State:** 4 measured (10 findings, one of them a failed
+> prediction), 9 buildable, the rest
 > analogy. One of the three was not on the theory list at all — see §1, language.
 > Governed by [`../adr/0007-theory-enters-by-measurement.md`](../adr/0007-theory-enters-by-measurement.md),
 > which is what makes the grades binding rather than decorative.
@@ -40,7 +41,7 @@ So the catalogue is kept, in full, and given no standing. Three grades:
 
 | grade | meaning | count |
 |---|---|---|
-| **measured** | a tool computes it from an ingested source, with a null and an interval | 3 constructs, 8 findings |
+| **measured** | a tool computes it from an ingested source, with a null and an interval | 4 constructs, 10 findings — **one of them negative** |
 | **buildable** | every file it needs is already in `data/`; only work stands in the way | 10 |
 | **analogy** | needs data this project does not have, or has no estimator attached | the rest |
 
@@ -227,6 +228,45 @@ condition identifier, and ClinVar issues identifiers to its placeholders — `CN
 provided` is a real row. Half the corpus (3,211,994 of 6,428,687 submissions) was being
 counted as context. The rule now checks the label before the identifier, and the comment at
 `condition_key` says why.
+
+### Knowledge shape — the atypical idea that did not survive contact
+
+**Grade:** measured · **Tool:** [`../../tools/knowledge_shape.py`](../../tools/knowledge_shape.py) ·
+**Artefact:** `out/rare/knowledge_shape.json` · **Stage:** `knowledge_shape`
+
+**The idea, and it is the most unusual one in the catalogue.** Not *how much* is known about a
+disease but the **shape** of it: a vector over genetics, phenotype, cellular, natural history
+and population, and the claim that a disease with a thousand genetics papers and two on
+natural history is not well studied — it is bright on one axis and dark on the rest.
+
+**It fails twice, and both failures are worth more than the idea.**
+
+*First:* knowledge is **less** concentrated than independence would give — mean anisotropy
+0.2633 against a null of 0.2723, z = **−19.0**. The axes rise and fall together. The intuition
+describes a handful of famous diseases, not the catalogue.
+
+*Second, and worse for the statistic:* anisotropy tracks the **number of populated axes**
+almost arithmetically — 0.590 at two live axes, 0.346 at three, 0.160 at four, 0.021 at five.
+It answers "how broad is the coverage", not "what shape is the knowledge".
+
+**So the question was replaced with the one it should have been:** which axes co-occur?
+
+| pair | Spearman | |
+|---|---:|---|
+| natural history ~ population | **+0.759** | both counted from Orphanet — an artefact of construction |
+| genetics ~ cellular | **+0.640** | the cellular axis is *derived from* the genes — near-tautological |
+| phenotype ~ cellular | +0.044 | |
+| genetics ~ phenotype | **+0.012** | knowing a disease's genes predicts nothing about how well its phenotype is annotated |
+| phenotype ~ population | **−0.332** | and every cross-catalogue pair is negative |
+
+**The residual structure is a registry boundary, not a shape of knowledge.** HPO annotation is
+OMIM-heavy; prevalence exists only under ORPHA codes. The negative correlations are that fault
+line — already recorded in the visualisation work — reappearing dressed as epistemology.
+
+**What this does to the roadmap.** §5.1 proposes a knowledge-completeness vector as a
+buildable item. It stays, with a condition now attached: **any such vector must be shown not to
+be measuring provenance before it is shown to anyone.** That condition did not exist an hour
+ago and it is the whole return on building this.
 
 ---
 

@@ -313,3 +313,30 @@ thresholds:
       phenotype" 95k, then nothing until 36k - so any cut between 40k and 90k
       drops the same three terms. The headline is reported WITHOUT this cut
       and the cut is reported beside it, so no published number depends on it.
+
+  # ---- tools/knowledge_shape.py --------------------------------------
+  - id: MIN_AXES
+    module: tools/knowledge_shape.py
+    value: 2
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      A disease scoring on one axis has no shape to measure — its entropy
+      is zero by arithmetic, not by concentration of knowledge. Excluding
+      those is the difference between "we know one thing about it" and
+      "we know nothing about it", and conflating them would have inflated
+      the headline in the direction the hypothesis wanted.
+
+  - id: SHAPE_PERMUTATIONS
+    module: tools/knowledge_shape.py
+    value: 200
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      Draws behind the independence null. The null's own sd came out at
+      0.00047 against an effect of 0.009, so the comparison is limited by
+      the effect and not by the draws; more would move no digit.

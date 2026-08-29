@@ -1,9 +1,9 @@
-# `tools/` — 57 scripts, grouped by what they are for
+# `tools/` — 58 scripts, grouped by what they are for
 
-> **Role:** the map of this directory. It grew to 19,165 lines without any declared
-> structure, and a flat listing of 57 filenames is not a structure — it is an inventory
+> **Role:** the map of this directory. It grew to 19,642 lines without any declared
+> structure, and a flat listing of 58 filenames is not a structure — it is an inventory
 > pretending to be one.
-> **Last revised:** 2026-08-29 · **State:** complete for the 57 files on disk. The groups
+> **Last revised:** 2026-08-29 · **State:** complete for the 58 files on disk. The groups
 > below are a reading order, not directories: renaming or moving a file would break the
 > pipeline's source tracking (`sieve.pipeline.stages` hashes each tool's path to decide
 > staleness), so the organisation is documentary and deliberately so.
@@ -35,6 +35,7 @@ These read an ingested file and compute. Nothing in this group is authored.
 | `evidence_atlas.py` | 272 | HPO | only **39.7 %** of diseases have one sign from a real series |
 | `nongene_measure.py` | 257 | HPO | six of ten authored non-gene classes have a footprint of **zero** |
 | `interactome_sparse.py` | 459 | HPO | modularity **0.861** against **0.162** for a degree-matched null |
+| `knowledge_shape.py` | 406 | HPO, ClinVar, HPA, Orphanet | the shape of what is known, per disease — and the finding that **the prediction fails**: knowledge is less concentrated than independence (z = −19.0) and the residual structure is the OMIM/ORPHA registry boundary |
 | `scale_information.py` | 657 | HPO, Reactome, HPA, STRING | what a change of scale costs: 181-fold compression onto 29 pathways keeps **22 %** of the information genes carry about organ system; onto 154 cell types, **31 %** |
 | `conflict_decomposition.py` | 377 | ClinVar submissions | the decomposition: **57.2 %** of variant-level conflicts are across-condition only, 48.6 % with panel indications removed — about half of recorded disagreement is context, not contradiction |
 | `evidence_conflict.py` | 255 | ClinVar | whether recorded conflict is contradiction or context: conflict rate rises **2.14x** with the number of conditions, and the rise survives every submitter stratum |

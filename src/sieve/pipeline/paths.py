@@ -90,6 +90,9 @@ LANGUAGE_COVERAGE = RARE / "language_coverage.json"
 EVIDENCE_CONFLICT = RARE / "evidence_conflict.json"
 # The decomposition the association could not do: contradiction against context.
 CONFLICT_DECOMPOSITION = RARE / "conflict_decomposition.json"
+# The shape of what is known, per disease, across five axes. A negative result: the
+# prediction fails and the vector largely measures which registry a disease lives in.
+KNOWLEDGE_SHAPE = RARE / "knowledge_shape.json"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"
 HPO_TRANSLATIONS = DATA / "ontology" / "hpo-translations.tar.gz"
 STRING_INFO = DATA / "ontology" / "9606.protein.info.v12.0.txt.gz"
@@ -128,6 +131,7 @@ TAIL_CALIBRATION = OUT / "tail_calibration.json"
 # The tooling survey imports and greps at run time, so it is never cacheable.
 ECOSYSTEM = OUT / "ecosystem.json"
 ORPHA_PREVALENCE = DATA / "ontology" / "en_product9_prev.xml"
+ORPHA_AGES = DATA / "ontology" / "en_product9_ages.xml"
 HPOA = DATA / "ontology" / "phenotype.hpoa"
 HP_OBO = DATA / "ontology" / "hp.obo"
 GENES_TO_DISEASE = DATA / "ontology" / "genes_to_disease.txt"
