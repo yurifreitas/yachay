@@ -97,6 +97,7 @@ KNOWLEDGE_SHAPE = RARE / "knowledge_shape.json"
 ATTENTION_BURDEN = RARE / "attention_burden.json"
 # Solved layouts for the hyperdimensional views. No measurement of its own: a seriation is
 # an argument, and one computed inside a component is an argument nobody can audit.
+KNOWLEDGE_VOID = RARE / "knowledge_void.json"
 VIEW_MODELS = RARE / "view_models.json"
 GENE2PUBMED = DATA / "ontology" / "gene2pubmed.gz"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"

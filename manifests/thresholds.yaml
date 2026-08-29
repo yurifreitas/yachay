@@ -356,3 +356,32 @@ thresholds:
       headline is reported on BOTH arms — all diseases and restricted — so
       no published number depends on where the cut sits, and the two arms
       agreeing (+0.331 against +0.254) is itself the robustness check.
+
+  # ---- tools/knowledge_void.py ---------------------------------------
+  - id: BINS_PER_AXIS
+    module: tools/knowledge_void.py
+    value: 4
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: mechanistic
+    reason: >-
+      Bands per axis. Five axes at four bands is 1,024 cells against 12,994
+      diseases — about thirteen per cell under a uniform spread, which is
+      enough that an empty cell means something. Follows from the ratio of
+      diseases to cells, not from the result: finer bands make emptiness
+      trivial and coarser bands make it invisible.
+
+  - id: ANTIFORM_EXPECTED
+    module: tools/knowledge_void.py
+    value: 5.0
+    fixed_at: 2026-08-29
+    target_contact: false
+    pre_registered: true
+    justification: conventional
+    reason: >-
+      An empty cell counts as an anti-form when independence predicts at
+      least five diseases in it. Fixed by fiat before the run: below five,
+      absence is unremarkable at this sample size. The count of anti-forms
+      moves with this number and the artefact reports the threshold beside
+      the count so the two cannot be read apart.

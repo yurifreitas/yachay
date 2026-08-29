@@ -8,7 +8,7 @@ import { useT } from "../../../i18n";
 import { MEAS } from "../../../i18n/measured";
 import { fmtInt } from "../../../lib/scale";
 import { Provenance } from "./Provenance";
-import { LanguageMatrix, ScaleSlopegraph, KnowledgePCP, ConflictGrid } from "./HyperViews";
+import { LanguageMatrix, ScaleSlopegraph, KnowledgePCP, ConflictGrid, KnowledgeVoid } from "./HyperViews";
 import css from "./MeasuredPanels.module.css";
 
 /** THE ADR 0007 LAYER — the four results on this site that carry a null and an interval.
@@ -507,6 +507,10 @@ export function KnowledgeShape() {
 
       <div className={css.block}>
         <KnowledgePCP />
+      </div>
+
+      <div className={css.block}>
+        <KnowledgeVoid />
       </div>
 
       <div className={css.pair}>

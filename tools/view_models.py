@@ -198,6 +198,30 @@ def conflict_grid() -> dict:
     }
 
 
+def knowledge_void() -> dict:
+    """The lattice faces, passed through with the headline the reader needs beside them.
+
+    No layout to solve — `tools/knowledge_void.py` already emits ten 4x4 faces. What this adds
+    is the framing numbers a face is meaningless without: how full the space is, how much of
+    it is frontier, and how many anti-forms there are in total. A grid of squares with no
+    denominator is decoration.
+    """
+    src = load("knowledge_void")
+    faces = (src.get("faces") or {}).get("items")
+    if not faces:
+        return {}
+    return {
+        "bins": src["lattice"]["bins_per_axis"],
+        "axes": src["lattice"]["axes"],
+        "faces": faces,
+        "occupied": src["occupied"],
+        "shape": src["shape"],
+        "antiforms": {k: v for k, v in src["antiforms"].items() if k != "cells"},
+        "top_antiforms": src["antiforms"]["cells"][:6],
+        "reading": (src.get("faces") or {}).get("reading", ""),
+    }
+
+
 def main() -> int:
     argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
 
@@ -206,6 +230,7 @@ def main() -> int:
         "scale_slopegraph": scale_slopegraph(),
         "knowledge_pcp": knowledge_pcp(),
         "conflict_grid": conflict_grid(),
+        "knowledge_void": knowledge_void(),
     }
     payload = {
         "generated": date.today().isoformat(),

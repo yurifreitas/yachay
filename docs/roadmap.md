@@ -21,11 +21,11 @@
 | | |
 |---|---|
 | library (`src/sieve/`) | **4 modules** implemented (Null, Power, Design, Target); six of the ten stages have no implementation |
-| tooling (`tools/`) | 61 scripts, 20,326 lines |
+| tooling (`tools/`) | 62 scripts, 20,634 lines |
 | tools that call the library | **3** (`dossier.py`, `genotype_phenotype.py`, `sieve.cli`) |
 | ingested sources | 18, ~1,339 MB |
 | sources ingested and unread | **3** (Orphanet gene associations, Orphanet age of onset, phenopacket-store) — gnomAD is read by `tools/gene_world.py`, Reactome by `tools/scale_information.py` |
-| pipeline stages | 38 |
+| pipeline stages | 39 |
 | audit findings | 35, of which 28 closed |
 | authored layers tested | 2 of 9 |
 

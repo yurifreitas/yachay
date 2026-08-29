@@ -349,13 +349,24 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="knowledge_void",
+    summary=("The shape of the occupied space and the shape of the hole: which ways of "
+             "knowing a disease occur, and which absent ones the marginals expected."),
+    inputs=(paths.KNOWLEDGE_SHAPE,),
+    outputs=(paths.KNOWLEDGE_VOID,),
+    needs=("knowledge_shape",),
+    code=sources("tools/knowledge_void.py"),
+    run=lambda: _run_tool("knowledge_void"),
+))
+
+_add(Stage(
     name="view_models",
     summary=("Solve the orderings, bins and ribbon counts the hyperdimensional views need, "
              "so the browser draws and never computes."),
     inputs=(paths.SCALE_INFORMATION, paths.LANGUAGE_COVERAGE, paths.EVIDENCE_CONFLICT,
             paths.KNOWLEDGE_SHAPE),
     outputs=(paths.VIEW_MODELS,),
-    needs=("scale_information", "language_coverage", "evidence_conflict", "knowledge_shape"),
+    needs=("scale_information", "language_coverage", "evidence_conflict", "knowledge_void"),
     code=sources("tools/view_models.py"),
     run=lambda: _run_tool("view_models"),
 ))

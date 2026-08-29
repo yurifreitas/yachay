@@ -42,6 +42,15 @@ type Models = {
     links: { axis: number; from: number; to: number; n: number }[];
     diseases: number; reading: string;
   };
+  knowledge_void?: {
+    bins: number; axes: string[];
+    faces: { x: string; y: string; grid: { n: number; anti: number }[][] }[];
+    occupied: { cells: number; share: number; null_mean: number; z_vs_null: number };
+    shape: { frontier_cells: number; interior_cells: number; frontier_share: number };
+    antiforms: { count: number; diseases_expected_in_them: number; threshold_expected: number };
+    top_antiforms: { expected: number; reads_as: Record<string, string> }[];
+    reading: string;
+  };
   conflict_grid?: {
     rows: string[]; cols: string[]; cells: (number | null)[][];
     marginal: (number | null)[]; reading: string;
@@ -301,6 +310,94 @@ export function ConflictGrid() {
             </div>
           ))}
         </div>
+      </div>
+    </figure>
+  );
+}
+
+/* ------------------------------------------------------------------ the void */
+
+/** THE ANTI-FORM VIEW — what is not there, drawn as an object.
+ *
+ *  Every atlas in this field renders what exists and lets the rest disappear as background.
+ *  This inverts it. Five axes of what is known, cut into four bands each, is a lattice of
+ *  1,024 cells; only 318 of them hold a disease. The other 706 are not background — they are
+ *  ways of knowing a disease that do not occur.
+ *
+ *  Two marks, and the second is the point:
+ *
+ *    a filled square   diseases sit here; opacity is how many
+ *    an outlined ring  an ANTI-FORM lies in the fibre over this face cell — an empty region
+ *                      of the lattice where the catalogue's own marginals predict diseases
+ *                      and none are found
+ *
+ *  Ten pairwise faces, because five dimensions cannot be drawn and a projection that hides
+ *  which pair you are looking at is worse than ten that say so. The reader is meant to notice
+ *  that the rings cluster in the corners: the absent combinations are the ones that mix a
+ *  well-studied axis with an unstudied one, and the catalogue has almost none of those.
+ */
+export function KnowledgeVoid() {
+  const tt = useT();
+  const models = useModels();
+  const m = models?.knowledge_void;
+  if (!models) return <Loading height={520} />;
+  if (!m) return null;
+
+  const maxN = Math.max(...m.faces.flatMap((f) => f.grid.flatMap((r) => r.map((c) => c.n))));
+  const short = (a: string) => a.replace(/_/g, " ").slice(0, 10);
+
+  return (
+    <figure className={css.figure}>
+      <figcaption className={css.caption}>
+        <strong>{tt(MEAS.voidTitle)}</strong> {tt(MEAS.voidRead)}
+      </figcaption>
+
+      <div className={css.voidStats}>
+        <div><em>{m.occupied.cells}</em><span>of {m.faces.length > 0 ? Math.pow(m.bins, m.axes.length) : 0} cells occupied</span></div>
+        <div><em>{m.occupied.z_vs_null}</em><span>z against independence — the void is structural</span></div>
+        <div><em>{(100 * m.shape.frontier_share).toFixed(0)} %</em><span>of occupied cells are frontier: a filament, not a blob</span></div>
+        <div><em>{m.antiforms.count}</em><span>anti-forms, holding {Math.round(m.antiforms.diseases_expected_in_them)} expected diseases and none real</span></div>
+      </div>
+
+      <div className={css.faces}>
+        {m.faces.map((f) => (
+          <div key={`${f.x}-${f.y}`} className={css.face}>
+            <span className={css.faceLabel}>{short(f.x)} × {short(f.y)}</span>
+            <div className={css.faceGrid} style={{ gridTemplateColumns: `repeat(${m.bins}, 1fr)` }}>
+              {f.grid.flatMap((row, ri) =>
+                row.map((cell, ci) => (
+                  <span
+                    key={`${ri}-${ci}`}
+                    className={css.faceCell}
+                    title={`${cell.n} diseases · ${cell.anti} anti-forms`}
+                  >
+                    <span className={css.faceFill} style={{ opacity: 0.08 + 0.92 * (cell.n / maxN) }} />
+                    {cell.anti > 0 && (
+                      <span className={css.faceAnti} style={{ opacity: 0.35 + 0.65 * Math.min(1, cell.anti / 20) }} />
+                    )}
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className={css.legend}>
+        <span><span className={`${css.key} ${css.keyFill}`} /> {tt(MEAS.voidFilled)}</span>
+        <span><span className={`${css.key} ${css.keyAnti}`} /> {tt(MEAS.voidAnti)}</span>
+      </div>
+
+      <div className={css.antiList}>
+        <span className={css.antiK}>{tt(MEAS.voidTop)}</span>
+        {m.top_antiforms.map((a, i) => (
+          <div key={i} className={css.antiRow}>
+            <span className={css.antiVal}>{a.expected.toFixed(0)}</span>
+            <span className={css.antiText}>
+              {Object.entries(a.reads_as).map(([k, v]) => `${k.replace(/_/g, " ")} ${v}`).join(" · ")}
+            </span>
+          </div>
+        ))}
       </div>
     </figure>
   );

@@ -234,6 +234,27 @@ export const MEAS = {
   gridTitle: bi("Conflict rises with context, and faster the more reviewers there are.",
                 "O conflito sobe com o contexto, e mais rápido quanto mais revisores há."),
 
+  voidTitle: bi("What is not there, drawn as an object.",
+                "O que não está lá, desenhado como objeto."),
+  voidRead: bi(
+    "Five axes cut into four bands each is a lattice of 1,024 ways a disease could be known. "
+    + "Only 318 of them hold a disease. The rest are not background — a filled square is where "
+    + "diseases sit, a ring is an ANTI-FORM: an empty region where the catalogue's own "
+    + "marginals predict diseases and none are found. Ten pairwise faces, because five "
+    + "dimensions cannot be drawn and a projection that hides which pair you are looking at is "
+    + "worse than ten that say so.",
+    "Cinco eixos cortados em quatro faixas cada é uma malha de 1.024 maneiras de uma doença ser "
+    + "conhecida. Só 318 delas contêm alguma doença. O resto não é fundo — um quadrado cheio é "
+    + "onde há doenças, um anel é uma ANTIFORMA: uma região vazia onde as próprias marginais do "
+    + "catálogo preveem doenças e nenhuma é encontrada. Dez faces aos pares, porque cinco "
+    + "dimensões não se desenham e uma projeção que esconde qual par você está vendo é pior que "
+    + "dez que dizem.",
+  ),
+  voidFilled: bi("diseases sit here", "há doenças aqui"),
+  voidAnti: bi("anti-form: expected and absent", "antiforma: esperada e ausente"),
+  voidTop: bi("the largest absences, in diseases the marginals expected",
+              "as maiores ausências, em doenças que as marginais esperavam"),
+
   // --------------------------------------------------------------- provenance
   prov: bi("Provenance, and what this does not say",
            "Proveniência, e o que isto não diz"),
