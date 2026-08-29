@@ -3,7 +3,7 @@
 > **Role:** the index for a five-lane adversarial review of the whole project. Each lane
 > was briefed to try to **break** its subject rather than confirm it, because a project
 > that has only ever been reviewed by its author has not been reviewed.
-> **Last revised:** 2026-08-26 · **State:** lanes running; this index is filled in as
+> **Last revised:** 2026-08-29 · **State:** lanes running; this index is filled in as
 > each deliverable lands, with its verdict quoted rather than paraphrased.
 
 ## Why five lanes, and why adversarial
@@ -61,3 +61,28 @@ Each deliverable opens with a blunt verdict. Where a lane contradicts the reposi
 existing documentation, **the lane wins until its evidence is disputed with numbers** —
 and the contradicted document gets corrected rather than quietly left standing. Where two
 lanes contradict each other, that goes in `docs/lineage.md` §8 as a new open anomaly.
+
+
+---
+
+## Two later files, which are not review lanes
+
+Added 2026-08-29 under [`../../adr/0007-theory-enters-by-measurement.md`](../../adr/0007-theory-enters-by-measurement.md),
+and they say so in their own headers rather than pretending to be lanes:
+
+- [`multiscale-formalism.md`](multiscale-formalism.md) — the mathematics behind
+  [`../theory-atlas.md`](../theory-atlas.md): for each family, the formal object, the estimator
+  it reduces to on this project's data, the identification problem, and the blocker.
+- [`foundations.md`](foundations.md) — the mid-century work those families descend from, each
+  tied to a number measured here or to a named open problem. Two of the ancestors made
+  predictions that were tested; one failed.
+
+**And two of the questions this directory lists as open have since been answered**, which is
+recorded here rather than by editing them away:
+
+- *"Why does the control pool calibrate to −4.09?"* — addressed by fitting nulls on blocks
+  rather than rows, [`../../adr/0004-block-nulls.md`](../../adr/0004-block-nulls.md), whose
+  prediction was scored correct.
+- *"Is the −0.0252 → −0.0559 move a defect or noise? Unanswerable without an interval, which
+  the repository has never computed anywhere."* — the repository now computes intervals
+  everywhere (`tools/intervals.py`, audit A26), and the sentence is no longer true.

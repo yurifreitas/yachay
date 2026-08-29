@@ -1,4 +1,4 @@
-# Broad Institute initiatives — where `sieve` genuinely applies, and where it does not
+# Broad Institute initiatives — where yachay genuinely applies, and where it does not
 
 > **Role:** an honest fit assessment between this library and the Broad's current
 > translational initiatives, using the same four-question test applied to every other
@@ -219,7 +219,7 @@ for medicines designed for one patient. Their answer is a *platform strategy* �
 tools, disease models, manufacturing, safety data and clinical protocols shared across
 programmes.
 
-### Where `sieve` applies — and one of these is a safety question
+### Where yachay applies — and one of these is a safety question
 
 | # | Decision point | Shape | Fit |
 |---|---|---|---|

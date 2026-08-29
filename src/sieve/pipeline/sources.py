@@ -91,7 +91,7 @@ SOURCES: tuple[Source, ...] = (
         url="https://codeload.github.com/obophenotype/hpo-translations/tar.gz/refs/heads/main",
         filename="hpo-translations.tar.gz",
         approx_mb=7.4,
-        gives="The phenotype vocabulary in thirteen languages besides English, as Babelon "
+        gives="The phenotype vocabulary in fourteen languages besides English, as Babelon "
               "TSV. Ingested because this project publishes in two languages and had no way "
               "to say what a reader loses in either.",
         licence="HPO licence (permissive, attribution)",

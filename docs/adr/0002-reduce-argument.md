@@ -1,5 +1,8 @@
 # 0002 — Make the sampling model an explicit `reduce=` argument, and refuse to guess
 
+> **Role:** the decision to make the sampling model explicit and refuse to infer it.
+> **Last revised:** 2026-08-29 · **State:** accepted, ⚠️ back-filled.
+
 **Status:** accepted · ⚠️ back-filled 2026-08-26
 **Supersedes:** nothing
 

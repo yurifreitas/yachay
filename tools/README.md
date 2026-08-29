@@ -1,9 +1,9 @@
-# `tools/` — 33 scripts, grouped by what they are for
+# `tools/` — 57 scripts, grouped by what they are for
 
-> **Role:** the map of this directory. It grew to 11,790 lines without any declared
-> structure, and a flat listing of 33 filenames is not a structure — it is an inventory
+> **Role:** the map of this directory. It grew to 19,165 lines without any declared
+> structure, and a flat listing of 57 filenames is not a structure — it is an inventory
 > pretending to be one.
-> **Last revised:** 2026-08-28 · **State:** complete for the 34 files on disk. The groups
+> **Last revised:** 2026-08-29 · **State:** complete for the 57 files on disk. The groups
 > below are a reading order, not directories: renaming or moving a file would break the
 > pipeline's source tracking (`sieve.pipeline.stages` hashes each tool's path to decide
 > staleness), so the organisation is documentary and deliberately so.
@@ -18,7 +18,7 @@ which grades the *artefacts* as measured, derived or authored. This file organis
 
 | tool | lines | what it does |
 |---|---|---|
-| `ingest.py` | 90 | Downloads the 14 registered public sources (~899 MB). Stdlib only, resumable, licence-aware. Deliberately **not** in the build graph: a missing catalogue should stop a build with a message, never trigger a silent download mid-analysis. |
+| `ingest.py` | 90 | Downloads the 18 registered public sources (~1,339 MB). Stdlib only, resumable, licence-aware. Deliberately **not** in the build graph: a missing catalogue should stop a build with a message, never trigger a silent download mid-analysis. |
 
 ---
 
@@ -35,6 +35,10 @@ These read an ingested file and compute. Nothing in this group is authored.
 | `evidence_atlas.py` | 272 | HPO | only **39.7 %** of diseases have one sign from a real series |
 | `nongene_measure.py` | 257 | HPO | six of ten authored non-gene classes have a footprint of **zero** |
 | `interactome_sparse.py` | 459 | HPO | modularity **0.861** against **0.162** for a degree-matched null |
+| `scale_information.py` | 657 | HPO, Reactome, HPA, STRING | what a change of scale costs: 181-fold compression onto 29 pathways keeps **22 %** of the information genes carry about organ system; onto 154 cell types, **31 %** |
+| `conflict_decomposition.py` | 377 | ClinVar submissions | the decomposition: **57.2 %** of variant-level conflicts are across-condition only, 48.6 % with panel indications removed — about half of recorded disagreement is context, not contradiction |
+| `evidence_conflict.py` | 255 | ClinVar | whether recorded conflict is contradiction or context: conflict rate rises **2.14x** with the number of conditions, and the rise survives every submitter stratum |
+| `language_coverage.py` | 286 | HPO translations, HPO | what a reader loses by not reading English: Portuguese covers **42.9 %** of the annotated phenotype, with a **69.6-point** spread across organ systems |
 | `dossier.py` | 796 | HPO, Orphanet, HPA, ClinicalTrials.gov | twelve diseases in full; the only tool that queries a live API |
 
 ---
@@ -106,6 +110,29 @@ been** (`nongene_seed` by `nongene_measure`, `rare_disease_seed` by `lexicon_che
 | `capability_math.py` | 362 | capital per patient, derived; contradicts the authored barriers layer |
 | `figure_data.py` | 314 | one data contract, two renderers — the paper and the explorer cannot disagree |
 | `paper_numbers.py` | 104 | no number is typed into the manuscript; each is a macro from a manifest |
+
+---
+
+## 7. The gene layers — one gene, every layer
+
+Added over 2026-08-28/29 and, until now, invisible in this map: thirteen `gene_*` tools plus
+three others build the per-gene view the explorer serves. They are grouped here because they
+share an axis, not a method — each reads the catalogue layers above and pivots them onto a
+single gene.
+
+| tool | what it produces |
+|---|---|
+| `gene_index.py` / `gene_shards.py` | the gene list the explorer loads, and its sharding |
+| `gene_datasheet.py` | one gene as a datasheet: every measured field with its provenance |
+| `gene_domains.py` / `gene_geometry.py` | protein domains and the variant geometry along them |
+| `gene_attention.py` | the attention a gene has received, against what it carries |
+| `gene_facets.py` / `gene_related.py` / `gene_insights.py` | facets, neighbours, and the read-outs |
+| `gene_space.py` / `gene_world.py` | the gene placed among the others |
+| `cancer_genotype.py` | genotype-defined subgroups with the confounds measured |
+| `gap_patterns.py` | which fields are missing together, at catalogue scale |
+| `tropical_gap.py` | the neglected-disease axis |
+| `twin_propagation.py` | the first dynamical layer: perturbation spread on STRING, against a degree-matched null |
+| `scale_information.py` | the first cross-scale layer — see group 2 |
 
 ---
 

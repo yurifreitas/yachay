@@ -1,5 +1,8 @@
 # 0006 — Thresholds are pre-registered, dated, and frozen against target contact
 
+> **Role:** the decision to pre-register, date and freeze every threshold against target contact.
+> **Last revised:** 2026-08-29 · **State:** proposed; written after the four thresholds it governs, and it says so.
+
 **Status:** proposed · written 2026-08-28 **after** the thresholds it governs already existed
 **Supersedes:** nothing. Adopts a practice from `F:\CODE\climate`.
 

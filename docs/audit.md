@@ -3,7 +3,7 @@
 > **Role:** a standing audit of this repository against the rules it publishes for itself
 > (`references/standards.md`, the documentation standard, the ten stages). One dated
 > section per pass. It records what is *out of conformance*, not what works.
-> **Last revised:** 2026-08-28 · **State:** nine sweeps in one day. Five went deeper into the
+> **Last revised:** 2026-08-29 · **State:** nine sweeps in one day. Five went deeper into the
 > rare-disease layers, the sixth measured the repository itself, the seventh widened the
 > reference base, the eighth used it to attack this project's own weakest published claim,
 > the ninth brought in patient-level data for the first time, the tenth read the two thirds
@@ -13,8 +13,8 @@
 > the fifteenth put an interval on every headline — closing **A6**, the oldest open finding
 > here — the sixteenth surveyed the author's own prior projects and found the ancestor this
 > repository never credited, and the seventeenth transferred two practices from them.
-> **34 findings**, 27 closed. **A27 is the one to read first**: it restates A15 and it is an
-> attribution debt, not a bug. **A28 is the one that stings**: four of this project's seven
+> **37 findings**, 28 closed. **A27 is the one to read first**: it restates A15 and it is an
+> attribution debt, not a bug. **A28 is the one that stings**: five of this project's nineteen
 > thresholds were chosen after looking at the data they gate. The backlog is ordered in
 > [`roadmap.md`](roadmap.md).
 > **A18 is the strongest result here**: the library's founding claim, measured on 10,377
@@ -247,7 +247,7 @@ exception rather than the standard.
 *Root cause:* the repository audits the statistics it computes and had never audited the
 statistics it **displays**. A9 was the schema equivalent of this; this is the rendering one.
 
-### A13 — only one of the nine authored layers has ever been tested · **open**
+### A13 — only two of the nine authored layers have ever been tested · **open**
 
 Exposed by writing A3's map, which is the argument for writing such maps.
 
@@ -1476,3 +1476,66 @@ stated intention rather than re-deriving it.
 - It did not resolve §9 of `lineage.md` — whether NF2 is a `sieve` demonstration or simply a
   good analysis that does not need Stage 1. That is a scientific question, not a
   conformance one, and it is the most important open item in the project.
+
+
+---
+
+### A36 — a body of work landed with no audit entry, and the indexes did not move · **closed 2026-08-29**
+
+**What happened.** On 2026-08-29 the repository gained one ADR, three reference documents,
+four tools, four pipeline stages and two ingested sources. Nothing in this file mentioned any
+of it, and six indexes still described the state of the day before: `rare-layers.md` mapped 26
+of 34 artefacts while its own header said 34, `tools/README.md` advertised 14 sources when 18
+were registered, `README.md` and `adr/README.md` both said one construct was measured when
+three were, and `audit.md` itself said four of seven thresholds were calibrated when the
+manifest held nineteen with five calibrated.
+
+**Why it matters, and it is the same failure as A11.** An index that lags the work is not a
+cosmetic problem in this repository: the indexes are how a reader decides what has been
+measured. A file that says twelve of twenty-five layers are measured, when eighteen of
+thirty-four are, understates the project in the direction that makes its strongest claims
+invisible — which is exactly the shape of A2.
+
+**Root cause.** Nothing links the addition of an artefact to the documents that are supposed
+to enumerate it. `tools/verify_claims.py` protects a *number* once registered; no control
+protects a *list*. The four new numbers were registered on the same commit that published
+them, which is the practice A1 asked for, but their existence in the layer map was not.
+
+**What was done.** Every count above corrected against the filesystem and `out/status.json`;
+the eight unmapped artefacts added to `rare-layers.md` with grades; this entry written.
+
+**What is still open, and it is the useful half.** A checker that enumerates `out/rare/*.json`
+and fails when one of them appears in no index would have caught all of it. It is the
+list-shaped sibling of `verify_claims.py` and does not exist. Filed here rather than fixed,
+because writing it in the same sweep that found the need is how A28's thresholds came to be
+calibrated against data already seen.
+
+
+---
+
+### A37 — the read-site detector under-reports, and one attempt to fix it made it worse · **open**
+
+**What it is.** `tools/status.py` decides whether an ingested file has ever been *read* by
+walking each module's AST for a read call whose argument resolves to a filename. It currently
+reports **eight** ingested files with no read site. At least two of those are read:
+`gnomad.v4.1.constraint_metrics.tsv` by `tools/gene_world.py:127` and
+`rna_single_cell_type.tsv.zip` by the same module at :165 and by `gene_datasheet.py:132`. Both
+use the shape `path = DATA / "name.ext"` followed by `path.open(...)`.
+
+**The diagnosis, which is probably right.** The detector keeps one filename per variable name,
+and `path` is rebound in several functions of the same module, so all but the last resolve to
+the wrong file.
+
+**The attempted fix, and why it is not in the repository.** Mapping each name to a *set* of
+filenames should have been strictly more permissive. It made the count **worse — eight to
+eleven** — and newly flagged `CRISPRGeneEffect.csv`, which is beyond doubt read. That means the
+detector's behaviour is not explained by the diagnosis above, and shipping the change would
+have traded a known under-report for an unexplained one. Reverted.
+
+**Why this matters more than the number.** `docs/status.md` is generated precisely so the
+repository cannot lie about itself, and here it does: it says nobody has looked at a 95 MB
+file that a shipped tool reads. "We have never opened this" is the finding that provokes work,
+so an under-report in this direction is the expensive kind.
+
+**Open, with the next step named.** Write a test that asserts the detector finds the reader of
+a known-read file, then fix against the test rather than against the count.

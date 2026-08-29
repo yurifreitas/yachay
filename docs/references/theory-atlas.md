@@ -144,7 +144,7 @@ error only; the diagnosis stays in a comment at the estimator.
 **Artefact:** `out/rare/language_coverage.json` · **Stage:** `language_coverage`
 
 Not from the theory conversation. HPO made internationalisation the headline of its 2024
-release and ships thirteen language profiles; that headline is an aggregate, and this is the
+release and ships fourteen language profiles; that headline is an aggregate, and this is the
 same distrust of an aggregate over unequal subgroups that the rest of the library runs on.
 Weighted by the annotations diseases actually carry:
 

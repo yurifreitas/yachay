@@ -20,11 +20,28 @@ keywords:
   - health equity
 license: CC-BY-4.0
 version: 0.1.0
-date-released: "2026-08-26"
+date-released: "2026-08-29"
 
 # ---------------------------------------------------------------------------------
 # The claims this repository stands behind, each with the number that supports it.
 # Genealogy in docs/lineage.md; references in docs/references/; stages in docs/methodology.md.
+#
+#  --- measured 2026-08-29, under ADR 0007 (a construct has no standing until a tool
+#      computes it from ingested data with a null and an interval) ---
+#  · compressing 5,260 genes 181-fold onto 29 Reactome top-level pathways keeps 22% of the
+#    information they carry about a disease's organ systems; 34-fold onto 154 cell types
+#    keeps 31%. Excess over a permutation null, because MI rises with alphabet size for free
+#  · retention spans 5.6-fold across organ systems (0.39 neoplasm, 0.07 cardiovascular), so
+#    there is no single right coarse-graining for a multiscale atlas
+#  · genes predict organ system 2.91x better than organ system predicts genes, and the
+#    asymmetry COLLAPSES to 1.02 at pathway scale - compression destroys direction
+#  · Portuguese, this project's own second language, covers 42.9% of the annotated
+#    rare-disease phenotype, with a 69.6-point spread across organ systems
+#  · 57.2% of ClinVar's variant-level conflicts are ACROSS-CONDITION ONLY - every condition
+#    internally consistent - falling to 48.6% once panel indications are removed. About half
+#    of recorded scientific disagreement is context rather than contradiction
+#  · redundancy does not resolve it: with the condition held fixed, internal disagreement
+#    rises from 17.9% at two submitters to ~24% and holds there through eleven
 #
 #  · the celebrated "training maximum" of the obesity screen (2.0047) was measured on ONE
 #    observation, where pure noise averages 0.845 and reaches 2.43 at p99 — the record
@@ -776,7 +793,7 @@ references:
       The 29 top-level pathways that the cross-scale measurement coarse-grains onto. Read
       directly by tools/scale_information.py. Verified 2026-08-29.
 
-  # --- language as a subgroup axis (docs/lineage.md 16) ---------------------------------
+  # --- language as a subgroup axis -------------------------------------------------------
   - type: article
     title: "The Human Phenotype Ontology in 2024: phenotypes around the world"
     authors:

@@ -1,10 +1,10 @@
 # The rare-disease layers — what each artefact is, and whether anyone measured it
 
-> **Role:** the map of `out/rare/`. Twenty artefacts feed the explorer and get quoted in
+> **Role:** the map of `out/rare/`. Thirty-four artefacts feed the explorer and get quoted in
 > prose, and until this file existed nothing stated, per artefact, **whether its content was
 > measured or authored**. That distinction is the whole epistemic contract of this project,
 > and it was legible only to someone reading the Python.
-> **Last revised:** 2026-08-28 · **State:** complete for the artefacts on disk. Provenance
+> **Last revised:** 2026-08-29 · **State:** complete for the artefacts on disk. Provenance
 > strings are quoted from each payload rather than paraphrased.
 >
 > ⚠ **This file went stale within a day of being written**, and `tools/verify_claims.py`
@@ -71,13 +71,23 @@ grades below are read from those fields, not assigned here.
 | `lupus.json` | `lupus_seed.py` | **authored** | Lupus as gene × cell. *"CELL-TYPE ATTRIBUTIONS ARE SIMPLIFICATIONS"* — the file says so in capitals. |
 | `references.json` | `references_seed.py` | **authored** | ~80 references tagged by community and ladder rung, then computed: which rungs are bridged and which carry one community only. |
 | `thesis.json` | `thesis_seed.py` | **authored**, audited | The research thesis, encoded with its own register intact, then checked against what is built. Several rows read *"named, not built"*, which is the reason to run it. |
+| `gap_patterns.json` | `gap_patterns.py` | **measured** | Which catalogue fields go missing together, at atlas scale. The largest single pattern is **1,326** diseases missing gene, onset and sign denominators at once — emptiness is concentrated, not scattered. |
+| `tropical_gap.json` | `tropical_gap.py` | **measured** | The neglected-disease axis, from MONDO and the HPO gene-to-disease table. |
+| `twin_propagation.json` | `twin_propagation.py` | **measured** | The first DYNAMICAL layer: a perturbation spreading from a disease's genes on STRING v12, every value a z against degree-stratified null seed sets. |
+| `intervals.json` | `intervals.py` | **derived** | A 95 % interval on every headline another layer already published — audit A6/A26. It corrected two published sentences on its first run, and reports five headlines it cannot reach. |
+| `scale_information.json` | `scale_information.py` | **measured** | What a change of scale costs. Genes carry **0.2791 bits** [0.2583, 0.3000] of excess information about organ system; 181-fold compression onto 29 Reactome pathways keeps **22 %**, 34-fold onto 154 cell types keeps **31 %**. Observational mutual information, deliberately *not* effective information — ADR 0007. |
+| `language_coverage.json` | `language_coverage.py` | **measured** | What a reader loses by not reading English, over 19,836 HPO terms, 285,598 annotations and 14 non-English profiles. Portuguese — this project's own second language — covers **42.9 %** of the annotated phenotype with a **69.6-point** spread across organ systems. |
+| `evidence_conflict.json` | `evidence_conflict.py` | **measured** | Whether recorded disagreement is contradiction or context, over 4,488,337 GRCh38 variants. Conflict rate rises **2.14×** from one condition to four or more, and the rise survives every submitter stratum. |
+| `conflict_decomposition.json` | `conflict_decomposition.py` | **measured** | The split the aggregate could not do, from 6,428,687 per-submission rows: **57.2 %** [56.9, 57.5] of variant-level conflicts are across-condition only, **48.6 %** once panel indications are removed. About half of recorded disagreement is context. |
 
 ---
 
 ## What the table shows when you stand back from it
 
-**Twelve of twenty-five are measured; three are derived; nine are authored** — the four
-patient-level layers added on 2026-08-28 are all measured, which moved the ratio. That is not
+**Eighteen of the thirty-four mapped here are measured; five are derived; eight are authored**
+(three carry a compound grade and are counted in none of the three). The patient-level layers
+added on 2026-08-28 and the four ADR 0007 constructs added on 2026-08-29 are all measured,
+which moved the ratio twice. That is not
 a complaint — the authored layers carry domain knowledge no ingested source contains, and each
 one says so in its own provenance field. But it is the first time the ratio has been
 visible, and two things follow.

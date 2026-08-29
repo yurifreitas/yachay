@@ -3,8 +3,8 @@
 > **Role:** the intellectual genealogy. Who established each piece of the approach, what the
 > original claim is, and **what our measurement does to it** — confirms, extends, quantifies,
 > or contradicts.
-> **Last revised:** 2026-08-27 · **State:** seven lineages mapped, five tied to a number we
-> measured and two tied to work not yet done; plus §11 (rare disease) and §12 (ancestry and
+> **Last revised:** 2026-08-29 · **State:** fifteen sections mapped, eight tied to a number
+> we measured and the rest tied to work not yet done; plus §11 (rare disease) and §12 (ancestry and
 > founder history), whose references are the first in this file to be **verified rather than
 > recalled**. §12 is also the first added section where OUR side is a fresh measurement
 > rather than a borrowed claim.
@@ -386,3 +386,30 @@ a common scale beats length beats angle beats area. Every form above trades some
 precision for density or for narrative, and each trade is stated in the component that makes
 it rather than left for a reader to discover. A form that needs a manual gets annotated in
 the piece itself — which is why `ReadAloud` is a component and not a convention.
+
+---
+
+## 15. Changing scale — what a coarse-graining costs, and who established the question
+
+Added 2026-08-29, under [`adr/0007-theory-enters-by-measurement.md`](adr/0007-theory-enters-by-measurement.md).
+⚠️ **From working knowledge; year, venue and author order must be checked before publication.**
+The right-hand column is measured, from `out/rare/scale_information.json`
+(`tools/scale_information.py`, 9,142 diseases, 25 permutations, 200 bootstrap resamples).
+
+| # | Lineage | Anchor name | What we owe it | What our measurement says |
+|---|---|---|---|---|
+| 15.1 | Information as the currency of a summary | **Shannon** (mutual information) | the statistic itself, and the fact that a summary can only lose | **Quantifies, on this catalogue.** Genes carry **0.2791 bits** [0.2583, 0.3000] of excess information about a disease's organ systems. That number had never been put on the atlas's own join. |
+| 15.2 | The smallest description that keeps what matters | **Tishby, Pereira & Bialek** (information bottleneck, 1999) | the framing: compress X, preserve information about Y | **Extends to an ontology rather than a learned code.** Their Z is optimised; ours are two *given* coarse-grainings a biologist already uses — Reactome top-level pathways and HPA cell types. Compressing 5,260 genes 181-fold onto 29 pathways keeps **22 %** of the information; 34-fold onto 154 cell types keeps **31 %**. The intervals do not overlap. |
+| 15.3 | A coarser description can be the better one | **Hoel, Albantakis & Tononi** (causal emergence, effective information) | the claim that macro can beat micro, and the discipline of measuring it rather than asserting it | **Neither confirms nor contradicts — it is deliberately weaker, and that is the finding.** EI is defined over interventions; ours is observational MI over a static catalogue, so it cannot speak to causal emergence. What it does show is the per-category efficiency their argument predicts: **the pathway scale carries ≈ 40× the excess information per category** that the gene scale does. Reading that as causal emergence is exactly the promotion ADR 0007 forbids, and the artefact's `says` field states so. |
+| 15.4 | Coarse-graining as a physical operation | **Kadanoff / Wilson** (renormalisation group) | the question — what survives a change of scale — and nothing else | **Borrowed as a question, not as a method.** There is no fixed point here, no flow and no scale parameter; ADR 0007 grades every dynamical form of this family as `analogy`. Recorded so the word "renormalisation" cannot enter a figure caption on the strength of §15's number. |
+| 15.5 | Asymmetry of a directed relation | **conditional entropy** (Shannon again), read as the two uncertainty coefficients | the observational form of the Finsler asymmetry the atlas grades `analogy` | **Quantifies, and finds a collapse.** Genes predict organ system **2.91×** better than organ system predicts genes (U(S\|F) 0.3091 against U(F\|S) 0.1062). At pathway scale the ratio is **1.02** — coarse-graining destroyed the direction, not only the magnitude. Nobody had put a number on the clinical commonplace that many genes converge on one phenotype. |
+| 15.6 | Scale-dependent structure | **Hoel et al.** again, and the multiscale-biology literature generally | the claim that the right scale is a property of the phenomenon, not of the analyst | **Extends, per organ system.** Pathway retention spans **5.6-fold** across the 20 organ systems that clear a z of 5: 0.39 for breast and 0.38 for neoplasm, 0.07 for cardiovascular. Pathways hold what is pathway-shaped and lose what is structural; cell types invert the ranking for exactly those structural systems. **There is no single right coarse-graining for this atlas** — which is a design consequence, not only a finding. |
+
+**And one thing the measurement did to us.** The first estimator bootstrapped diseases with
+replacement and returned a gene-scale point estimate of **0.2791** against a percentile
+interval of **[0.1745, 0.2163]** — an interval that does not contain its own estimate, because
+mutual information is biased in n and a resample holds ~63 % of the diseases. Caught before
+publication by looking at the printed table rather than by any test. The interval is now
+point ± 1.96 SE, and the failed version is kept in a comment at the estimator rather than
+tidied away.
+

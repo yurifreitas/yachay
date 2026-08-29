@@ -118,10 +118,11 @@ Where each stage bites:
 - **Stage 7** — a shortlist should not put every slot on the Hippo axis; that is the single
   point of failure this stage exists to prevent.
 
-**Blockers, all data:** `Model.csv` (lineage), `OmicsSomaticMutations.csv` (NF2 mutation
-calls), and `OmicsCNGene.csv` (NF2 deletion) are not downloaded yet — see
-[`README.md`](README.md). Defining the NF2-null subgroup from mutations alone would be
-wrong, because deletion is a major loss mechanism (section 2).
+**The data blocker is closed.** `Model.csv` (lineage),
+`OmicsSomaticMutationsMatrixDamaging.csv` (NF2 mutation calls) and `OmicsCNGene.csv` (NF2
+deletion) were fetched on 2026-08-27 and the subgroup contrast runs; see
+[`README.md`](README.md). All three were needed, because defining the NF2-null subgroup from
+mutations alone would be wrong — deletion is a major loss mechanism (section 2).
 
 ## 6. Lexicon — the terms and symbols the work actually needs
 

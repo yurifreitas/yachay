@@ -463,7 +463,7 @@ against HPO ids rather than against display text. And **a defect confined to one
 divided by the number of subgroups in any pooled figure** — the same argument Stage 3 of this
 library makes about confounds, pointed at language.
 
-`tools/language_coverage.py` asks both against HPO's thirteen language profiles, weighted by the
+`tools/language_coverage.py` asks both against HPO's fourteen language profiles, weighted by the
 annotations diseases actually carry. Portuguese — this project's own second language — reads
 **42.9%** of the annotated rare-disease phenotype, with a **69.6-point spread** across organ
 systems: 78.4% for the eye, 20.8% for the nervous system, which carries 6,254 of the 9,142

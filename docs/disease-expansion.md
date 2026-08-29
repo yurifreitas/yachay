@@ -1,5 +1,8 @@
 # Disease expansion — from one obesity screen to a disease portfolio
 
+> **Role:** the disease portfolio — which screens the method is being widened onto, and the test each had to pass.
+> **Last revised:** 2026-08-29 · **State:** plan, not result. NF2 is the only entry with a run behind it.
+
 `sieve` was distilled from a single obesity perturbation screen and hardened against
 DepMap. This document plans the next widening: **several diseases whose screens have
 different shapes**, so that the core stops being a generalisation of one assay.

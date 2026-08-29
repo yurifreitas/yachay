@@ -1,5 +1,8 @@
 # 0005 — Population is a typed field, and CARE joins FAIR in the standards
 
+> **Role:** the decision to type population and to add CARE to the standards.
+> **Last revised:** 2026-08-29 · **State:** proposed.
+
 **Status:** proposed · written 2026-08-27 **before** the work
 **Supersedes:** nothing. Extends the data contracts, and amends `references/standards.md`.
 
