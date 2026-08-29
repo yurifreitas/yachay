@@ -349,6 +349,18 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="view_models",
+    summary=("Solve the orderings, bins and ribbon counts the hyperdimensional views need, "
+             "so the browser draws and never computes."),
+    inputs=(paths.SCALE_INFORMATION, paths.LANGUAGE_COVERAGE, paths.EVIDENCE_CONFLICT,
+            paths.KNOWLEDGE_SHAPE),
+    outputs=(paths.VIEW_MODELS,),
+    needs=("scale_information", "language_coverage", "evidence_conflict", "knowledge_shape"),
+    code=sources("tools/view_models.py"),
+    run=lambda: _run_tool("view_models"),
+))
+
+_add(Stage(
     name="references",
     summary="Encode the reference map and compute which communities actually share a rung.",
     outputs=(paths.REFERENCES,),

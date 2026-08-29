@@ -334,6 +334,10 @@ def main() -> int:
             "diseases_at_or_above_half": len(spikes),
             "share_at_or_above_half": round(len(spikes) / len(rows), 4),
         },
+        # The per-disease vectors. They stay in the LOCAL artefact and are dropped by
+        # web/scripts/build-data.mjs, because 12,994 five-dimensional rows are what
+        # tools/view_models.py needs to bin and what a browser has no use for.
+        "diseases": rows,
         "dominant_axis": dict(dominant.most_common()),
         "axis_correlation": {
             "asks": ("Which axes rise and fall together? This is the shape question the "

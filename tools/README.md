@@ -1,9 +1,9 @@
-# `tools/` — 60 scripts, grouped by what they are for
+# `tools/` — 61 scripts, grouped by what they are for
 
-> **Role:** the map of this directory. It grew to 19,642 lines without any declared
-> structure, and a flat listing of 60 filenames is not a structure — it is an inventory
+> **Role:** the map of this directory. It grew to 20,326 lines without any declared
+> structure, and a flat listing of 61 filenames is not a structure — it is an inventory
 > pretending to be one.
-> **Last revised:** 2026-08-29 · **State:** complete for the 60 files on disk. The groups
+> **Last revised:** 2026-08-29 · **State:** complete for the 61 files on disk. The groups
 > below are a reading order, not directories: renaming or moving a file would break the
 > pipeline's source tracking (`sieve.pipeline.stages` hashes each tool's path to decide
 > staleness), so the organisation is documentary and deliberately so.
@@ -69,6 +69,7 @@ uncomfortable findings.
 | `interactome_string.py` | 218 | our own weakest published claim against an independent graph — it survived |
 | `ecosystem.py` | 283 | which libraries are installed and unused, and which sources are named and not ingested |
 | `pipeline_state.py` | 123 | publishes staleness, so freshness is not a terminal-only fact |
+| `view_models.py` | 234 | the artefacts above | layouts solved in Python so the browser only draws: a seriated 14×23 matrix, a slopegraph of the scale inversion, binned parallel coordinates over 12,994 diseases, and the conflict gradient as a grid |
 | `attention_burden.py` | 310 | gene2pubmed, HPO, Orphanet | attention against burden: **+0.331** with prevalence, **+0.254** once gene popularity is removed — and the severity arm **refuses to report**, because every ORPHA-coded disease has zero evidenced signs |
 | `index_check.py` | 145 | every artefact, tool, stage, source and ADR against the document that claims to enumerate it — A36, and its first run found **sixteen of eighteen** ingested sources named in no index |
 | `verify_claims.py` | 246 | every published number against the artefact that produced it — F1, and it found stale docs on its first run |

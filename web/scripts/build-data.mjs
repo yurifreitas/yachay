@@ -92,6 +92,10 @@ const PROJECT = {
  */
 const FETCHED = new Set([
   "gene_network", "ancestry_geography",
+  // Solved layouts for the hyperdimensional views. Fetched rather than bundled: it is
+  // needed only by one group of sections, and a reader who never opens them should not pay
+  // its parse cost before first paint. The route prefetches it on intent.
+  "view_models",
   // The three cancer levels: fetched, and one at a time. Bundling all three would charge
   // every route in the shared chunk for two levels the reader is not looking at.
   "cancer_subgroups_lineage", "cancer_subgroups_disease", "cancer_subgroups_subtype",
@@ -367,7 +371,7 @@ emit("figures", figures);
   // with a null and an interval, and none of them rendered anywhere until now — which is the
   // same failure the comment above names, committed again on newer work.
   for (const name of ["scale_information", "language_coverage", "evidence_conflict",
-                      "conflict_decomposition", "knowledge_shape"]) {
+                      "conflict_decomposition", "knowledge_shape", "view_models"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

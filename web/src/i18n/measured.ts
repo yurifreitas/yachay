@@ -211,6 +211,29 @@ export const MEAS = {
   axesDefs: bi("What each axis counts", "O que cada eixo conta"),
   dominant: bi("Which axis dominates", "Qual eixo domina"),
 
+  // --------------------------------------------------------------- hyperdimensional views
+  matrixTitle: bi("Fourteen languages, twenty-three organ systems.",
+                  "Catorze idiomas, vinte e três sistemas orgânicos."),
+  matrixRead: bi(
+    "Each cell is the share of that system's annotation mass readable in that language. Rows "
+    + "descend from complete to absent; columns are sorted by mean coverage. The holes line "
+    + "up vertically — the systems one language drops are the systems the others drop too.",
+    "Cada célula é a fração da massa de anotação daquele sistema legível naquele idioma. As "
+    + "linhas descem de completo a ausente; as colunas são ordenadas pela cobertura média. Os "
+    + "buracos se alinham na vertical — os sistemas que um idioma abandona são os que os "
+    + "outros abandonam também.",
+  ),
+  slopeTitle: bi("What one alphabet loses, the other recovers.",
+                 "O que um alfabeto perde, o outro recupera."),
+  slopeHint: bi("lines that rise are systems the spatial alphabet recovers",
+                "linhas que sobem são sistemas que o alfabeto espacial recupera"),
+  pcpTitle: bi("Twelve thousand diseases on five axes of what is known.",
+               "Doze mil doenças em cinco eixos do que se sabe."),
+  pcpHint: bi("diseases, drawn as density rather than as lines — at this count a polyline plot is a filled rectangle",
+              "doenças, desenhadas como densidade e não como linhas — nesta contagem um gráfico de polilinhas é um retângulo cheio"),
+  gridTitle: bi("Conflict rises with context, and faster the more reviewers there are.",
+                "O conflito sobe com o contexto, e mais rápido quanto mais revisores há."),
+
   // --------------------------------------------------------------- provenance
   prov: bi("Provenance, and what this does not say",
            "Proveniência, e o que isto não diz"),

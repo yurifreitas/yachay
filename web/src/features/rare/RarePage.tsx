@@ -9,7 +9,7 @@
  *  Composition only: the page picks the data, holds the two pieces of view state, and
  *  hands slots to organisms. Nothing below an organism knows what a disease is.
  */
-import { Suspense, lazy, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { lexicon } from "./data/lexicon";
 import { atlas } from "./data/atlas";
 import { nongeneMeasured } from "./data/nongeneMeasured";
@@ -51,6 +51,13 @@ const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ def
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 // The ADR 0007 layer. Lazy like the rest: a reader who never opens the group pays nothing.
+// Prefetch the solved layouts the moment a reader shows intent toward this group, so the
+// 46 kB is in flight before the section mounts rather than after. Fire-and-forget: the views
+// render a shaped skeleton if it has not landed.
+const prefetchMeasured = () => {
+  import("./components/HyperViews").then((m) => m.prefetchViewModels()).catch(() => {});
+};
+
 const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
 const LanguageCoverage = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.LanguageCoverage })));
 const ConflictContext = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ConflictContext })));
@@ -137,6 +144,13 @@ export default function RarePage() {
   const { section } = useSectionNav({
     owner: "rare", groups: GROUPS, sections: SECTIONS, initial: "world",
   });
+
+  // Intent, not arrival: the moment the reader is inside the measured group, the solved
+  // layouts start loading. Idempotent, so re-renders cost nothing and two sections racing
+  // share one request.
+  useEffect(() => {
+    if (["scale", "language", "conflict", "shape"].includes(section)) prefetchMeasured();
+  }, [section]);
 
   const ordered = useMemo(
     () => sortDiseases(lexicon, lexicon.diseases, sort),

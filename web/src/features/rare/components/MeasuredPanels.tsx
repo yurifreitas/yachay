@@ -8,6 +8,7 @@ import { useT } from "../../../i18n";
 import { MEAS } from "../../../i18n/measured";
 import { fmtInt } from "../../../lib/scale";
 import { Provenance } from "./Provenance";
+import { LanguageMatrix, ScaleSlopegraph, KnowledgePCP, ConflictGrid } from "./HyperViews";
 import css from "./MeasuredPanels.module.css";
 
 /** THE ADR 0007 LAYER — the four results on this site that carry a null and an interval.
@@ -155,6 +156,10 @@ export function ScaleLoss() {
         </div>
       </div>
 
+      <div className={css.block}>
+        <ScaleSlopegraph />
+      </div>
+
       {morph && (
         <div className={css.block}>
           <span className={css.blockK}>{tt(MEAS.turing)}</span>
@@ -268,6 +273,10 @@ export function LanguageCoverage() {
           </table>
         </div>
         <p className={css.note}>{tt(MEAS.langNote)}</p>
+      </div>
+
+      <div className={css.block}>
+        <LanguageMatrix />
       </div>
 
       <div className={css.block}>
@@ -422,6 +431,7 @@ export function ConflictContext() {
           </table>
         </div>
         <p className={css.note}>{a.reading}</p>
+        <ConflictGrid />
       </div>
 
       {redundancy.length > 0 && (
@@ -494,6 +504,10 @@ export function KnowledgeShape() {
       </div>
 
       <p className={css.caveat}>{d.verdict}</p>
+
+      <div className={css.block}>
+        <KnowledgePCP />
+      </div>
 
       <div className={css.pair}>
         <div className={css.stat}>

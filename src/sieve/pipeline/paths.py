@@ -95,6 +95,9 @@ CONFLICT_DECOMPOSITION = RARE / "conflict_decomposition.json"
 KNOWLEDGE_SHAPE = RARE / "knowledge_shape.json"
 # Attention against burden: is what the field studies explained by who the disease reaches?
 ATTENTION_BURDEN = RARE / "attention_burden.json"
+# Solved layouts for the hyperdimensional views. No measurement of its own: a seriation is
+# an argument, and one computed inside a component is an argument nobody can audit.
+VIEW_MODELS = RARE / "view_models.json"
 GENE2PUBMED = DATA / "ontology" / "gene2pubmed.gz"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"
 HPO_TRANSLATIONS = DATA / "ontology" / "hpo-translations.tar.gz"
