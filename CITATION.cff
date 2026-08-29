@@ -716,6 +716,205 @@ references:
       and sign denominators together). Before these, nothing here could show that an entity
       carries two labels at once.
 
+  # --- changing scale (docs/lineage.md 15; ADR 0007) ------------------------------------
+  - type: generic
+    title: "A mathematical theory of communication (mutual information)"
+    authors:
+      - { family-names: Shannon, given-names: "Claude E." }
+    year: 1948
+    notes: >-
+      The statistic behind tools/scale_information.py. Supports the claim that a disease's
+      causal genes carry 0.2791 bits [0.2583, 0.3000] of excess information about its organ
+      systems, measured against a permutation null on 9,142 diseases.
+  - type: article
+    title: "The information bottleneck method"
+    authors:
+      - { family-names: Tishby, given-names: Naftali }
+      - { family-names: Pereira, given-names: "Fernando C." }
+      - { family-names: Bialek, given-names: William }
+    year: 1999
+    notes: >-
+      The framing: compress X, keep what it says about Y. Supports the cross-scale result -
+      181-fold compression onto 29 Reactome pathways keeps 22 percent of the information,
+      34-fold onto 154 cell types keeps 31 percent. Our Z is a given ontology, not a learned
+      code, which is the stated extension in lineage 15.2.
+  - type: article
+    title: "Quantifying causal emergence shows that macro can beat micro"
+    authors:
+      - { family-names: Hoel, given-names: "Erik P." }
+      - { family-names: Albantakis, given-names: Larissa }
+      - { family-names: Tononi, given-names: Giulio }
+    journal: "Proceedings of the National Academy of Sciences"
+    year: 2013
+    doi: "10.1073/pnas.1314922110"
+    notes: >-
+      Verified through Crossref 2026-08-29. Cited for what our measurement is NOT. Effective information is defined over
+      interventions; scale_information.py is observational, so the 40x per-category
+      efficiency of the pathway scale is not evidence of causal emergence. ADR 0007 turns
+      that distinction into a rule rather than a caveat.
+
+  - type: article
+    title: "Estimation of entropy and mutual information"
+    authors:
+      - { family-names: Paninski, given-names: Liam }
+    journal: "Neural Computation"
+    year: 2003
+    doi: "10.1162/089976603321780272"
+    notes: >-
+      The bias of a mutual-information estimate in n. Supports the estimator failure recorded
+      in lineage 15: a bootstrap resampling diseases with replacement returned an interval
+      that did not contain its own point estimate, and this is why. Verified 2026-08-29.
+  - type: article
+    title: "The Reactome Pathway Knowledgebase 2024"
+    authors:
+      - { family-names: Milacic, given-names: Marija }
+      - { family-names: Beavers, given-names: Deidre }
+    journal: "Nucleic Acids Research"
+    year: 2023
+    doi: "10.1093/nar/gkad1025"
+    notes: >-
+      The 29 top-level pathways that the cross-scale measurement coarse-grains onto. Read
+      directly by tools/scale_information.py. Verified 2026-08-29.
+
+  # --- language as a subgroup axis (docs/lineage.md 16) ---------------------------------
+  - type: article
+    title: "The Human Phenotype Ontology in 2024: phenotypes around the world"
+    authors:
+      - { family-names: Gargano, given-names: "Michael A." }
+      - { family-names: Matentzoglu, given-names: Nicolas }
+      - { family-names: Coleman, given-names: Ben }
+    journal: "Nucleic Acids Research"
+    volume: "52"
+    year: 2024
+    doi: "10.1093/nar/gkad1005"
+    notes: >-
+      The release whose headline is internationalisation, and the source of the thirteen
+      language profiles tools/language_coverage.py reads. Supports the finding that the
+      aggregate "available in ten languages" hides a population running from ~100 percent
+      coverage to zero. Resolved through NCBI E-utilities 2026-08-29 (PMID 37953324).
+  - type: article
+    title: "A single-cell type transcriptomics map of human tissues"
+    authors:
+      - { family-names: Karlsson, given-names: Max }
+      - { family-names: Zhang, given-names: Cheng }
+      - { family-names: "Méar", given-names: Loren }
+    journal: "Science Advances"
+    year: 2021
+    doi: "10.1126/sciadv.abh2169"
+    notes: >-
+      The 154 cell types the cross-scale measurement coarse-grains onto. Was the second of
+      two unresolved references blocking docs/references/deep/multiscale-formalism.md 13;
+      resolved through Crossref 2026-08-29.
+  - type: article
+    title: "Choosing preferable labels for the Japanese translation of the Human Phenotype Ontology"
+    authors:
+      - { family-names: Ninomiya, given-names: Kota }
+      - { family-names: Takatsuki, given-names: Terue }
+      - { family-names: Kushida, given-names: Tatsuya }
+    journal: "Genomics & Informatics"
+    year: 2020
+    doi: "10.5808/gi.2020.18.2.e23"
+    notes: >-
+      That a translated label is a curatorial choice and not a lookup. Supports the limit
+      recorded in language_coverage.json - labels only, definitions not counted.
+  - type: article
+    title: "Access to Coronavirus Disease 2019 Clinical Trials by English and Non-English Speakers"
+    authors:
+      - { family-names: Jain, given-names: Manik }
+      - { family-names: Rollins, given-names: Nathan }
+      - { family-names: Jain, given-names: Rahul }
+    journal: "Clinical Infectious Diseases"
+    year: 2020
+    doi: "10.1093/cid/ciaa493"
+    notes: >-
+      Independent evidence that a language barrier is an access barrier, not a convenience.
+      Supports why language is measured here as a subgroup axis alongside ancestry and
+      geography rather than treated as presentation.
+
+  # --- mid-century foundations (docs/references/deep/foundations.md) ---------------------
+  - type: article
+    title: "The chemical basis of morphogenesis"
+    authors:
+      - { family-names: Turing, given-names: "Alan M." }
+    journal: "Philosophical Transactions of the Royal Society B"
+    volume: "237"
+    year: 1952
+    doi: "10.1098/rstb.1952.0012"
+    notes: >-
+      Form arises from reaction and diffusion, not from an inventory of reactions. Supports
+      the tested prediction that a Reactome pathway alphabet retains less about morphogenetic
+      organ systems than about physiological ones: 0.138 against 0.238, permutation p 0.0185.
+      Marked in the artefact as a description with target contact, not a pre-registered test.
+      Verified through Crossref 2026-08-29.
+  - type: article
+    title: "Probabilistic logics and the synthesis of reliable organisms from unreliable components"
+    authors:
+      - { family-names: "von Neumann", given-names: John }
+    journal: "Automata Studies (AM-34)"
+    year: 1956
+    doi: "10.1515/9781400882618-003"
+    notes: >-
+      Multiplexing: redundancy buys reliability. Cited for a prediction this project's data
+      CONTRADICTS - with the condition held fixed, ClinVar internal disagreement rises from
+      17.9 percent at two submitters to about 24 percent and holds there through eleven. An
+      aggregate classification is therefore not a consensus. Verified 2026-08-29.
+  - type: book
+    title: "An Introduction to Cybernetics"
+    authors:
+      - { family-names: Ashby, given-names: "W. Ross" }
+    year: 1956
+    doi: "10.5962/bhl.title.5851"
+    notes: >-
+      Only variety can absorb variety. The reason the three measured results HAD to be
+      gradients rather than constants, and the principled ground for a per-system choice of
+      scale. Its quantitative form is not yet computed here. Verified 2026-08-29.
+  - type: article
+    title: "A mathematical theory of communication"
+    authors:
+      - { family-names: Shannon, given-names: "Claude E." }
+    journal: "Bell System Technical Journal"
+    volume: "27"
+    year: 1948
+    doi: "10.1002/j.1538-7305.1948.tb01338.x"
+    notes: >-
+      The estimator itself, now with its DOI - supersedes the undated entry above. Every
+      headline in scale_information.json is a mutual information in bits.
+  - type: article
+    title: "Canalization of development and the inheritance of acquired characters"
+    authors:
+      - { family-names: Waddington, given-names: "C. H." }
+    journal: "Nature"
+    volume: "150"
+    year: 1942
+    doi: "10.1038/150563a0"
+    notes: >-
+      Development is buffered, so the decisive quantity is remaining channel depth rather
+      than position. Supports the open claim that severity is mis-modelled in this project's
+      own layers: no artefact distinguishes two identical phenotypes with different remaining
+      tolerance. Verified 2026-08-29.
+  - type: article
+    title: "On the length of programs for computing finite binary sequences"
+    authors:
+      - { family-names: Chaitin, given-names: "Gregory J." }
+    journal: "Journal of the ACM"
+    volume: "13"
+    year: 1966
+    doi: "10.1145/321356.321363"
+    notes: >-
+      With Kolmogorov (DOI 10.1080/00207166808803030), description length as the arbiter that
+      needs no prior. Named as the un-asked question about the cross-scale trade: 22 percent
+      of the information kept at 181-fold compression - is that a good exchange?
+  - type: book
+    title: "Cybernetics, or Control and Communication in the Animal and the Machine"
+    authors:
+      - { family-names: Wiener, given-names: Norbert }
+    year: 1961
+    doi: "10.1037/13140-000"
+    notes: >-
+      The feedback loop as the unit. Cited for an OPEN problem, not a result: every layer here
+      observes from outside the loop, and the co-evolving state and topology this implies is
+      graded analogy in the theory atlas.
+
   # --- standards and provenance ---------------------------------------------------------
   - type: standard
     title: "Citation File Format (CFF) 1.2.0"
