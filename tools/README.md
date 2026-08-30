@@ -76,6 +76,7 @@ uncomfortable findings.
 | `view_models.py` | 427 | the artefacts above | layouts solved in Python so the browser only draws: a seriated 14×23 matrix, a slopegraph of the scale inversion, binned parallel coordinates over 12,994 diseases, and the conflict gradient as a grid |
 | `attention_burden.py` | 310 | gene2pubmed, HPO, Orphanet | attention against burden: **+0.331** with prevalence, **+0.254** once gene popularity is removed — and the severity arm **refuses to report**, because every ORPHA-coded disease has zero evidenced signs |
 | `gene_constraint.py` | 330 | gnomAD v4.1 constraint, HPO, gene2pubmed | selective constraint as the axis the curation could not have produced: attention tracks it at **-0.317**, and **66 %** of the disease-gene shift is gene length rather than constraint |
+| `single_cell_coverage.py` | 230 | CZ CELLxGENE index, MONDO, HPO | whether anyone ever collected a cell: **77 of 14,831** catalogue diseases are reachable from a public single-cell dataset, and 1,527 of 2,216 indexed datasets are normal tissue |
 | `index_check.py` | 145 | every artefact, tool, stage, source and ADR against the document that claims to enumerate it — A36, and its first run found **sixteen of eighteen** ingested sources named in no index |
 | `verify_claims.py` | 246 | every published number against the artefact that produced it — F1, and it found stale docs on its first run |
 | `intervals.py` | 268 | a 95 % interval on every headline — A6, and it corrected two published sentences |

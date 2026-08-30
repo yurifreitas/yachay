@@ -59,6 +59,26 @@ export const DEEP = {
   twinLadder: bi("the rung this moves, and the ones it does not",
                  "o degrau que isto move, e os que não"),
 
+  // ---------------------------------------------------------------- single-cell coverage
+  sCells: bi("Has anyone collected a cell?", "Alguém já coletou uma célula?"),
+  cellHeading: bi(
+    "four layers reason over a cell axis that, for 99.5 % of these diseases, is an inference",
+    "quatro camadas raciocinam sobre um eixo celular que, para 99,5 % destas doenças, é inferência",
+  ),
+  cellSub: bi(
+    "Scale, autism convergence, the gap taxonomy and the knowledge lattice all place a "
+    + "disease on a cell type, and all of them read an atlas of NORMAL tissue. CZ CELLxGENE "
+    + "indexes the single-cell datasets that actually exist: 77 of 14,831 catalogue diseases "
+    + "can be reached from one.",
+    "Escala, convergência autista, taxonomia de lacunas e a grade de conhecimento colocam "
+    + "uma doença num tipo celular, e todas leem um atlas de tecido NORMAL. O CZ CELLxGENE "
+    + "indexa os conjuntos de célula única que existem de fato: 77 de 14.831 doenças do "
+    + "catálogo alcançam algum.",
+  ),
+  cellBest: bi("the diseases that do have cells", "as doenças que têm células"),
+  cellTissue: bi("and the tissues the field actually samples",
+                 "e os tecidos que a área de fato amostra"),
+
   // ---------------------------------------------------------------- constraint
   sConstraint: bi("Intolerance to loss", "Intolerância à perda"),
   conHeading: bi(

@@ -403,6 +403,13 @@ emit("figures", figures);
   // hiv_resistance: the method outside rare disease entirely — an adapter that passed the
   // four-question gate, whose positive controls were named before the run, and which breaks
   // an assumption the core smuggles in. That last part is why it is worth a screen.
+  // Whether anyone ever collected a cell from these diseases at all. Four layers of this
+  // site reason over a cell-type axis taken from an atlas of NORMAL tissue; this is the
+  // denominator none of them had.
+  {
+    const f = join(REPO, "out", "rare", "single_cell_coverage.json");
+    emit("single_cell_coverage", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
   // Selective constraint: the one axis in this repository measured in a population nobody
   // asked about disease, and therefore the only one that cannot have been produced by the
   // curation process it is used to audit.

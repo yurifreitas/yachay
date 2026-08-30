@@ -148,6 +148,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "gapkinds", label: MORE.sGaps, group: "knownshape" },
   { id: "voidcells", label: MORE.sVoid, group: "knownshape" },
 
+  { id: "cells", label: DEEP.sCells, group: "knownshape" },
   { id: "constraint", label: DEEP.sConstraint, group: "converge" },
   { id: "autism", label: MORE.sAut, group: "converge" },
 

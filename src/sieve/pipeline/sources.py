@@ -281,6 +281,24 @@ SOURCES: tuple[Source, ...] = (
         redistributable=False,
     ),
     Source(
+        key="cellxgene_collections",
+        name="CZ CELLxGENE Discover — collection and dataset index",
+        url="https://api.cellxgene.cziscience.com/curation/v1/collections",
+        filename="cellxgene_collections.json",
+        approx_mb=3.1,
+        gives="WHICH DISEASES ANYONE HAS ACTUALLY SEQUENCED AT SINGLE-CELL RESOLUTION, as "
+              "MONDO terms. Every other cell-type layer in this repository describes where a "
+              "gene is EXPRESSED in a healthy reference — the Human Protein Atlas measures "
+              "normal tissue, so a claim that a disease sits on some cell type is a claim "
+              "about healthy biology plus an inference. This index says whether cells were "
+              "ever collected from a patient with that disease at all, which is the "
+              "difference between an inference and an observation. It is also the first "
+              "source here that reports the DENOMINATOR of the cell axis: 2,216 datasets "
+              "carrying 321 distinct disease terms, of which 1,867 are annotated `normal`.",
+        licence="CC-BY 4.0 (metadata); individual datasets carry their own terms",
+        redistributable=True,
+    ),
+    Source(
         key="phenopackets",
         name="Monarch phenopacket-store (GA4GH phenopackets)",
         url="https://github.com/monarch-initiative/phenopacket-store/releases/download/"

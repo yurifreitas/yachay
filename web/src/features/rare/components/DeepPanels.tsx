@@ -2,6 +2,7 @@ import hivRaw from "../../../data/generated/hiv_resistance.json";
 import twinRaw from "../../../data/generated/twin_propagation.json";
 import genoRaw from "../../../data/generated/genotype_phenotype.json";
 import conRaw from "../../../data/generated/gene_constraint.json";
+import cellsRaw from "../../../data/generated/single_cell_coverage.json";
 import { useState } from "react";
 import { useT } from "../../../i18n";
 import { DEEP } from "../../../i18n/deep";
@@ -451,6 +452,137 @@ export function GeneConstraint() {
       <p className={css.note}>{d.says}</p>
 
       <Provenance generated={d.generated} provenance={d.provenance} method={d.instrument}
+                  says={d.says} limits={d.limits} governedBy={d.governed_by} />
+    </div>
+  );
+}
+
+/* ============================================================ the denominator of the cell axis */
+
+/** WHETHER THE OBSERVATION WAS EVER MADE.
+ *
+ *  Four layers of this site place a disease on a cell type — scale_information,
+ *  autism_convergence, gap_taxonomy and knowledge_void — and every one of them reads the
+ *  Human Protein Atlas, which measures NORMAL tissue. Each is therefore a statement about
+ *  healthy biology plus an inference that the disease sits there too.
+ *
+ *  This panel is the denominator none of them had. It does not correct those layers and does
+ *  not claim they are wrong; it says how often the inference could have been checked, which
+ *  turns out to be 0.52 % of the time. That belongs on the same site as the four layers, in
+ *  the reader's path, rather than in a limitation nobody scrolls to.
+ */
+export function SingleCellCoverage() {
+  const tt = useT();
+  const d = cellsRaw as any;
+  const sc = d.scale ?? {};
+  const best: any[] = d.best_covered ?? [];
+  const tissues: any[] = d.commonest_tissues ?? [];
+  const total = sc.datasets_indexed || 1;
+  const normal = sc.datasets_of_normal_tissue ?? 0;
+
+  return (
+    <div className={css.wrap}>
+      <div className={css.finding}>
+        <span className={`${css.value} ${css.valueMuted}`}>
+          {pct(sc.share_of_catalogue ?? 0, 2)}
+          <span className={css.unit}>of the catalogue</span>
+        </span>
+        <p>
+          <span className={css.answersK}>{tt(DEEP.cellHeading)}</span>
+          {d.question}
+        </p>
+      </div>
+
+      <p className={css.caveat}>{d.the_finding}</p>
+
+      <div className={css.block}>
+        <span className={css.blockK}>what the index holds, and how much of it is disease</span>
+        {/* The normal/disease split first: two thirds of every single-cell dataset in the
+            public index is healthy tissue, and that is the shape of the field rather than a
+            detail about this particular join. */}
+        <div className={css.split} role="img"
+             aria-label="datasets of normal tissue against datasets carrying a disease term">
+          <span className={css.splitB} style={{ width: `${(100 * normal) / total}%` }} />
+          <span className={css.splitA} style={{ width: `${(100 * (total - normal)) / total}%` }} />
+        </div>
+        <div className={css.splitLegend}>
+          <span className={css.legendItem}>
+            <span className={`${css.swatch} ${css.swatchB}`} />
+            <span className={css.legendVal}>{fmtInt(normal)}</span>
+            <span className={css.legendText}>datasets of normal tissue</span>
+          </span>
+          <span className={css.legendItem}>
+            <span className={`${css.swatch} ${css.swatchA}`} />
+            <span className={css.legendVal}>{fmtInt(total - normal)}</span>
+            <span className={css.legendText}>carrying a disease term</span>
+          </span>
+        </div>
+        <div className={css.pair}>
+          <div className={css.stat}>
+            <span className={css.statVal}>{fmtInt(sc.disease_terms_with_cells ?? 0)}</span>
+            <span className={css.statK}>distinct disease terms with cells</span>
+          </div>
+          <div className={css.stat}>
+            <span className={css.statVal}>{fmtInt(sc.catalogue_diseases_with_cells ?? 0)}</span>
+            <span className={css.statK}>
+              of {fmtInt(sc.catalogue_diseases ?? 0)} catalogue diseases reachable
+            </span>
+          </div>
+          <div className={css.stat}>
+            <span className={css.statVal}>
+              {fmtInt(sc.cellxgene_terms_with_no_omim_or_orpha_crosswalk ?? 0)}
+            </span>
+            <span className={css.statK}>have cells and no crosswalk</span>
+            <span className={css.statNote}>
+              the OMIM/ORPHA boundary again: they have data and cannot be attached to a
+              catalogue entry
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div className={css.block}>
+        <span className={css.blockK}>{tt(DEEP.cellBest)}</span>
+        <div className={css.tableWrap}>
+          <table className={css.table}>
+            <thead>
+              <tr><th>disease</th><th>datasets</th><th>genes</th><th>tissues sampled</th></tr>
+            </thead>
+            <tbody>
+              {best.slice(0, 15).map((r) => (
+                <tr key={r.disease}>
+                  <td className={css.tdName}>{r.label ?? r.disease}</td>
+                  <td>{fmtInt(r.datasets)}</td>
+                  <td className={css.tdMuted}>{r.genes || "—"}</td>
+                  <td className={css.tdMuted}>{(r.tissues ?? []).join(", ")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className={css.block}>
+        <span className={css.blockK}>{tt(DEEP.cellTissue)}</span>
+        <div className={css.rows}>
+          {tissues.slice(0, 12).map((t) => (
+            <div key={t.tissue} className={css.row}>
+              <span className={css.rowLabel}>{t.tissue}</span>
+              <span className={css.track}>
+                <span className={css.bar}
+                      style={{ width: `${(100 * t.diseases) / (tissues[0]?.diseases || 1)}%` }} />
+              </span>
+              <span className={css.rowVal}>{t.diseases}</span>
+            </div>
+          ))}
+        </div>
+        <p className={css.note}>
+          A disease of a tissue nobody dissociates is unreachable for a different reason than
+          a disease nobody has heard of, and this is the list that separates them.
+        </p>
+      </div>
+
+      <Provenance generated={d.generated} provenance={d.provenance} method={d.not_an_adapter}
                   says={d.says} limits={d.limits} governedBy={d.governed_by} />
     </div>
   );
