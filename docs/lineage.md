@@ -44,6 +44,19 @@
 
 ---
 
+| 63 | Selective constraint as a prior | **Karczewski et al.** (2020) | quantifies its own stated caveat | disease genes 0.8435 against a length-matched 0.8861 (z -8.68) — but **66 %** of the distance from the genome mean is length, not constraint |
+| 64 | Ancestry composition of genetic studies | **Sirugo et al.** (2019) | quantifies, and qualifies a natural reading of it | 65.8 % European across 562 psychiatric analyses — and against seven other disease areas psychiatry is the **least** European of the eight, so the problem is the field's rather than psychiatry's |
+| 65 | Transferability of polygenic scores | **Martin et al.** (2019) | extends the unit of measurement | measured per ANALYSIS, not per cohort: ADHD, OCD, anorexia and Tourette carry zero analyses with an African-ancestry majority |
+| 66 | Who is counted in a GWAS | **Popejoy et al.** (2016) | extends it to a unit the original did not use | 11.9 % of psychiatric analysis weight declares no ancestry whatsoever — a category the participant-level count cannot express |
+| 67 | Consortium-scale psychiatric genetics | **Trubetskoy et al.** (2022) | measures its composition without touching its findings | schizophrenia carries the most analyses of the nine disorders and 3 of them have an African-ancestry majority |
+| 68 | A public index of single-cell data | **CZI et al.** (2025) | uses it as a denominator nobody had applied | **77 of 14,831** catalogue diseases are reachable from a public single-cell dataset — 0.52 %, and 1,527 of 2,216 indexed datasets are normal tissue |
+| 69 | Where a gene is expressed, in normal tissue | **Karlsson et al.** (2021) | states the limit of an inference built on it | the cell-type axis is an inference rather than an observation for **99.5 %** of these diseases |
+| 70 | Pathways as a coarser alphabet | **Gillespie et al.** (2022) | contradicts a reading this repository had given its own result | the field-shaping families do **not** carry more about morphogenetic systems than the energy families (-0.009477 against -0.005272 bits) — so the loss is about how coarse the alphabet is, not about what its letters mean |
+| 71 | Genome-scale Perturb-seq | **Replogle et al.** (2022) | applies a calibration the design invites and does not supply | the challenge's own top-3 aggregate has a floor of 0.239 at 8 cells and 0.001 at 900 — resampled from a designed non-targeting control |
+| 72 | Pooled single-cell genetic screens | **Dixit et al.** (2016) | quantifies a bias the design produces | 16 of the raw top 20 survive calibration and 4 are displaced; perturbations under 100 cells in the top 20 drop from 3 to 1 |
+| 73 | How cleared medical AI is evaluated | **Wu et al.** (2021) | extends its count and adds the distribution | 1,164 of 1,524 authorisations are radiology (76.4 %), one panel holds half the list, and 90 % of the list was authorised in 2019 or later |
+| 74 | A database of cleared AI devices | **Benjamens et al.** (2020) | updates it and names what it did not report | the Dermatology panel does not appear at all — a fact about review pathways that the tool's own name scan corrects, finding 2 skin-lesion devices reviewed elsewhere |
+
 ## 1. The expected maximum of noise — order statistics
 
 **The work.** That `E[max of n draws]` increases with n is textbook (David & Nagaraja,

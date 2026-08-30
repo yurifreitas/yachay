@@ -97,6 +97,204 @@ date-released: "2026-08-29"
 # ---------------------------------------------------------------------------------
 
 references:
+  # --- 2026-08-30: the sources behind seven measurements added in one day, each
+  # --- verified against PubMed or Crossref by title match before it was written here.
+  # --- Two candidate references were REJECTED rather than accepted on a search hit:
+  # --- a free-text query for "Genomics is failing on diversity" returned a Korean
+  # --- farming paper at 0.31 title similarity. A search result is not a reference.
+  - type: article
+    title: "The mutational constraint spectrum quantified from variation in 141,456 humans"
+    authors:
+      - { name: "Karczewski KJ" }
+      - { name: "Francioli LC" }
+      - { name: "Tiao G" }
+    journal: "Nature"
+    year: 2020
+    identifiers:
+      - { type: doi, value: "10.1038/s41586-020-2308-7" }
+      - { type: other, value: "PMID:32461654" }
+    notes: >-
+      THE SOURCE OF EVERY CONSTRAINT FIGURE HERE. tools/gene_constraint.py reads its LOEUF and
+      asks what the catalogue's structure does to it. The paper's own caution — that LOEUF is
+      bounded away from small values for short genes — is stated there and had never been
+      counted anywhere; this repository measures that 66 % of the apparent constraint shift in
+      disease genes is reproduced by drawing genes of the same length.
+      Verified [NCBI].
+  - type: article
+    title: "The Missing Diversity in Human Genetic Studies"
+    authors:
+      - { name: "Sirugo G" }
+      - { name: "Williams SM" }
+      - { name: "Tishkoff SA" }
+    journal: "Cell"
+    year: 2019
+    identifiers:
+      - { type: doi, value: "10.1016/j.cell.2019.04.032" }
+      - { type: other, value: "PMID:31051100" }
+    notes: >-
+      THE CLAIM tools/psychiatric_gwas.py AND tools/trait_atlas.py TURN INTO A COUNT. The review
+      establishes that human genetic studies are overwhelmingly European; this repository
+      measures the composition per disease area, at the level of the individual analysis rather
+      than the cohort.
+      Verified [NCBI].
+  - type: article
+    title: "Clinical use of current polygenic risk scores may exacerbate health disparities"
+    authors:
+      - { name: "Martin AR" }
+      - { name: "Kanai M" }
+      - { name: "Kamatani Y" }
+    journal: "Nat Genet"
+    year: 2019
+    identifiers:
+      - { type: doi, value: "10.1038/s41588-019-0379-x" }
+      - { type: other, value: "PMID:30926966" }
+    notes: >-
+      SUPPORTS THE ARGUMENT FOR WHY tools/trait_atlas.py IS WORTH THE COMPARISON. The paper
+      shows polygenic scores transfer poorly across ancestries; the composition measured here is
+      the input to that failure, reported per disease area.
+      Verified [NCBI].
+  - type: article
+    title: "Genomics is failing on diversity"
+    authors:
+      - { name: "Popejoy AB" }
+      - { name: "Fullerton SM" }
+    journal: "Nature"
+    year: 2016
+    identifiers:
+      - { type: doi, value: "10.1038/538161a" }
+    notes: >-
+      THE ORIGINAL COUNT this repository's ancestry work descends from. It counted GWAS
+      participants; tools/psychiatric_gwas.py counts analyses, and reports the share that states
+      no ancestry at all.
+      Verified [XR].
+  - type: article
+    title: "Mapping genomic loci implicates genes and synaptic biology in schizophrenia"
+    authors:
+      - { name: "Trubetskoy V" }
+      - { name: "Pardiñas AF" }
+      - { name: "Qi T" }
+    journal: "Nature"
+    year: 2022
+    identifiers:
+      - { type: doi, value: "10.1038/s41586-022-04434-5" }
+      - { type: other, value: "PMID:35396580" }
+    notes: >-
+      THE CORPUS tools/psychiatric_gwas.py MEASURES. Its schizophrenia results are the largest
+      single contribution to the psychiatric traits counted here, and this repository makes no
+      claim about their validity — only about who was in them.
+      Verified [NCBI].
+  - type: article
+    title: "CZ CELLxGENE Discover: a single-cell data platform for scalable exploration, analysis and modeling of aggregated data"
+    authors:
+      - { name: "CZI Cell Science Program" }
+      - { name: "Abdulla S" }
+      - { name: "Aevermann B" }
+    journal: "Nucleic Acids Res"
+    year: 2025
+    identifiers:
+      - { type: doi, value: "10.1093/nar/gkae1142" }
+      - { type: other, value: "PMID:39607691" }
+    notes: >-
+      THE DENOMINATOR OF THE CELL AXIS. Four layers of this site place a disease on a cell type
+      from an atlas of NORMAL tissue; tools/single_cell_coverage.py uses this index to ask how
+      often that inference could have been checked against cells from a patient.
+      Verified [NCBI].
+  - type: article
+    title: "A single-cell type transcriptomics map of human tissues"
+    authors:
+      - { name: "Karlsson M" }
+      - { name: "Zhang C" }
+      - { name: "Méar L" }
+    journal: "Sci Adv"
+    year: 2021
+    identifiers:
+      - { type: doi, value: "10.1126/sciadv.abh2169" }
+      - { type: other, value: "PMID:34321199" }
+    notes: >-
+      THE ATLAS FOUR LAYERS HERE DEPEND ON. scale_information, autism_convergence, gap_taxonomy
+      and knowledge_void all place a disease on a cell type through it. It measures NORMAL
+      tissue, so each of those is healthy biology plus an inference — and single_cell_coverage
+      says how often the inference is checkable.
+      Verified [NCBI].
+  - type: article
+    title: "The reactome pathway knowledgebase 2022"
+    authors:
+      - { name: "Gillespie M" }
+      - { name: "Jassal B" }
+      - { name: "Stephan R" }
+    journal: "Nucleic Acids Res"
+    year: 2022
+    identifiers:
+      - { type: doi, value: "10.1093/nar/gkab1028" }
+      - { type: other, value: "PMID:34788843" }
+    notes: >-
+      THE PATHWAY ALPHABET. scale_information collapses genes onto its 29 top-level pathways and
+      measures what survives; signal_energy decomposes that alphabet family by family.
+      Verified [NCBI].
+  - type: article
+    title: "Mapping information-rich genotype-phenotype landscapes with genome-scale Perturb-seq"
+    authors:
+      - { name: "Replogle JM" }
+      - { name: "Saunders RA" }
+      - { name: "Pogson AN" }
+    journal: "Cell"
+    year: 2022
+    identifiers:
+      - { type: doi, value: "10.1016/j.cell.2022.05.013" }
+      - { type: other, value: "PMID:35688146" }
+    notes: >-
+      THE ASSAY CLASS BEHIND analyses/obesity_thermogenesis.py. Genome-scale Perturb-seq is the
+      design the obesity challenge screen belongs to, and its unequal cell counts per
+      perturbation are what makes Stage 1 apply.
+      Verified [NCBI].
+  - type: article
+    title: "Perturb-Seq: Dissecting Molecular Circuits with Scalable Single-Cell RNA Profiling of Pooled Genetic Screens"
+    authors:
+      - { name: "Dixit A" }
+      - { name: "Parnas O" }
+      - { name: "Li B" }
+    journal: "Cell"
+    year: 2016
+    identifiers:
+      - { type: doi, value: "10.1016/j.cell.2016.11.038" }
+      - { type: other, value: "PMID:27984732" }
+    notes: >-
+      THE ORIGINATING PERTURB-SEQ PAPER, cited for the design rather than for a number.
+      analyses/obesity_thermogenesis.py measures a screen of this kind and reports what its
+      ranking statistic is worth at each cell count.
+      Verified [NCBI].
+  - type: article
+    title: "How medical AI devices are evaluated: limitations and recommendations from an analysis of FDA approvals"
+    authors:
+      - { name: "Wu E" }
+      - { name: "Wu K" }
+      - { name: "Daneshjou R" }
+    journal: "Nat Med"
+    year: 2021
+    identifiers:
+      - { type: doi, value: "10.1038/s41591-021-01312-x" }
+      - { type: other, value: "PMID:33820998" }
+    notes: >-
+      THE PRIOR THAT tools/cleared_devices.py EXTENDS. It analysed how FDA-cleared medical AI
+      devices are evaluated and found the evaluations thin; this repository counts the same list
+      by review panel and by year.
+      Verified [NCBI].
+  - type: article
+    title: "The state of artificial intelligence-based FDA-approved medical devices and algorithms: an online database"
+    authors:
+      - { name: "Benjamens S" }
+      - { name: "Dhunnoo P" }
+      - { name: "Meskó B" }
+    journal: "NPJ Digit Med"
+    year: 2020
+    identifiers:
+      - { type: doi, value: "10.1038/s41746-020-00324-0" }
+      - { type: other, value: "PMID:32984550" }
+    notes: >-
+      THE EARLIER DATABASE OF FDA-CLEARED AI DEVICES. tools/cleared_devices.py reads the
+      regulator's own current list rather than a curated snapshot, and reports the specialty
+      concentration the earlier count did not.
+      Verified [NCBI].
   # --- the author's own prior work: where the method and the discipline come from ----
   - type: software
     title: "nominator — turn sparse, confounded assay data into a defensible shortlist"
