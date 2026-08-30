@@ -395,6 +395,23 @@ emit("figures", figures);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
 
+  // TWO MORE THAT WERE MEASURED AND PUBLISHED NOWHERE — found by scripts/check-artefacts.mjs,
+  // which exists because this comment block has now been written three times.
+  //
+  // twin_propagation: network propagation with a degree-stratified null, the rung
+  // tools/thesis_seed.py grades as the one this repository actually built.
+  // hiv_resistance: the method outside rare disease entirely — an adapter that passed the
+  // four-question gate, whose positive controls were named before the run, and which breaks
+  // an assumption the core smuggles in. That last part is why it is worth a screen.
+  {
+    const f = join(REPO, "out", "rare", "twin_propagation.json");
+    emit("twin_propagation", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+  {
+    const f = join(REPO, "out", "hiv_resistance.json");
+    emit("hiv_resistance", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   for (const name of ["patient_frequencies", "patient_variants", "genotype_phenotype",
                       "intervals", "gap_patterns", "tropical_gap"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);

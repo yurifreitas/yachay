@@ -15,22 +15,25 @@ export const MEAS = {
      what biases the register, what shape the known region has, and where many disorders meet
      are four questions with four different answers. The rail now says which is which, and
      the count in this sentence stopped being wrong — it said "four" while eight shipped. */
-  group: bi("What a scale costs", "O que uma escala custa"),
+  /* SHORT NOUNS, NOT SENTENCES. A rail of ten rows is scanned, not read; the label is the
+     handle and the question underneath is the prose. The first version of this split gave
+     each group a full clause and made ten rows take longer to scan than six had. */
+  group: bi("Scale and language", "Escala e língua"),
   question: bi(
     "Coarsen the description, or change the language, and measure what is lost.",
     "Engrosse a descrição, ou mude a língua, e meça o que se perde.",
   ),
-  gRegister: bi("What biases the register", "O que enviesa o registro"),
+  gRegister: bi("Register bias", "Viés do registro"),
   qRegister: bi(
     "Conflicting evidence and unequal attention — measured on the catalogue, with a null.",
     "Evidência conflitante e atenção desigual — medidas no catálogo, com um nulo.",
   ),
-  gShape: bi("The shape of the known", "A forma do que se sabe"),
+  gShape: bi("Shape of the known", "Forma do conhecido"),
   qShape: bi(
     "Which combinations of knowledge occur, which are absent, and what would close each hole.",
     "Que combinações de conhecimento ocorrem, quais faltam, e o que fecharia cada buraco.",
   ),
-  gConverge: bi("Where disorders meet", "Onde distúrbios se encontram"),
+  gConverge: bi("Convergence", "Convergência"),
   qConverge: bi(
     "Hundreds of disorders share a sign. Pathway or cell type — and neither is a mechanism.",
     "Centenas de distúrbios compartilham um sinal. Via ou tipo celular — e nenhum é mecanismo.",

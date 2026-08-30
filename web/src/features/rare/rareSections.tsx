@@ -12,6 +12,7 @@ import { DiseaseCard } from "./components/DiseaseCard";
 import { TROP } from "../../i18n/tropical";
 import { MEAS } from "../../i18n/measured";
 import { MORE } from "../../i18n/more";
+import { DEEP } from "../../i18n/deep";
 
 import { StatusDot } from "../../components/atoms/StatusDot";
 import { Chip } from "../../components/atoms/Chip";
@@ -40,6 +41,9 @@ const LanguageCoverage = lazy(() => import("./components/MeasuredPanels").then((
 const ConflictContext = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ConflictContext })));
 const KnowledgeShape = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.KnowledgeShape })));
 const GapTaxonomy = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.GapTaxonomy })));
+const HivResistance = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.HivResistance })));
+const TwinPropagation = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.TwinPropagation })));
+const GenotypePhenotype = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GenotypePhenotype })));
 const AttentionBurden = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AttentionBurden })));
 const AutismConvergence = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AutismConvergence })));
 const VoidCells = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.VoidCells })));
@@ -136,6 +140,30 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     sub: (ctx) => (<>{ctx.tt(MORE.autSub)}</>),
     view: () => (
       <><AutismConvergence /></>
+    ),
+  },
+  {
+    id: "hiv",
+    title: (ctx) => (<>{ctx.tt(DEEP.hivHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(DEEP.hivSub)}</>),
+    view: () => (
+      <><HivResistance /></>
+    ),
+  },
+  {
+    id: "twin",
+    title: (ctx) => (<>{ctx.tt(DEEP.twinHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(DEEP.twinSub)}</>),
+    view: () => (
+      <><TwinPropagation /></>
+    ),
+  },
+  {
+    id: "genopheno",
+    title: (ctx) => (<>{ctx.tt(DEEP.genoHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(DEEP.genoSub)}</>),
+    view: () => (
+      <><GenotypePhenotype /></>
     ),
   },
   {

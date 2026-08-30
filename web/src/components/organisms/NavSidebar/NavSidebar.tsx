@@ -38,6 +38,27 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
    *  tree a desktop gets, which is the whole reason it was worth building once. */
   const [open, setOpen] = useState(false);
 
+  /* OPENING A MENU MOVED THE READER.
+   *
+   *  Clicking a group called `onGroup`, which selects that group's FIRST section — so
+   *  looking at what a question contains navigated away from the panel being read, and
+   *  reaching a section two groups over cost two navigations, the first of them somewhere
+   *  nobody asked to go. With six groups that was annoying; at ten it is the reason the rail
+   *  stopped being usable.
+   *
+   *  Disclosure and position are different things, so they are different state. `peek` is
+   *  which group is expanded; the tree still owns where the reader is. Expanding shows the
+   *  sections and moves nothing; only a section click navigates.
+   *
+   *  `peek` is null until the reader opens something, and null means "follow the tree" —
+   *  so arriving anywhere, by link or by the [ and ] keys, expands the group you are in
+   *  without this component having to synchronise a copy of it. */
+  const [peek, setPeek] = useState<string | null>(null);
+  const shown = peek ?? tree?.group ?? "";
+  // Walking into another group with [ or ] should open that group, not leave the reader
+  // looking at an expanded list that no longer contains them.
+  useEffect(() => { setPeek(null); }, [tree?.group]);
+
   // Escape closes, and the body does not scroll behind an open drawer — a drawer whose
   // backdrop scrolls is a drawer people close by accident.
   useEffect(() => {
@@ -141,15 +162,18 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                       <div className={css.groups} role="group"
                            aria-label={`${t(S.questionsIn)} ${t(v.label)}`}>
                         {tree.groups.map((g) => {
-                          const openGroup = g.id === tree.group;
+                          const openGroup = g.id === shown;
+                          // The group the reader is actually IN, which may not be the one
+                          // they are peeking at. Marked, so peeking never loses the anchor.
+                          const isHere = g.id === tree.group;
                           const sections = tree.sections.filter((s) => s.group === g.id);
                           return (
                             <Fragment key={g.id}>
                               <button
                                 type="button"
-                                className={openGroup ? css.groupOn : css.group}
+                                className={isHere ? css.groupOn : openGroup ? css.groupPeek : css.group}
                                 aria-expanded={openGroup}
-                                onClick={() => tree.onGroup(g.id)}
+                                onClick={() => setPeek(openGroup && !isHere ? null : g.id)}
                               >
                                 <span className={css.groupLabel}>{t(g.label)}</span>
                                 <span className={css.count} aria-hidden="true">{g.count}</span>

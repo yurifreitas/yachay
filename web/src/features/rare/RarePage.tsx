@@ -26,6 +26,7 @@ import { RARE } from "../../i18n/strings";
 import { TROP } from "../../i18n/tropical";
 import { MEAS } from "../../i18n/measured";
 import { MORE } from "../../i18n/more";
+import { DEEP } from "../../i18n/deep";
 import { useT } from "../../i18n";
 
 
@@ -92,6 +93,7 @@ const GROUPS: NavGroupDef[] = [
   { id: "register", label: MEAS.gRegister, question: MEAS.qRegister },
   { id: "knownshape", label: MEAS.gShape, question: MEAS.qShape },
   { id: "converge", label: MEAS.gConverge, question: MEAS.qConverge },
+  { id: "beyond", label: DEEP.gBeyond, question: DEEP.qBeyond },
   { id: "argument", label: RARE.gArgument, question: RARE.qArgument },
 ];
 
@@ -112,6 +114,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "network", label: RARE.sNetwork, group: "cause" },
   { id: "sparse", label: RARE.sSparse, group: "cause" },
   { id: "nongene", label: RARE.sNongene, group: "cause" },
+  { id: "twin", label: DEEP.sTwin, group: "cause" },
 
   // 3. One record in full, then the physics and the payroll a therapy would need.
   { id: "disease", label: RARE.sDisease, group: "case" },
@@ -121,6 +124,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "evidence", label: RARE.sEvidence, group: "decide" },
   { id: "choose", label: RARE.sChoose, group: "decide" },
   { id: "dims", label: RARE.sDims, group: "decide" },
+  { id: "genopheno", label: DEEP.sGeno, group: "decide" },
 
   // 5. What was measured under ADR 0007 — eight results, each with a null and an interval,
   //    and one of them negative. These carry a governing decision record the catalogue layers
@@ -145,6 +149,11 @@ const SECTIONS: NavSectionDef[] = [
   { id: "voidcells", label: MORE.sVoid, group: "knownshape" },
 
   { id: "autism", label: MORE.sAut, group: "converge" },
+
+  // 5b. The method on a domain that did not produce it. Its own group, because the standing
+  //     is different again: this is not a fact about rare disease, it is evidence that the
+  //     instrument works where the instrument was not built.
+  { id: "hiv", label: DEEP.sHiv, group: "beyond" },
 
   // 6. The argument and its provenance — a thesis and its bibliography are one thing.
   { id: "thesis", label: RARE.sThesis, group: "argument" },

@@ -180,6 +180,17 @@
 }
 .chip:hover { color: var(--r-text); }
 .chip:focus-visible { outline: 2px solid var(--unknown); outline-offset: 2px; }
+
+/* A row that was PREDICTED before the run, marked in the row itself. Written after the table
+   rather than beside the heading, because the claim is about that one entry: the shortlist
+   is only readable if the reader can see which of its rows were the test. */
+.badgeKnown {
+  margin-left: var(--sp-2); padding: 1px 6px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--unknown) 16%, transparent);
+  color: var(--unknown);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap;
+}
 .chipOn {
   background: var(--unknown); border-color: transparent; color: var(--r-surface);
   font-weight: 600;

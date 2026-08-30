@@ -157,7 +157,7 @@ export const RARE = {
     "The whole catalogue first, because every later claim inherits its shape.",
     "O catálogo inteiro primeiro, porque toda afirmação seguinte herda a forma dele.",
   ),
-  gNaming: bi("Names and absences", "Nomes e ausências"),
+  gNaming: bi("Names and gaps", "Nomes e lacunas"),
   qNaming: bi(
     "What a disease is called, what has no name yet, and who is missing from the register.",
     "Como uma doença é chamada, o que ainda não tem nome, e quem falta no registro.",
