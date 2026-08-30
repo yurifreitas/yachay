@@ -35,6 +35,7 @@ const Thesis = lazy(() => import("./components/Thesis").then((m) => ({ default: 
 const NonGene = lazy(() => import("./components/NonGene").then((m) => ({ default: m.NonGene })));
 const Ancestry = lazy(() => import("./components/Ancestry").then((m) => ({ default: m.Ancestry })));
 const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ default: m.SelfAudit })));
+const ZAudit = lazy(() => import("./components/ZAudit").then((m) => ({ default: m.ZAudit })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
@@ -288,6 +289,22 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
               contradictions in a file nobody opens is publishing them nowhere.</>,
     view: () => (
       <><SelfAudit /></>
+    ),
+  },
+  {
+    id: "zaudit",
+    title: <>Every number here is a distance from a null. This is what those distances are worth</>,
+    sub: <>The section above checks whether our layers agree with each other. This one checks
+              whether our headline statistic can carry the weight put on it. It audits all
+              3,166 published z values against the draw count of the null each was computed
+              from &mdash; a permutation null of 200 draws resolves no tail below 1/201, so
+              every z past about 2.6 is a distance measured against a spread and then extended
+              along a curve nobody sampled. Two artefacts have a further problem: a null whose
+              spread is under 1&thinsp;% of its own centre, which turns any deviation into an
+              enormous number. The findings survive; the statistic that announced them does
+              not, and both are said here.</>,
+    view: () => (
+      <><ZAudit /></>
     ),
   },
   {

@@ -132,6 +132,7 @@ const ARGUMENT: RareView = {
   sections: [
     { id: "thesis", label: RARE.sThesis, group: "argument" },
     { id: "selfaudit", label: RARE.sSelfAudit, group: "argument" },
+    { id: "zaudit", label: DEEP.sZAudit, group: "argument" },
     { id: "refmap", label: RARE.sRefmap, group: "argument" },
     { id: "sources", label: RARE.sSources, group: "argument" },
     { id: "hiv", label: DEEP.sHiv, group: "beyond" },

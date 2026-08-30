@@ -426,6 +426,15 @@ emit("figures", figures);
     emit("obesity_thermogenesis", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
 
+  // THE AUDIT OF THE SITE'S OWN NUMBERS. tools/z_audit.py reads every artefact in this
+  // directory and holds each published z against the draw count of the null it was computed
+  // from. It is emitted like any other artefact because a page that reports 3,166 z values
+  // owes the reader the one figure that says what they are worth.
+  {
+    const f = join(REPO, "out", "z_audit.json");
+    emit("z_audit", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   // The predictive-technology layer's founding measurement: what a regulator has actually
   // permitted, which is the only rung of a readiness scale that can be observed rather than
   // asserted. Lives in out/devices/ because it is not about rare disease.

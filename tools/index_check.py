@@ -181,6 +181,9 @@ NOT_A_STAGE = {
               "never depends on a remote being up",
     "index_check": "this file. It audits the repository rather than producing a layer of it",
     "verify_claims": "an audit of published numbers, not a producer of them",
+    "z_audit": "an audit of published z values against the nulls they were computed from; it "
+               "reads every bundled artefact, so making it a stage would put every artefact "
+               "upstream of it and it would never be fresh",
     "status": "reports on the pipeline; making it a stage would make the report a dependency "
               "of itself",
     "paper_numbers": "renders figures for prose from artefacts other stages produce",

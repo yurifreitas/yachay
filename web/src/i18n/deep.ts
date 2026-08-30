@@ -18,6 +18,7 @@ export const DEEP = {
     "O mesmo método num domínio que não o produziu — e o que esse domínio quebra.",
   ),
   sHiv: bi("HIV drug resistance", "Resistência do HIV"),
+  sZAudit: bi("What is a z worth here?", "Quanto vale um z aqui?"),
   hivHeading: bi(
     "the positive controls were named before the run, and they came back",
     "os controles positivos foram nomeados antes da execução, e voltaram",
@@ -54,6 +55,31 @@ export const DEEP = {
     + "genes causais de onze distúrbios. Reportado contra 200 conjuntos de sementes "
     + "estratificados por grau, nunca como escore bruto — uma propagação sem nulo pareado "
     + "por grau é uma lista das proteínas mais conectadas do grafo.",
+  ),
+  zaHeading: bi(
+    "published z values on this site, and what a permutation null can actually support",
+    "valores de z publicados neste site, e o que um nulo de permutação de fato sustenta",
+  ),
+  zaFigure: bi(
+    "the loudest z of each artefact, with the error it inherits from its own denominator",
+    "o maior z de cada artefato, com o erro herdado do próprio denominador",
+  ),
+  zaTight: bi(
+    "the other failure, which is not about tails: a null with almost no spread",
+    "a outra falha, que não é sobre caudas: um nulo quase sem dispersão",
+  ),
+  zaTightSays: bi(
+    "knowledge_void reports 318 occupied lattice cells against a null of 575 with a standard "
+    + "deviation of 0.95 — under one unit, on a count — and a z of -270.51. The shortfall is "
+    + "real and it is one of the strongest measurements here. The z is not a measurement of "
+    + "it: it is a statement about the size of a denominator. Where the null is this tight, "
+    + "the effect on its own scale is the number that means something, and it is published "
+    + "beside every one of these.",
+    "knowledge_void reporta 318 células ocupadas contra um nulo de 575 com desvio padrão de "
+    + "0,95 — menos de uma unidade, numa contagem — e um z de -270,51. O déficit é real e é "
+    + "uma das medidas mais fortes daqui. O z não é a medida dele: é uma afirmação sobre o "
+    + "tamanho de um denominador. Onde o nulo é assim tão apertado, o efeito na própria "
+    + "escala é o número que significa algo, e ele é publicado ao lado de cada um destes.",
   ),
   conNulls: bi(
     "the four nulls themselves, with each measured value marked inside its own",

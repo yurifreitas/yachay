@@ -1730,3 +1730,60 @@ with a stated fragility, not as an established result.
 as a ranked list of findings. After it, one of them is a ranked list whose top ten do not
 survive, one is a list whose top is at an assay ceiling, and one is a negative result whose
 key contrast is fragile. Nothing was wrong that a rerun fixed; the numbers were always these.
+
+### A41 — a z of 2,128, a z of −270, and what a permutation null can actually support · **closed**
+
+*2026-08-30.* Giving `twin_propagation` an interval produced a finding about the artefact
+rather than about the genes: not one of its ten largest z values kept a positive interval. The
+cause was the denominator. A gene of degree five is missed by almost every draw of a
+degree-matched null, so the spread there is near zero and any reach at all divides into an
+enormous number.
+
+That is a fact about **dividing by an estimated spread**, and this repository does it in nine
+artefacts. `tools/z_audit.py` asks the question of all of them at once and finds
+**3,166 published z values**, of which **871 are above 10** and **345 of those carry an
+interval**.
+
+**Three things make a z large, and only one is a finding.**
+
+1. *A large effect against a well-estimated spread.* The finding.
+2. *A degenerate null.* `knowledge_void` reports 318 occupied lattice cells against a null of
+   575 with a standard deviation of **0.95** — under one unit, on a count — and publishes
+   z = −270.51. The shortfall is real and is one of the strongest measurements here. The z is
+   not a measurement of it; it is a statement about the size of a denominator. Two artefacts
+   have a null whose spread is under 1% of its own centre: `knowledge_void` (0.00165) and
+   `knowledge_shape` (0.00173).
+3. *An extrapolation past what the null resolves.* A permutation null of N draws cannot
+   distinguish any tail probability below 1/(N+1). At the 200 draws used almost everywhere
+   here that floor is 0.005, about z = 2.58 under a normal reading. Every z past it is a
+   distance the experiment measured, extended along a curve the experiment never sampled.
+
+**A z carries its own error, and nobody had computed it.** The denominator is a standard
+deviation estimated from N draws, whose relative standard error is 1/sqrt(2N) — 5% at 200
+draws. So the propagation artefact's largest value of 2,128 carries a standard error of
+**±106** before anything about biology is considered. That number now appears in the figure.
+
+**What was paid.** `gene_constraint`'s inheritance arms published z = −25.72 and z = +9.63
+against a tight null with no interval on the observed mean. Both now carry a bootstrap over
+the member genes — a different resample from the length-matched null, and the difference is
+the point: the null says how the statistic moves under the geometry, the interval says how the
+estimate moves under the sample. All three arms survive:
+
+| arm | observed | 95% | null | excludes the null |
+|---|---|---|---|---|
+| all disease genes | 0.8435 | [0.8325, 0.8545] | 0.8860 | yes |
+| autosomal dominant | 0.6391 | [0.6165, 0.6618] | 0.8809 | yes |
+| autosomal recessive | 0.9605 | [0.9472, 0.9738] | 0.8873 | yes |
+
+That contrast is the reason to run the audit rather than assume its answer. The same treatment
+destroyed the propagation artefact's top ten and left the constraint results standing.
+
+**⚠️ The auditor invented a defect, again.** The first version of the interval detector carried
+six literal key names and reported `knowledge_shape` as publishing z = −19 with no interval. It
+publishes `mean_ci95`, which was not in the list. This is the same failure as the citation
+audit that "found" nine articles with no notes when the real number was zero: a list of names
+cannot see a name nobody thought of. The detector now matches by shape.
+
+`python tools/z_audit.py --check` joined the submission gate, verified to fail by stripping the
+intervals from a bundled artefact. The result is published as a section rather than filed here:
+a site that reports 3,166 z values owes the reader the figure that says what they are worth.

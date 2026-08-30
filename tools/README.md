@@ -84,6 +84,7 @@ uncomfortable findings.
 | `analyses/obesity_thermogenesis.py` | 300 | Broad/EWSC obesity challenge | **STAGE 1 ON THE CHALLENGE'S OWN AGGREGATE, with the best control pool this library has had.** The competition ranks by the mean of the top three of twelve thermogenic signatures — a top-k over correlated scores computed on 8–688 cells. Resampling the 2,242-cell non-targeting control gives the floor of that statistic: **0.23946 at 8 cells against 0.01249 at 340**, so a perturbation with 8 cells must clear **0.69504** to be credible while the actual winner scores 0.548. **4 of the raw top 20 are displaced** by calibration. |
 | `index_check.py` | 145 | every artefact, tool, stage, source and ADR against the document that claims to enumerate it — A36, and its first run found **sixteen of eighteen** ingested sources named in no index |
 | `verify_claims.py` | 246 | every published number against the artefact that produced it — F1, and it found stale docs on its first run |
+| `z_audit.py` | 260 | every published z against the draw count of its own null. 3,166 z values; 871 above 10; two artefacts whose null spread is under 1% of its own centre |
 | `intervals.py` | 268 | a 95 % interval on every headline — A6, and it corrected two published sentences |
 
 | `cancer_subgroups.py` | 262 | selective dependency per cancer subgroup at three nesting levels — audit A29, and the first analysis here to run several library stages on one question |

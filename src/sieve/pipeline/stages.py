@@ -816,6 +816,7 @@ def _check() -> None:
     _run(str(paths.TOOLS / "verify_claims.py"))
     _run(str(paths.TOOLS / "status.py"), "--check")
     _run(str(paths.TOOLS / "index_check.py"))
+    _run(str(paths.TOOLS / "z_audit.py"), "--check")
     bib = paths.REFS_BIB.read_text(encoding="utf-8")
     unverified = sum(
         1

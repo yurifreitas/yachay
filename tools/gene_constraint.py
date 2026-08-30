@@ -80,6 +80,10 @@ MIN_POSSIBLE_LOF = 10
 
 #: Draws for every permutation null. 400 is enough for a z at the sizes here and keeps the
 #: whole tool under a minute on one core.
+BOOT_DRAWS = 400
+#: Resamples of the MEMBER GENES, for an interval on the observed mean. Distinct from DRAWS,
+#: which resamples the length-matched pool: one asks how the estimate moves, the other how
+#: the statistic moves under the geometry.
 DRAWS = 400
 
 #: Buckets for the matched null: genes are binned on log10(possible LoF sites), and a draw
@@ -292,6 +296,22 @@ def matched_null(
         return {}
     observed = statistics.fmean(pool[g][field] for g in members)
 
+    # AN INTERVAL ON THE OBSERVED MEAN, over the genes in the set.
+    #
+    #  The null below says what a length-matched set of genes produces. It says nothing about
+    #  how far THIS set's mean would move if the curators had listed a slightly different set
+    #  of genes for the same disorders — and for the inheritance arms that is the operative
+    #  question, because "autosomal dominant" is 1,398 genes somebody assigned a mode to.
+    #
+    #  Resampled over member genes with replacement at the same count. The two quantities are
+    #  different and both are needed: the null's spread is how much the STATISTIC moves under
+    #  the geometry, the interval is how much the ESTIMATE moves under the sample.
+    vals = [pool[g][field] for g in members]
+    b_rng = random.Random(SEED + 13)
+    boot = [statistics.fmean(vals[b_rng.randrange(len(vals))] for _ in vals)
+            for _ in range(BOOT_DRAWS)]
+    obs_se = statistics.pstdev(boot)
+
     by_bin: dict[int, list[str]] = collections.defaultdict(list)
     for sym in sorted(pool):
         by_bin[length_bin(pool[sym]["possible"])].append(sym)
@@ -316,6 +336,14 @@ def matched_null(
     return {
         "genes": len(members),
         "observed": round(observed, 4),
+        "observed_se": round(obs_se, 5),
+        "observed_ci95": [round(observed - 1.96 * obs_se, 4),
+                          round(observed + 1.96 * obs_se, 4)],
+        # Whether the interval on the observed mean still excludes the null's centre. A z of
+        # -25 against a null this tight says almost nothing on its own; this says whether the
+        # gene set could have been curated differently and given the same answer.
+        "interval_excludes_null_mean": bool(
+            (observed + 1.96 * obs_se) < mu or (observed - 1.96 * obs_se) > mu),
         "null_mean": round(mu, 4),
         "null_sd": round(sd, 5),
         "z": round((observed - mu) / sd, 2) if sd else None,
