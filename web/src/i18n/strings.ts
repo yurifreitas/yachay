@@ -230,6 +230,17 @@ export const RARE = {
   /* THE FOUR BANDS. Each names a KIND of question rather than a subject, because the groups
      inside them already name subjects and repeating that one level up would be a second
      table of contents. */
+  /* Bands for the gene page. The same idea as the atlas's: a run of groups that answer one
+     KIND of question, so a reader can skip a band without reading the groups inside it. */
+  tGene: bi("This gene", "Este gene"),
+  tExperiment: bi("What experiments say", "O que os experimentos dizem"),
+  tOnward: bi("Onward", "Adiante"),
+  /* And for a run. A screen answers four questions in order and they were four peer groups. */
+  tRun: bi("The run", "A execução"),
+  tNull: bi("The null", "O nulo"),
+  tEffect: bi("The effect", "O efeito"),
+  tResult: bi("The result", "O resultado"),
+
   tCatalogue: bi("The catalogue", "O catálogo"),
   tLadder: bi("Where in the organism", "Onde no organismo"),
   tEstablished: bi("How well it is established", "Quão bem está estabelecido"),

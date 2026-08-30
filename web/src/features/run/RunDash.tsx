@@ -24,22 +24,27 @@ import { RUN_SECTIONS } from "./runSections";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { SectionWalk } from "../../components/molecules/SectionWalk";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
-import { RUN } from "../../i18n/strings";
+import { RUN, RARE } from "../../i18n/strings";
 // The design tokens live in their own sheet and were previously imported only by the
 // rare-disease page, so every --sp-* and --r-* used here resolved to nothing: the grid
 // gaps collapsed to zero and the layout looked broken rather than unstyled.
 import css from "./RunDash.module.css";
 
 const GROUPS: NavGroupDef[] = [
-  /* THE SHORTLIST IS FIRST, and it was absent entirely. This project describes itself as
-     "screen → defensible shortlist" and the explorer opened on a diagnostic. Diagnostics
-     justify a result; they are not the result, and putting them first told the reader the
-     method was the point. */
-  { id: "result", label: RUN.gResult, question: RUN.qResult },
-  { id: "premise", label: RUN.gPremise, question: RUN.qPremise },
-  { id: "null", label: RUN.gNull, question: RUN.qNull },
-  { id: "effect", label: RUN.gEffect, question: RUN.qEffect },
-  { id: "state", label: RUN.gState, question: RUN.qState },
+  /* IN PIPELINE ORDER, AND THE BANDS FOLLOW IT.
+   *
+   *  A band heading prints when the tier CHANGES between one group and the next, so a
+   *  tier that appears twice non-contiguously prints its heading twice and reads as two
+   *  different bands. The first version of this had exactly that: `premise` and `state`
+   *  both sit in "the run" and had `null`, `effect` and `result` between them.
+   *
+   *  Ordering them premise, state, null, effect, result fixes it and is the better
+   *  reading anyway — it is the order the pipeline runs in. */
+  { id: "premise", label: RUN.gPremise, question: RUN.qPremise, tier: RARE.tRun },
+  { id: "state", label: RUN.gState, question: RUN.qState, tier: RARE.tRun },
+  { id: "null", label: RUN.gNull, question: RUN.qNull, tier: RARE.tNull },
+  { id: "effect", label: RUN.gEffect, question: RUN.qEffect, tier: RARE.tEffect },
+  { id: "result", label: RUN.gResult, question: RUN.qResult, tier: RARE.tResult },
 ];
 
 const TABS: NavSectionDef[] = [

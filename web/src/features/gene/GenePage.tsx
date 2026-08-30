@@ -11,6 +11,7 @@ import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { SectionWalk } from "../../components/molecules/SectionWalk";
 import { useT, fill } from "../../i18n";
 import { GENE } from "../../i18n/gene";
+import { RARE } from "../../i18n/strings";
 import { fmtInt } from "../../lib/scale";
 import { layersFor, searchGenes, type GeneSearchIndex, type GeneRecord,
          type GeneShard } from "./geneModel";
@@ -51,34 +52,35 @@ import css from "./GenePage.module.css";
  */
 
 const GROUPS: NavGroupDef[] = [
-  /* WHAT IT IS COMES FIRST. A reader who does not yet know what the protein does cannot
-     weigh a dependency score, and the screen results are meaningless without it. The order
-     is: what it is, what breaking it costs, what our screen found, what it is linked to. */
-  /* FIRST. Everything after it is one aspect argued at length; this is the whole component
-     on one page, with every number's conditions beside it. A reader who wants the summary
-     should not have to assemble it from nine sections. */
-  { id: "sheet", label: DS.group, question: DS.question },
-  /* SECOND, and deliberately before the layer-by-layer groups. The datasheet is the whole
-     component on one page; this is what two of its rows mean when read together, which is
-     the question a reader has after the table and before the detail. */
-  { id: "observed", label: INS.group, question: INS.question },
-  { id: "attention", label: ATT.group, question: ATT.question },
-  { id: "world", label: WORLD.gWorld, question: WORLD.qWorld },
-  { id: "shape", label: GEO.gShape, question: GEO.qShape },
-  { id: "ladder", label: LADDER.rProtein, question: LADDER.lede1 },
-  { id: "screen", label: GENE.gScreen, question: GENE.qScreen },
-  { id: "context", label: GENE.gContext, question: GENE.qContext },
-  { id: "clinic", label: GENE.gClinic, question: GENE.qClinic },
+  /* SIX GROUPS, NOT TEN — AND FOUR BANDS OVER THEM.
+   *
+   *  Six of the ten groups here held exactly ONE section. A group per section is not a
+   *  grouping; it is a list with a heading on every row, and it costs the reader the only
+   *  thing a group is for, which is knowing what they can skip.
+   *
+   *  The three that describe the gene as a whole are one group now. The interaction network
+   *  joined the structural group, because a protein's partners are part of its shape in the
+   *  only sense this page uses the word. The bands above them say which KIND of question a
+   *  run of groups answers, the same device the rare atlas uses.
+   *
+   *  Section ids are untouched, so every link anyone has sent still resolves — the group is
+   *  derived from the section, never stored. */
+  { id: "sheet", label: DS.group, question: DS.question, tier: RARE.tGene },
+  { id: "world", label: WORLD.gWorld, question: WORLD.qWorld, tier: RARE.tLadder },
+  { id: "shape", label: GEO.gShape, question: GEO.qShape, tier: RARE.tLadder },
+  { id: "ladder", label: LADDER.rProtein, question: LADDER.lede1, tier: RARE.tLadder },
+  { id: "screen", label: GENE.gScreen, question: GENE.qScreen, tier: RARE.tExperiment },
+  { id: "clinic", label: GENE.gClinic, question: GENE.qClinic, tier: RARE.tExperiment },
   /* LAST, AND IT IS A DESTINATION. Everything above describes this gene; this is the only
      group that takes the reader somewhere else, so it sits where a reader arrives after
      reading rather than before. */
-  { id: "next", label: REL.section, question: REL.question },
+  { id: "next", label: REL.section, question: REL.question, tier: RARE.tOnward },
 ];
 
 const SECTIONS: NavSectionDef[] = [
   { id: "datasheet", label: DS.section, group: "sheet" },
-  { id: "insights", label: INS.section, group: "observed" },
-  { id: "attention", label: ATT.section, group: "attention" },
+  { id: "insights", label: INS.section, group: "sheet" },
+  { id: "attention", label: ATT.section, group: "sheet" },
   { id: "form", label: WORLD.sForm, group: "world" },
   { id: "constraint", label: WORLD.sConstraint, group: "world" },
   { id: "expression", label: WORLD.sExpression, group: "world" },
@@ -90,7 +92,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "dependency", label: GENE.sDependency, group: "screen" },
   { id: "cancer", label: GENE.sCancer, group: "screen" },
   { id: "genotype", label: GENE.sGenotype, group: "screen" },
-  { id: "network", label: GENE.sNetwork, group: "context" },
+  { id: "network", label: GENE.sNetwork, group: "shape" },
   { id: "disease", label: GENE.sDisease, group: "clinic" },
   { id: "related", label: REL.group, group: "next" },
 ];
