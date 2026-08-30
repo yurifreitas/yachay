@@ -46,9 +46,13 @@ class Source:
     licence: str
     redistributable: bool
 
+    #: Some sources are not ontologies. `subdir` keeps data/ readable rather than making
+    #: data/ontology/ the place everything lands because that is where the first file went.
+    subdir: str = "ontology"
+
     @property
     def dest(self):
-        return ONTOLOGY / self.filename
+        return ONTOLOGY.parent / self.subdir / self.filename
 
 
 SOURCES: tuple[Source, ...] = (
@@ -279,6 +283,71 @@ SOURCES: tuple[Source, ...] = (
         licence="Freely available for any use; verify the current gnomAD terms before "
                 "redistributing a derivative",
         redistributable=False,
+    ),
+    Source(
+        key="gwas_studies",
+        name="GWAS Catalog — studies",
+        url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-studies.tsv",
+        filename="gwas-catalog-studies.tsv",
+        subdir="gwas",
+        approx_mb=18.5,
+        gives="120,064 published genome-wide association studies with their trait, sample "
+              "description and association count. The psychiatric traits here are largely "
+              "the output of the Psychiatric Genomics Consortium and its collaborators, and "
+              "this is the closest thing in the repository to an irrefutable base: findings "
+              "that cleared a genome-wide significance threshold on samples in the hundreds "
+              "of thousands, catalogued by a third party rather than self-reported.",
+        licence="EMBL-EBI terms of use; freely available",
+        redistributable=True,
+    ),
+    Source(
+        key="gwas_accessions",
+        name="GWAS Catalog — studies with accession and mapped trait",
+        url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/"
+            "gwas-catalog-download-studies-v1.0.3.1.txt",
+        filename="gwas-catalog-studies-accessions.txt",
+        subdir="gwas",
+        approx_mb=8.6,
+        gives="THE JOIN THAT MAKES THE ANCESTRY FILE USABLE. `gwas-catalog-studies.tsv` is "
+              "keyed on PubMed id, and a single phenome-wide paper can carry over a thousand "
+              "study accessions covering unrelated traits — so selecting papers by trait and "
+              "then taking all of their samples imports the whole phenome. This file carries "
+              "STUDY ACCESSION beside the mapped ontology term, which is the level the "
+              "ancestry file is keyed on, and lets a disorder be selected by MONDO id rather "
+              "than by a regular expression over free text.",
+        licence="EMBL-EBI terms of use; freely available",
+        redistributable=True,
+    ),
+    Source(
+        key="gwas_ancestry",
+        name="GWAS Catalog — ancestry",
+        url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/"
+            "gwas-catalog-ancestry.tsv",
+        filename="gwas-catalog-ancestry.tsv",
+        subdir="gwas",
+        approx_mb=51.6,
+        gives="WHO WAS ACTUALLY IN THE SAMPLE, per study and per stage: broad ancestral "
+              "category, number of individuals, country of origin and country of "
+              "recruitment. Several results in this repository carry a caveat that their "
+              "underlying panels are not ancestry-neutral - gnomAD constraint says so "
+              "explicitly. This is the file that turns that caveat into a count.",
+        licence="EMBL-EBI terms of use; freely available",
+        redistributable=True,
+    ),
+    Source(
+        key="gwas_efo",
+        name="GWAS Catalog — trait to EFO/MONDO mappings",
+        url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/"
+            "gwas-efo-trait-mappings.tsv",
+        filename="gwas-efo-trait-mappings.tsv",
+        subdir="gwas",
+        approx_mb=37.0,
+        gives="The free-text trait of each study mapped to an ontology term, 2,897 of them "
+              "MONDO - which is the identifier space the rare atlas already runs on. This is "
+              "the join that lets a genome-wide association be read against the catalogue "
+              "entry for the same disorder rather than beside it.",
+        licence="EMBL-EBI terms of use; freely available",
+        redistributable=True,
     ),
     Source(
         key="fda_ai_devices",
