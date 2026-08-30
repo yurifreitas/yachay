@@ -168,6 +168,9 @@ export default function RarePage() {
   );
   const focus = ordered.find((d) => d.name === selected) ?? ordered[0];
 
+  /** The section a bare link opens on. Only there does the reader need the introduction. */
+  const entry = section === "world";
+
   // The lexicon is a build artifact and can legitimately be missing. Say so, and say how
   // to produce it, rather than rendering an atlas of nothing.
   if (!lexicon.diseases.length) {
@@ -186,7 +189,19 @@ export default function RarePage() {
 
   return (
     <section className={css.page}>
-      <header className={css.hero}>
+      {/* THE SAME 700 PIXELS, TWENTY-NINE TIMES.
+          The headline, the lede and the four counters are how a reader is introduced to the
+          atlas — and they sat above every one of the twenty-nine panels, so a reader who
+          changed section scrolled past the whole introduction again to reach the thing they
+          had just asked for. An introduction repeated on arrival is an introduction; repeated
+          on the twelfth panel it is an obstacle.
+
+          So it is full on the section a bare link opens, and a strip everywhere else. Derived
+          from the section rather than stored, so it cannot disagree with where the reader is,
+          and a deep link to a panel opens with the panel near the top where it belongs. The
+          counters survive the collapse, in place and in order — nothing appears from nowhere
+          when the reader walks back. */}
+      <header className={entry ? css.hero : `${css.hero} ${css.heroLean}`}>
         <div className={css.heroTop}>
         <div className={css.heroText}>
           <p className={css.eyebrow}>Rare and ultra-rare disease · decision support</p>
