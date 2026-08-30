@@ -105,4 +105,8 @@ export const DISC = {
     + "que vale por si, porque a mesma calibração removeu dois terços das afirmações de uma "
     + "estatística nas páginas de gene deste próprio repositório.",
   ),
+  uncertaintyK: bi(
+    "and the same question asked with the interval instead of the point",
+    "e a mesma pergunta feita com o intervalo em vez do ponto",
+  ),
 } as const;

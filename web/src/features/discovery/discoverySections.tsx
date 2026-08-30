@@ -1,6 +1,7 @@
 import raw from "../../data/generated/obesity_thermogenesis.json";
 import type { SectionRegistry } from "../../lib/sectionRegistry";
 import type { Text } from "../../i18n";
+import { useT } from "../../i18n";
 import { DISC } from "../../i18n/discovery";
 import { Provenance } from "../rare/components/Provenance";
 import { fmtInt } from "../../lib/scale";
@@ -156,11 +157,13 @@ function Floor() {
 /* ------------------------------------------------------------------ the reranking */
 
 function Rerank() {
+  const t = useT();
   const r = d.reranking ?? {};
   const rows: any[] = d.rows ?? [];
   const raw20: string[] = r.raw_top20 ?? [];
   const cal20: string[] = r.calibrated_top20 ?? [];
   const byGene = Object.fromEntries(rows.map((x: any) => [x.gene, x]));
+  const u = d.uncertainty ?? {};
   const displaced = raw20.filter((g) => !cal20.includes(g));
   const promoted = cal20.filter((g) => !raw20.includes(g));
 
@@ -211,7 +214,7 @@ function Rerank() {
             <thead>
               <tr>
                 <th>perturbation</th><th>cells</th><th>raw</th>
-                <th>floor at that n</th><th>z</th><th>clears p95</th>
+                <th>floor at that n</th><th>z</th><th>z interval</th><th>clears p95</th>
               </tr>
             </thead>
             <tbody>
@@ -222,14 +225,48 @@ function Rerank() {
                   <td>{f3(x.raw)}</td>
                   <td className={css.tdMuted}>{f3(x.null_mean)}</td>
                   <td>{x.z}</td>
-                  <td className={x.above_null_p95 ? css.tdName : css.tdMuted}>
-                    {x.above_null_p95 ? "yes" : "no"}
+                  <td className={css.tdMuted}>
+                    {x.z_ci95 ? `${x.z_ci95[0]} – ${x.z_ci95[1]}` : "—"}
+                  </td>
+                  {/* "yes" only when the INTERVAL clears it. A point estimate that clears a
+                      95th percentile and an interval that does are different claims, and the
+                      column used to make only the weaker one. */}
+                  <td className={x.interval_clears_p95 ? css.tdName : css.tdMuted}>
+                    {x.interval_clears_p95 ? "yes" : x.above_null_p95 ? "point only" : "no"}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* THE HARDER NUMBER, and it belongs in the ranking panel rather than in a footnote.
+          A z says how far a score sits from its null. It says nothing about how far the score
+          itself would move if the same perturbation were sequenced again — and that is the
+          question a reader deciding what to put on a bench actually has. */}
+      <div className={css.block}>
+        <span className={css.blockK}>{t(DISC.uncertaintyK)}</span>
+        <div className={css.pair}>
+          <div className={css.stat}>
+            <span className={css.statVal}>{u.clear_p95_on_the_point}</span>
+            <span className={css.statK}>clear the null on the point estimate</span>
+          </div>
+          <div className={css.stat}>
+            <span className={css.statVal}>{u.clear_p95_on_the_interval}</span>
+            <span className={css.statK}>clear it on the lower end of their own interval</span>
+            <span className={css.statNote}>
+              the ones that would survive being sequenced again from a different sample of the
+              same cells
+            </span>
+          </div>
+          <div className={`${css.stat}`}>
+            <span className={`${css.statVal} ${css.valueMuted}`}>{u.point_only}</span>
+            <span className={css.statK}>clear it on the point alone</span>
+          </div>
+        </div>
+        <p className={css.note}>{u.reading}</p>
+        <p className={css.caveat}>{u.why_not_percentile}</p>
       </div>
 
       <p className={css.caveat}>{d.says}</p>

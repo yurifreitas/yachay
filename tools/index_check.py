@@ -20,6 +20,10 @@ WHAT IT CHECKS, and each is a claim some document makes about the filesystem:
     stages      every registered pipeline stage has a tool or analysis that exists
     sources     every ingested source is named in docs/references/README.md
     adrs        every docs/adr/NNNN-*.md appears in the ADR index
+    intervals   an artefact that publishes a z publishes an interval too.
+                docs/references/standards.md §4 requires an uncertainty on every published
+                number; an audit on 2026-08-30 found EIGHT bundled artefacts carrying a z
+                and no interval, four of them written that same week.
     citations   every reference earns its place: no duplicates, no placeholders, and a
                 `notes:` that says which claim in THIS repository it supports. The
                 sieve-doc skill's rule is that a reference with no stated purpose is
@@ -304,8 +308,64 @@ def check_citations() -> tuple[str, list[str], int]:
     return "citations", missing, len(refs)
 
 
+#: Artefacts that publish a z with no interval, and why it has not been given one. Every entry
+#: here is DEBT, not an exemption on merit — a z is a distance in units of a null's dispersion
+#: and says nothing about how far the observed value itself could move.
+Z_WITHOUT_INTERVAL = {
+    "runs": "the adapter's own output shape, produced by analyses/depmap_selective_dependency.py "
+            "before the interval discipline existed; intervals live in out/rare/intervals.json "
+            "and are not folded back into the run manifest",
+    "points": "a projection of runs for plotting — it inherits the shape above",
+    "figures": "a rendering of finished artefacts, carrying whatever they carried",
+    "tail_calibration": "reports the calibration curve rather than a per-entity estimate; an "
+                        "interval would be on the curve and is not yet computed",
+    "hiv_resistance": "⚠️ DEBT. Permutation z per mutation with no bootstrap on the observed "
+                      "fold-resistance. The carrier sets overlap, so the resample has to be "
+                      "over isolates and is not written",
+    "twin_propagation": "⚠️ DEBT. Degree-stratified z per reached gene, no interval on the "
+                        "propagation score itself",
+    "signal_energy": "⚠️ DEBT. Per-pathway z against a permutation null with no bootstrap over "
+                     "diseases on the observed mutual information",
+}
+
+
+def check_intervals() -> tuple[str, list[str], int]:
+    """A z is not an uncertainty.
+
+    THE STANDARD IS THIS REPOSITORY'S OWN: docs/references/standards.md §4 requires every
+    published figure to carry its uncertainty, and a difference smaller than its own interval
+    is not a difference. A z satisfies neither — it says how far an observation sits from a
+    null's mean in units of that null's spread, and nothing about how far the observation
+    itself would move if the experiment were repeated.
+
+    The distinction is not academic. `analyses/obesity_thermogenesis.py` publishes 41
+    perturbations clearing its null's 95th percentile on the point estimate; only 16 clear it
+    on the lower end of their own interval. Twenty-five results survive or do not depending on
+    which of the two a reader is shown.
+    """
+    gen = ROOT / "web" / "src" / "data" / "generated"
+    if not gen.exists():
+        return "intervals", [], 0
+
+    Z_KEYS = ('"z"', '"z_score"', '"null_mean"', '"null_sd"')
+    CI_KEYS = ("ci95", '"se"', "_ci", '"p95"', "interval")
+
+    missing, checked = [], 0
+    for f in sorted(gen.glob("*.json")):
+        text = f.read_text(encoding="utf-8", errors="replace")
+        if not any(k in text for k in Z_KEYS):
+            continue
+        checked += 1
+        if any(k in text for k in CI_KEYS):
+            continue
+        if f.stem in Z_WITHOUT_INTERVAL:
+            continue
+        missing.append(f"{f.stem} publishes a z and no interval, with no reason recorded")
+    return "intervals", missing, checked
+
+
 CHECKS = [check_artefacts, check_tools, check_stages, check_sources, check_adrs,
-          check_thresholds, check_staging, check_citations]
+          check_thresholds, check_staging, check_citations, check_intervals]
 
 
 def main() -> int:

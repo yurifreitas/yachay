@@ -182,11 +182,34 @@ def main() -> int:
     rng = random.Random(SEED)
     table = control_null(controls, rng, grid, args.draws)
 
+    # AN INTERVAL ON EVERY PUBLISHED SCORE, because a z with no uncertainty on it is a number
+    # docs/references/standards.md §4 says must not be published. An audit of the bundled
+    # artefacts found eight carrying a z and no interval; this was one of them, and it was
+    # written the same day as the audit that found it.
+    #
+    #  The resample is over the perturbation's OWN CELLS, with replacement, at the same count
+    #  — so the interval answers "how much of this score is the particular cells that were
+    #  sequenced", which is the question a reader deciding whether to test the perturbation
+    #  actually has. It is point ± 1.96 SE rather than a percentile interval: the top-3 mean
+    #  is biased in cell count, and this repository has already published one percentile
+    #  interval that did not contain its own point estimate.
+    boot_rng = random.Random(SEED + 7)
+
+    def score_interval(cells: list[list[float]], draws: int = 200) -> tuple[float, list] | tuple[float, None]:
+        if len(cells) < 8:
+            return 0.0, None
+        reps = []
+        for _ in range(draws):
+            sample = [cells[boot_rng.randrange(len(cells))] for _ in range(len(cells))]
+            reps.append(top_k_mean(sample))
+        return statistics.pstdev(reps), reps
+
     rows = []
     for g in perturbations:
         n = counts[g]
         raw = top_k_mean(per_gene[g])
         null = null_at(table, n)
+        se, _reps = score_interval(per_gene[g])
         rows.append({
             "gene": g,
             "cells": n,
@@ -195,7 +218,20 @@ def main() -> int:
             "null_p95": round(null["p95"], 5),
             "excess": round(raw - null["mean"], 5),
             "z": round((raw - null["mean"]) / null["sd"], 2),
+            "raw_se": round(se, 5) if se else None,
+            "raw_ci95": ([round(raw - 1.96 * se, 5), round(raw + 1.96 * se, 5)]
+                         if se else None),
+            # The interval on the score, carried through to the z: how far the z could move
+            # if the same perturbation had been sequenced in a different sample of its own
+            # cells. A z of 11 whose interval spans 6 to 16 is a different claim from a z of
+            # 11 that does not move.
+            "z_ci95": ([round((raw - 1.96 * se - null["mean"]) / null["sd"], 2),
+                        round((raw + 1.96 * se - null["mean"]) / null["sd"], 2)]
+                       if se else None),
             "above_null_p95": raw > null["p95"],
+            # The honest version of "clears the bar": the LOWER end of the score's own
+            # interval clears it, not the point estimate.
+            "interval_clears_p95": bool(se) and (raw - 1.96 * se) > null["p95"],
             "null_clamped": null["clamped"],
         })
 
@@ -208,6 +244,10 @@ def main() -> int:
     small = [r for r in rows if r["cells"] < 100]
     small_in_raw_top = sum(1 for r in by_raw[:20] if r["cells"] < 100)
     small_in_cal_top = sum(1 for r in by_z[:20] if r["cells"] < 100)
+
+    with_ci = [r for r in rows if r["raw_ci95"]]
+    survives_interval = [r for r in with_ci if r["interval_clears_p95"]]
+    point_only = [r for r in with_ci if r["above_null_p95"] and not r["interval_clears_p95"]]
 
     payload = {
         "generated": "2026-08-30",
@@ -253,6 +293,23 @@ def main() -> int:
              "p99": round(v["p99"], 5)}
             for n, v in sorted(table.items())
         ],
+        "uncertainty": {
+            "method": "point ± 1.96 SE from a 200-draw bootstrap over the perturbation's own "
+                      "cells, resampled with replacement at the same count",
+            "why_not_percentile": "the top-3 mean is biased in cell count, and a percentile "
+                                  "interval on a statistic biased in n need not contain its "
+                                  "own point estimate — this repository published one that "
+                                  "did not, and replaced it",
+            "scored_with_an_interval": len(with_ci),
+            "clear_p95_on_the_point": sum(1 for r in with_ci if r["above_null_p95"]),
+            "clear_p95_on_the_interval": len(survives_interval),
+            "point_only": len(point_only),
+            "reading": f"{len(survives_interval)} perturbations clear the null's 95th "
+                       f"percentile with the LOWER end of their own interval; "
+                       f"{len(point_only)} clear it on the point estimate alone and would "
+                       f"not survive being sequenced again from a different sample of the "
+                       f"same cells.",
+        },
         "reranking": {
             "raw_top20": raw_top,
             "calibrated_top20": cal_top,
@@ -292,6 +349,8 @@ def main() -> int:
           f"{len(raw_top) - len(survived)} displaced")
     print(f"  perturbations with under 100 cells in the raw top 20: {small_in_raw_top}; "
           f"after calibration: {small_in_cal_top}")
+    print(f"  clear p95 on the point: {sum(1 for r in with_ci if r['above_null_p95'])}; "
+          f"on the lower end of their own interval: {len(survives_interval)}")
     return 0
 
 
