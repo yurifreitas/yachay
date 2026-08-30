@@ -148,10 +148,19 @@ export const CANCER = {
 /* ---------------------------------------------------------------- rare disease */
 
 export const RARE = {
-  gKnown: bi("What is known", "O que se sabe"),
+  /* EIGHT SECTIONS UNDER ONE QUESTION IS A LIST, NOT A MAP.
+     "What is known" held the catalogue, its denominators, its naming, and the diseases that
+     fall outside every register — four different questions wearing one label. Split at the
+     seam that was already there: what the catalogue COUNTS, and what it CALLS things. */
+  gKnown: bi("The catalogue", "O catálogo"),
   qKnown: bi(
     "The whole catalogue first, because every later claim inherits its shape.",
     "O catálogo inteiro primeiro, porque toda afirmação seguinte herda a forma dele.",
+  ),
+  gNaming: bi("Names and absences", "Nomes e ausências"),
+  qNaming: bi(
+    "What a disease is called, what has no name yet, and who is missing from the register.",
+    "Como uma doença é chamada, o que ainda não tem nome, e quem falta no registro.",
   ),
   gCause: bi("What it is of", "Do que ela é"),
   qCause: bi(

@@ -84,10 +84,14 @@ const prefetchMeasured = () => {
  */
 const GROUPS: NavGroupDef[] = [
   { id: "known", label: RARE.gKnown, question: RARE.qKnown },
+  { id: "naming", label: RARE.gNaming, question: RARE.qNaming },
   { id: "cause", label: RARE.gCause, question: RARE.qCause },
   { id: "case", label: RARE.gCase, question: RARE.qCase },
   { id: "decide", label: RARE.gDecide, question: RARE.qDecide },
   { id: "measured", label: MEAS.group, question: MEAS.question },
+  { id: "register", label: MEAS.gRegister, question: MEAS.qRegister },
+  { id: "knownshape", label: MEAS.gShape, question: MEAS.qShape },
+  { id: "converge", label: MEAS.gConverge, question: MEAS.qConverge },
   { id: "argument", label: RARE.gArgument, question: RARE.qArgument },
 ];
 
@@ -98,10 +102,10 @@ const SECTIONS: NavSectionDef[] = [
   { id: "bias", label: RARE.sBias, group: "known" },
   { id: "population", label: RARE.sPopulation, group: "known" },
   { id: "patients", label: RARE.sPatients, group: "known" },
-  { id: "names", label: RARE.sNames, group: "known" },
-  { id: "atlas", label: RARE.sAtlas, group: "known" },
-  { id: "gaps", label: RARE.sGaps, group: "known" },
-  { id: "tropical", label: TROP.section, group: "known" },
+  { id: "names", label: RARE.sNames, group: "naming" },
+  { id: "atlas", label: RARE.sAtlas, group: "naming" },
+  { id: "gaps", label: RARE.sGaps, group: "naming" },
+  { id: "tropical", label: TROP.section, group: "naming" },
 
   // 2. What a disease is OF — the ladder's middle rungs, in order of scale.
   { id: "cell", label: RARE.sCell, group: "cause" },
@@ -118,21 +122,29 @@ const SECTIONS: NavSectionDef[] = [
   { id: "choose", label: RARE.sChoose, group: "decide" },
   { id: "dims", label: RARE.sDims, group: "decide" },
 
-  // 5. What was measured under ADR 0007 — the four results with a null and an interval,
-  //    and the one of them that failed. Grouped apart from the catalogue layers because the
-  //    epistemic standing is different, and a reader is entitled to know which is which.
+  // 5. What was measured under ADR 0007 — eight results, each with a null and an interval,
+  //    and one of them negative. These carry a governing decision record the catalogue layers
+  //    do not, and a reader is entitled to know which is which.
+  //
+  //    THEY ARE FOUR QUESTIONS, NOT ONE. Held under a single heading they were a list of
+  //    eight labels whose only shared property was the ADR that governs them. What a coarser
+  //    alphabet costs, what biases the register, what shape the known region has, and where
+  //    many disorders meet are four different questions with four different answers, and the
+  //    rail is where a reader is supposed to be able to see that before clicking.
+  //
+  //    Contiguous by group, deliberately: the walker steps through this array in order, so a
+  //    sequence that zig-zags between groups would announce a boundary crossing every step.
   { id: "scale", label: MEAS.sScale, group: "measured" },
   { id: "language", label: MEAS.sLang, group: "measured" },
-  { id: "conflict", label: MEAS.sConflict, group: "measured" },
-  { id: "shape", label: MEAS.sShape, group: "measured" },
 
-  // Measured under the same decision record and, until now, rendered nowhere — which is
-  // audit A29 committed again on the newest work. One registry entry each, which is the
-  // whole reason ADR 0009 was worth the churn.
-  { id: "gapkinds", label: MORE.sGaps, group: "measured" },
-  { id: "attention", label: MORE.sAtt, group: "measured" },
-  { id: "autism", label: MORE.sAut, group: "measured" },
-  { id: "voidcells", label: MORE.sVoid, group: "measured" },
+  { id: "conflict", label: MEAS.sConflict, group: "register" },
+  { id: "attention", label: MORE.sAtt, group: "register" },
+
+  { id: "shape", label: MEAS.sShape, group: "knownshape" },
+  { id: "gapkinds", label: MORE.sGaps, group: "knownshape" },
+  { id: "voidcells", label: MORE.sVoid, group: "knownshape" },
+
+  { id: "autism", label: MORE.sAut, group: "converge" },
 
   // 6. The argument and its provenance — a thesis and its bibliography are one thing.
   { id: "thesis", label: RARE.sThesis, group: "argument" },
@@ -159,7 +171,11 @@ export default function RarePage() {
     // DERIVED, NOT LISTED. This was a hand-written array of four ids, and four sections were
     // added to the group the same day without touching it — the same list-drifts-from-the-
     // thing failure ADR 0009 exists to stop, one file away from where it was stopped.
-    if (SECTIONS.find((s) => s.id === section)?.group === "measured") prefetchMeasured();
+    // The solved layouts back four panels — scale, language, conflict and shape — which now
+    // sit in three different groups. Named by the groups that contain them rather than by a
+    // list of section ids, because a list of ids is the thing that went stale last time.
+    const g = SECTIONS.find((s) => s.id === section)?.group;
+    if (g === "measured" || g === "register" || g === "knownshape") prefetchMeasured();
   }, [section]);
 
   const ordered = useMemo(

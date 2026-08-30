@@ -10,10 +10,30 @@ import type { Bi } from "./types";
 const bi = (en: string, pt: string): Bi => ({ en, pt });
 
 export const MEAS = {
-  group: bi("What was measured", "O que foi medido"),
+  /* ONE GROUP HELD EIGHT RESULTS AND CALLED THEM ONE QUESTION.
+     They share a governing decision record, not a subject: what a coarser alphabet costs,
+     what biases the register, what shape the known region has, and where many disorders meet
+     are four questions with four different answers. The rail now says which is which, and
+     the count in this sentence stopped being wrong — it said "four" while eight shipped. */
+  group: bi("What a scale costs", "O que uma escala custa"),
   question: bi(
-    "Four ideas, each with a null and an interval — and one that did not survive",
-    "Quatro ideias, cada uma com nulo e intervalo — e uma que não sobreviveu",
+    "Coarsen the description, or change the language, and measure what is lost.",
+    "Engrosse a descrição, ou mude a língua, e meça o que se perde.",
+  ),
+  gRegister: bi("What biases the register", "O que enviesa o registro"),
+  qRegister: bi(
+    "Conflicting evidence and unequal attention — measured on the catalogue, with a null.",
+    "Evidência conflitante e atenção desigual — medidas no catálogo, com um nulo.",
+  ),
+  gShape: bi("The shape of the known", "A forma do que se sabe"),
+  qShape: bi(
+    "Which combinations of knowledge occur, which are absent, and what would close each hole.",
+    "Que combinações de conhecimento ocorrem, quais faltam, e o que fecharia cada buraco.",
+  ),
+  gConverge: bi("Where disorders meet", "Onde distúrbios se encontram"),
+  qConverge: bi(
+    "Hundreds of disorders share a sign. Pathway or cell type — and neither is a mechanism.",
+    "Centenas de distúrbios compartilham um sinal. Via ou tipo celular — e nenhum é mecanismo.",
   ),
 
   // --------------------------------------------------------------- scale

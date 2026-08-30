@@ -13,7 +13,11 @@
  *    2. every registered id appears in the SECTIONS array — a section nobody can reach
  *    3. every registry entry has a non-empty `sub`, because in this project a figure's
  *       sentence is where it states what it does not show
- *    4. no id appears twice, in either list. `renderSection` resolves with `.find`, so a
+ *    4. every section names a group the page declares, and every declared group holds at
+ *       least one section. A section whose group does not exist is drawn by nothing and
+ *       listed under nothing — invisible in the rail with no error; an empty group is a
+ *       heading with nothing under it. Splitting six groups into ten made both one typo away.
+ *    5. no id appears twice, in either list. `renderSection` resolves with `.find`, so a
  *       duplicate id does not fail — the FIRST entry wins and the second is unreachable
  *       while the rail still offers it. That shipped once: a section added on 2026-08-29
  *       reused `gaps`, and the rail carried two tabs that drew the same old panel. Checks
@@ -80,6 +84,15 @@ for (const { name, page, registry } of MIGRATED) {
   const dupNav = dupes(navIds);
   const dupReg = dupes(regIds);
 
+  // The third list on the page: the groups. A section carries `group: "x"`; a group is
+  // declared with `question:`. Nothing connected those two either.
+  const groupIds = [...pageSrc.matchAll(/\{\s*id:\s*"([a-z_]+)",\s*label:[^}]*?question:/g)]
+    .map((m) => m[1]);
+  const sectionGroups = [...pageSrc.matchAll(/\{\s*id:\s*"[a-z_]+",\s*label:[^}]*?group:\s*"([a-z_]+)"/g)]
+    .map((m) => m[1]);
+  const strayGroup = [...new Set(sectionGroups.filter((g) => !groupIds.includes(g)))];
+  const emptyGroup = groupIds.filter((g) => !sectionGroups.includes(g));
+
   // Every entry must carry a sentence — and the check is on the TEXT, not the syntax.
   // Its first version demanded a quoted string and failed twenty-three entries whose
   // sentences are JSX carrying inline emphasis. That is the checker being wrong about form
@@ -105,18 +118,22 @@ for (const { name, page, registry } of MIGRATED) {
     })
     .map((e) => (e.match(/id:\s*"([a-z_]+)"/) || [, "?"])[1]);
 
-  if (missing.length || orphan.length || noSub.length || dupNav.length || dupReg.length) {
+  if (missing.length || orphan.length || noSub.length || dupNav.length || dupReg.length
+      || strayGroup.length || emptyGroup.length) {
     failures++;
     console.error(`sections: ${name}`);
     for (const id of missing) console.error(`  the rail offers "${id}" and nothing draws it`);
     for (const id of orphan) console.error(`  "${id}" is registered and unreachable from the rail`);
     for (const id of noSub) console.error(`  "${id}" has no sentence saying what it shows`);
     for (const id of dupNav) console.error(`  the rail offers "${id}" twice — two tabs, one view`);
+    for (const g of strayGroup) console.error(
+      `  a section names group "${g}", which the page does not declare — invisible in the rail`);
+    for (const g of emptyGroup) console.error(`  group "${g}" holds no section`);
     for (const id of dupReg) console.error(
       `  "${id}" is registered twice; \`.find\` takes the first and the second never draws`);
   } else {
     console.log(`sections: ${name} — ${regIds.length} sections, every one reachable, `
-      + `uniquely addressed and described.`);
+      + `uniquely addressed and described, in ${groupIds.length} groups.`);
   }
 }
 
