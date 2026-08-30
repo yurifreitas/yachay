@@ -195,7 +195,28 @@ def data_inventory() -> list[dict]:
         # in the source, by name or by constant, is genuinely untouched. Everything between
         # is reported as "referenced, no direct read site", which is what is actually known.
         mentioned = name in ALL_TEXT or (const is not None and const in ALL_TEXT)
-        state = ("read" if readers else
+
+        # A DOWNLOAD THAT FAILED AND LEFT ITS ERROR PAGE BEHIND.
+        #
+        # data/hiv/INSTI_DataSet.txt is 1,632 bytes of HTML — the Stanford database's own
+        # "not found" page, saved under the name of the dataset it was supposed to be. It sat
+        # on disk counted as a dataset, listed as untouched, indistinguishable in every audit
+        # from a file nobody had got round to using yet. A fourth HIV drug panel appeared to
+        # be available and was not.
+        #
+        # This is worse than a missing file, because a missing file announces itself the
+        # moment something opens it. Checking the first bytes costs nothing and turns a
+        # silent absence into a stated one.
+        corrupt = False
+        try:
+            head = f.open("rb").read(300).lower()
+            corrupt = f.suffix.lower() in {".txt", ".csv", ".tsv", ".json", ".xml"} and (
+                b"<!doctype html" in head or b"<html" in head)
+        except OSError:
+            pass
+
+        state = ("not-data" if corrupt else
+                 "read" if readers else
                  "referenced" if mentioned else "untouched")
         rows.append({
             "file": str(f.relative_to(ROOT)).replace("\\", "/"),
@@ -204,6 +225,7 @@ def data_inventory() -> list[dict]:
             "state": state,
             "read": bool(readers),
             "registered": bool(const),
+            "notData": corrupt,
         })
     return rows
 
@@ -472,7 +494,8 @@ def render(payload: dict) -> str:
     for r in sorted(s["data"], key=lambda x: -x["megabytes"])[:26]:
         who = ", ".join(f"`{p}`" for p in r["readers"]) if r["readers"] else "—"
         mark = {"read": "read", "referenced": "referenced, no read site",
-                "untouched": "**untouched**"}[r["state"]]
+                "untouched": "**untouched**",
+                "not-data": "⚠️ **not data** — HTML under a data extension"}[r["state"]]
         add(f"| `{r['file']}` | {r['megabytes']} | {mark} | {who} |")
     add("")
     untouched = [r for r in s["data"] if r["state"] == "untouched"]
@@ -597,6 +620,7 @@ def main() -> int:
             "dataFiles": len(data),
             "dataGb": round(sum(r["megabytes"] for r in data) / 1000, 2),
             "dataUntouched": sum(1 for r in data if r["state"] == "untouched"),
+            "dataNotData": sum(1 for r in data if r["state"] == "not-data"),
             "dataNoReadSite": sum(1 for r in data if r["state"] == "referenced"),
             "datasets": len(web),
             "datasetsDead": sum(1 for r in web if not r["consumed"]),
@@ -620,6 +644,15 @@ def main() -> int:
     print("data %d files / %.2f GB · %d untouched, %d with no read site · datasets %d (%d dead)"
           % (c["dataFiles"], c["dataGb"], c["dataUntouched"], c["dataNoReadSite"],
              c["datasets"], c["datasetsDead"]))
+    # Printed on its own line rather than folded into a count, because a file that is not the
+    # thing its name says it is deserves to be read as a defect and not as a statistic.
+    if c.get("dataNotData"):
+        for r in data:
+            if r["state"] == "not-data":
+                # ASCII here on purpose: this line prints to a Windows console under cp1252,
+                # and a warning that raises UnicodeEncodeError warns nobody.
+                print("  !! %s is HTML, not data - a failed download saved under the name "
+                      "of the dataset it was meant to be" % r["file"])
     print("wrote out/status.json and docs/status.md")
 
     if bad:

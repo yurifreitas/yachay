@@ -403,6 +403,13 @@ emit("figures", figures);
   // hiv_resistance: the method outside rare disease entirely — an adapter that passed the
   // four-question gate, whose positive controls were named before the run, and which breaks
   // an assumption the core smuggles in. That last part is why it is worth a screen.
+  // Selective constraint: the one axis in this repository measured in a population nobody
+  // asked about disease, and therefore the only one that cannot have been produced by the
+  // curation process it is used to audit.
+  {
+    const f = join(REPO, "out", "rare", "gene_constraint.json");
+    emit("gene_constraint", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
   {
     const f = join(REPO, "out", "rare", "twin_propagation.json");
     emit("twin_propagation", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });

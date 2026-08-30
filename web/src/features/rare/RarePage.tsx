@@ -148,6 +148,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "gapkinds", label: MORE.sGaps, group: "knownshape" },
   { id: "voidcells", label: MORE.sVoid, group: "knownshape" },
 
+  { id: "constraint", label: DEEP.sConstraint, group: "converge" },
   { id: "autism", label: MORE.sAut, group: "converge" },
 
   // 5b. The method on a domain that did not produce it. Its own group, because the standing

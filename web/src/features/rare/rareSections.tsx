@@ -42,6 +42,7 @@ const ConflictContext = lazy(() => import("./components/MeasuredPanels").then((m
 const KnowledgeShape = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.KnowledgeShape })));
 const GapTaxonomy = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.GapTaxonomy })));
 const HivResistance = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.HivResistance })));
+const GeneConstraint = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GeneConstraint })));
 const TwinPropagation = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.TwinPropagation })));
 const GenotypePhenotype = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GenotypePhenotype })));
 const AttentionBurden = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AttentionBurden })));
@@ -140,6 +141,14 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     sub: (ctx) => (<>{ctx.tt(MORE.autSub)}</>),
     view: () => (
       <><AutismConvergence /></>
+    ),
+  },
+  {
+    id: "constraint",
+    title: (ctx) => (<>{ctx.tt(DEEP.conHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(DEEP.conSub)}</>),
+    view: () => (
+      <><GeneConstraint /></>
     ),
   },
   {

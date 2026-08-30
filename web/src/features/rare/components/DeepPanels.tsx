@@ -1,6 +1,7 @@
 import hivRaw from "../../../data/generated/hiv_resistance.json";
 import twinRaw from "../../../data/generated/twin_propagation.json";
 import genoRaw from "../../../data/generated/genotype_phenotype.json";
+import conRaw from "../../../data/generated/gene_constraint.json";
 import { useState } from "react";
 import { useT } from "../../../i18n";
 import { DEEP } from "../../../i18n/deep";
@@ -336,6 +337,121 @@ export function GenotypePhenotype() {
 
       <Provenance generated={d.generated} provenance={d.input} method={d.design}
                   says={d.premise} limits={[d.caveat]} />
+    </div>
+  );
+}
+
+/* ============================================================ constraint, as an outside axis */
+
+/** THE ONLY AXIS HERE THAT THE CURATION COULD NOT HAVE PRODUCED.
+ *
+ *  Everything else on this site is measured on catalogues that people built by deciding what
+ *  to write down — so a finding about what the catalogue knows is always partly a finding
+ *  about who wrote it. gnomAD constraint is not: it is counted in 800,000 exomes from a
+ *  population nobody asked about rare disease, and it is therefore the one place this
+ *  repository can check its own results against something outside its own process.
+ *
+ *  THE MATCHED NULL IS THE PANEL. LOEUF is bounded away from small values for short genes —
+ *  there is nothing to observe — and disease-gene sets are enriched for long genes. So the
+ *  unmatched contrast and the matched one are printed together with the share of the shift
+ *  that was length alone, which for the disease genes is most of it.
+ */
+export function GeneConstraint() {
+  const tt = useT();
+  const d = conRaw as any;
+  const arms = d.arms ?? {};
+  const att = arms.attention_vs_constraint ?? {};
+  const sets: [string, any][] = [
+    ["all disease genes", arms.disease_genes_vs_matched],
+    ["the autism-sign set", arms.autism_set_vs_matched],
+  ];
+  const genome = arms.disease_genes_vs_matched?.genome_mean_unmatched ?? 1;
+  const scaleX = (v: number) => `${Math.max(0, Math.min(100, (v / 1.2) * 100))}%`;
+
+  return (
+    <div className={css.wrap}>
+      <div className={css.finding}>
+        <span className={css.value}>{att.spearman}</span>
+        <p>
+          <span className={css.answersK}>{tt(DEEP.conHeading)}</span>
+          {att.reading}
+        </p>
+      </div>
+
+      <div className={css.block}>
+        <span className={css.blockK}>{tt(DEEP.conMatched)}</span>
+        <p className={css.blockSub}>{d.instrument?.null}</p>
+        {sets.filter(([, a]) => a && a.observed != null).map(([label, a]) => (
+          <div key={label} className={css.corrRow}>
+            <span className={css.corrLabel}>
+              {label}
+              <br /><span className={css.corrFlag}>{fmtInt(a.genes)} genes · z {a.z}</span>
+            </span>
+            <span className={css.corrTrack}>
+              {/* Three marks on one axis: the genome, the length-matched draw, and the set.
+                  The gap that matters is the last two — the first is printed only so the
+                  reader can see how much of the apparent shift the null already took. */}
+              <span className={css.corrZero} style={{ left: scaleX(genome) }} />
+              <span className={css.corrBar}
+                    style={{ left: scaleX(Math.min(a.observed, a.null_mean)),
+                             width: `${Math.abs(a.observed - a.null_mean) / 1.2 * 100}%` }} />
+            </span>
+            <span className={css.corrVal}>{a.observed}</span>
+          </div>
+        ))}
+        <p className={css.note}>
+          The vertical mark is the genome-wide mean ({genome}); the bar spans from the
+          length-matched null to what the set actually is. Lower LOEUF is more intolerant.
+        </p>
+      </div>
+
+      <div className={css.block}>
+        <span className={css.blockK}>{tt(DEEP.conLength)}</span>
+        <div className={css.pair}>
+          {sets.filter(([, a]) => a?.shift_explained_by_length != null).map(([label, a]) => (
+            <div key={label} className={css.stat}>
+              <span className={css.statVal}>
+                {Math.round(100 * a.shift_explained_by_length)} %
+              </span>
+              <span className={css.statK}>{label}</span>
+              <span className={css.statNote}>
+                of the distance from the genome mean is reproduced by drawing genes of the
+                same length, and is therefore not constraint
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className={css.block}>
+        <span className={css.blockK}>{tt(DEEP.conBands)}</span>
+        <div className={css.tableWrap}>
+          <table className={css.table}>
+            <thead>
+              <tr><th>set</th><th>constrained</th><th>tolerant</th><th>total</th></tr>
+            </thead>
+            <tbody>
+              {[["every gene with constraint", d.scale?.genome_bands],
+                ["disease genes", d.scale?.disease_gene_bands]].map(([label, b]: any) => (
+                <tr key={label}>
+                  <td className={css.tdName}>{label}</td>
+                  <td>{fmtInt(b?.constrained ?? 0)}</td>
+                  <td className={css.tdMuted}>{fmtInt(b?.tolerant ?? 0)}</td>
+                  <td className={css.tdMuted}>
+                    {fmtInt((b?.constrained ?? 0) + (b?.tolerant ?? 0))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className={css.caveat}>{d.fit_test?.verdict}</p>
+      </div>
+
+      <p className={css.note}>{d.says}</p>
+
+      <Provenance generated={d.generated} provenance={d.provenance} method={d.instrument}
+                  says={d.says} limits={d.limits} governedBy={d.governed_by} />
     </div>
   );
 }

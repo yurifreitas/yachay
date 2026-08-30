@@ -59,6 +59,29 @@ export const DEEP = {
   twinLadder: bi("the rung this moves, and the ones it does not",
                  "o degrau que isto move, e os que não"),
 
+  // ---------------------------------------------------------------- constraint
+  sConstraint: bi("Intolerance to loss", "Intolerância à perda"),
+  conHeading: bi(
+    "the confound the attention result could state and not answer",
+    "o confundidor que o resultado de atenção sabia enunciar e não respondia",
+  ),
+  conSub: bi(
+    "gnomAD measures, for every gene, how much less loss-of-function variation appears in "
+    + "800,000 exomes than mutation rate predicts. It is a property of the gene, measured in "
+    + "a population nobody asked about disease — the only axis here that cannot have been "
+    + "produced by the curation it is used to audit.",
+    "O gnomAD mede, para cada gene, quanta variação de perda de função aparece a menos em "
+    + "800.000 exomas do que a taxa de mutação prevê. É uma propriedade do gene, medida numa "
+    + "população a quem ninguém perguntou sobre doença — o único eixo aqui que não pode ter "
+    + "sido produzido pela curadoria que ele audita.",
+  ),
+  conMatched: bi("every arm against a length-matched null",
+                 "cada braço contra um nulo pareado por comprimento"),
+  conLength: bi("how much of the shift was length alone",
+                "quanto do deslocamento foi só comprimento"),
+  conBands: bi("the bands, so the table can be checked",
+               "as faixas, para a tabela poder ser conferida"),
+
   // ---------------------------------------------------------------- power
   sGeno: bi("Truncating versus missense", "Truncante versus missense"),
   genoHeading: bi(
