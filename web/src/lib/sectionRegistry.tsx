@@ -25,11 +25,18 @@ import { Suspense, type ReactNode } from "react";
 export type SectionEntry<Ctx = void> = {
   /** Matches the id in the page's nav definition. The registry is keyed on it. */
   id: string;
-  /** The heading above the view. */
-  title: string;
+  /** The heading above the view. A node rather than a string because several headings
+   *  carry inline emphasis, and flattening them to text would lose the emphasis that makes
+   *  a sentence like "a prevalence is a property of a disorder IN A POPULATION" readable. */
+  title: ReactNode | ((ctx: Ctx) => ReactNode);
   /** What the reader is looking at, and what it does not show. Required, deliberately:
    *  a figure that cannot be described in a sentence is a figure nobody can argue with. */
-  sub: string;
+  sub: ReactNode | ((ctx: Ctx) => ReactNode);
+  /** A section that draws its own frame. Two of the twenty-five in the rare atlas do — one
+   *  opens with a warning banner, one splits into two blocks — and forcing them into the
+   *  heading-plus-view shape would have meant either rewriting working views or lying about
+   *  what they are. They still declare a `sub`, so the check still sees them. */
+  bare?: boolean;
   /** The view itself. Takes the page's context so a section can read run state without the
    *  registry knowing what a run is. */
   view: (ctx: Ctx) => ReactNode;
@@ -72,11 +79,19 @@ export function renderSection<Ctx>(
     );
   }
 
+  if (entry.bare) {
+    return (
+      <Suspense key={id} fallback={opts.fallback ?? null}>
+        {entry.view(ctx)}
+      </Suspense>
+    );
+  }
+
   return (
     <section className={opts.className}>
       <div>
-        <h3 className={opts.headingClass}>{entry.title}</h3>
-        <p className={opts.subClass}>{entry.sub}</p>
+        <h3 className={opts.headingClass}>{resolve(entry.title, ctx)}</h3>
+        <p className={opts.subClass}>{resolve(entry.sub, ctx)}</p>
       </div>
       <div className={opts.bodyClass}>
         <Suspense key={id} fallback={opts.fallback ?? null}>
@@ -85,6 +100,14 @@ export function renderSection<Ctx>(
       </div>
     </section>
   );
+}
+
+/** A heading may be a value or a function of the context, because several of them need the
+ *  page's translator and a registry is a module rather than a component — so it cannot call
+ *  a hook. Passing the translator in and resolving here keeps a section a plain value that
+ *  can be listed, counted and checked without being mounted. */
+function resolve<Ctx>(v: ReactNode | ((ctx: Ctx) => ReactNode), ctx: Ctx): ReactNode {
+  return typeof v === "function" ? (v as (c: Ctx) => ReactNode)(ctx) : v;
 }
 
 /** Every id the registry can draw. Used by the nav check and by the build-time check. */

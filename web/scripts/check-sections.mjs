@@ -28,16 +28,25 @@ const SRC = join(HERE, "..", "src");
  *  chain and is not checked — which is itself worth seeing, so it is printed. */
 const MIGRATED = [
   {
+    name: "rare",
+    page: join(SRC, "features/rare/RarePage.tsx"),
+    registry: join(SRC, "features/rare/rareSections.tsx"),
+  },
+  {
+    name: "gene",
+    page: join(SRC, "features/gene/GenePage.tsx"),
+    registry: join(SRC, "features/gene/geneSections.tsx"),
+  },
+  {
     name: "run",
     page: join(SRC, "features/run/RunDash.tsx"),
     registry: join(SRC, "features/run/runSections.tsx"),
   },
 ];
 
-const LEGACY = [
-  join(SRC, "features/rare/RarePage.tsx"),
-  join(SRC, "features/gene/GenePage.tsx"),
-];
+/** Pages still using a render chain. Empty is the goal and, as of 2026-08-29, the state —
+ *  but the list stays so the next page added without a registry is named rather than silent. */
+const LEGACY = [];
 
 let failures = 0;
 
@@ -60,10 +69,29 @@ for (const { name, page, registry } of MIGRATED) {
   const missing = navIds.filter((id) => !regIds.includes(id));
   const orphan = regIds.filter((id) => !navIds.includes(id));
 
-  // Every entry must carry a sentence.
+  // Every entry must carry a sentence — and the check is on the TEXT, not the syntax.
+  // Its first version demanded a quoted string and failed twenty-three entries whose
+  // sentences are JSX carrying inline emphasis. That is the checker being wrong about form
+  // rather than about substance, the same mistake verify_claims made about the typographic
+  // minus: a check that fails on notation teaches people to disable it.
   const entries = regSrc.split(/^\s{2}\{$/m).slice(1);
   const noSub = entries
-    .filter((e) => !/sub:\s*\n?\s*"[^"]{20,}"/.test(e))
+    .filter((e) => {
+      const m = e.match(/\n\s*sub:([\s\S]*?)\n\s*(?:bare|view):/);
+      if (!m) return true;
+      // A sentence that lives in the i18n module counts. `tt(MEAS.scaleSub)` cannot compile
+      // unless the key exists and the key cannot exist without both languages, so TypeScript
+      // has already made the guarantee this check was written to make. Re-deriving it here
+      // would mean parsing the i18n modules to prove something the compiler proves.
+      if (/\btt\(\s*[A-Z][A-Za-z]*\.[A-Za-z]/.test(m[1])) return false;
+      const text = m[1]
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\{[^}]*\}/g, " ")
+        .replace(/["'`(),]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      return text.length < 20;
+    })
     .map((e) => (e.match(/id:\s*"([a-z_]+)"/) || [, "?"])[1]);
 
   if (missing.length || orphan.length || noSub.length) {

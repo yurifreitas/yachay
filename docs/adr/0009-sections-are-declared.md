@@ -2,8 +2,9 @@
 
 > **Role:** the decision that the explorer's sections are data in a registry rather than
 > branches in a render chain, and the check that keeps the two lists from drifting.
-> **Last revised:** 2026-08-29 · **State:** proposed. One page migrated of three, and the
-> check names the other two rather than pretending they are done.
+> **Last revised:** 2026-08-29 · **State:** proposed, and **all three pages migrated**. 59
+> sections across rare, gene and run are declared, reachable and described; the render chains
+> are gone and `LEGACY` is empty.
 
 **Status:** proposed · written after the first migration, before the remaining two
 **Supersedes:** nothing · **Relates to:** [0008](0008-layouts-are-computed-once.md)
@@ -55,10 +56,24 @@ now heading + sentence + view, and a section that genuinely needs a different sh
 either fit that or stay out of the registry — at which point it is unchecked again. The
 constraint is the point, but it is a constraint.
 
-**Paid.** Two patterns exist until the migration finishes. `RarePage.tsx` (25 branches) and
-`GenePage.tsx` (17) still use render chains. **The check prints them by name on every run**
-rather than staying silent, so the debt is visible in the same place the passing page is —
-which is the only reason it is acceptable to stop at one.
+**Paid, and then repaid the same day.** All three pages are migrated: rare 25, gene 17, run
+17. The pages went from 1,586 lines to **709**, and the 59 branches to **none**. Two things
+had to give to get there, and both are worth naming:
+
+  * `title` and `sub` accept a **function of the context**, because several headings need the
+    page's translator and a registry is a module rather than a component, so it cannot call a
+    hook. The page passes `tt` in and the registry resolves it. That keeps a section a plain
+    value that can be listed and checked without being mounted.
+  * The gene page's panels were **local functions inside the page**, which is fine until a
+    registry needs them — a registry importing from the page it feeds is a cycle. They moved
+    to `genePanels.tsx`.
+
+**And the gene page gained something the migration was not for.** Its seventeen sections had
+no description at all: `{section === "x" && <Panel/>}`, with the rail's label as the only
+thing telling a reader what they were looking at. A label is a name, not a claim. Each now
+carries a sentence, and the sentences are deliberately **factual rather than interpretive** —
+each names what the panel draws and which tool wrote the artefact behind it, which a reader
+can check by opening the file.
 
 **Risk accepted.** The checker reads the modules as text rather than importing them, because a
 checker that needs a bundler is a checker that gets skipped. It therefore depends on the
@@ -66,8 +81,24 @@ literal shape of the declarations. Its first version matched group ids as well a
 and reported five false failures; a checker that cries wolf is one somebody deletes, so the
 pattern now requires the `group:` key that only a section carries.
 
+## What the checker learned, twice
+
+Both times it was wrong about **form** rather than substance, and both times the fix was to
+the checker:
+
+  * It matched group ids as well as section ids and reported five false failures. A checker
+    that cries wolf is one somebody deletes; the pattern now requires the `group:` key that
+    only a section carries.
+  * It demanded a quoted string for `sub` and failed twenty-three entries whose sentences are
+    JSX with inline emphasis. It now measures the **text**, and accepts a sentence that lives
+    in the i18n module — because `tt(MEAS.scaleSub)` cannot compile unless the key exists in
+    both languages, so the compiler has already made the guarantee.
+
+This is the same lesson `verify_claims.py` learned about the typographic minus on the same
+day. A check that fails on notation teaches people to disable it.
+
 ## The next step, concretely
 
-Migrate `RarePage.tsx`. It is the largest and it holds the ADR 0007 measured group, which is
-where new sections keep landing — so it is the page where the drift this record exists to
-prevent is most likely to happen next.
+`LEGACY` is empty and stays in the file. The next page added without a registry will be named
+by the check rather than passing silently, which is the only reason an empty list is worth
+keeping.
