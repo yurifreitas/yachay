@@ -64,6 +64,18 @@ const PROJECT = {
     // 13,528 per-gene rows are read by sieve.stages.target from disk, never by the browser.
     drop: ["vusByGene.all"],
   },
+  gap_taxonomy: {
+    // The per-field example lists are for a person reading the artefact, not the page.
+    drop: ["examples"],
+  },
+  attention_burden: {
+    // Two ranked lists of fifteen are what the view shows; the arms carry the rest.
+    head: { most_neglected: 15, most_attended: 15 },
+  },
+  knowledge_void: {
+    // The ten faces are drawn from view_models, which already carries them.
+    drop: ["faces"],
+  },
   knowledge_shape: {
     // 12,994 per-disease vectors are the pipeline's output, not the interface's. The page
     // renders the headline, the correlation matrix and the depth table, all of which are
@@ -374,7 +386,11 @@ emit("figures", figures);
   // same failure the comment above names, committed again on newer work.
   for (const name of ["scale_information", "language_coverage", "evidence_conflict",
                       "conflict_decomposition", "knowledge_shape", "view_models",
-                      "gene_ladder"]) {
+                      "gene_ladder",
+                      // Measured today and rendered nowhere until now — the A29 failure,
+                      // committed again on the newest work.
+                      "gap_taxonomy", "attention_burden", "autism_convergence",
+                      "knowledge_void"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

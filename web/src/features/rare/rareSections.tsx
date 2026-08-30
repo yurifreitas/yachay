@@ -11,6 +11,7 @@ import { DiseaseCard } from "./components/DiseaseCard";
 
 import { TROP } from "../../i18n/tropical";
 import { MEAS } from "../../i18n/measured";
+import { MORE } from "../../i18n/more";
 
 import { StatusDot } from "../../components/atoms/StatusDot";
 import { Chip } from "../../components/atoms/Chip";
@@ -38,6 +39,10 @@ const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => (
 const LanguageCoverage = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.LanguageCoverage })));
 const ConflictContext = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ConflictContext })));
 const KnowledgeShape = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.KnowledgeShape })));
+const GapTaxonomy = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.GapTaxonomy })));
+const AttentionBurden = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AttentionBurden })));
+const AutismConvergence = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AutismConvergence })));
+const VoidCells = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.VoidCells })));
 const PatientEvidence = lazy(() => import("./components/PatientEvidence").then((m) => ({ default: m.PatientEvidence })));
 import type { SectionRegistry } from "../../lib/sectionRegistry";
 
@@ -107,6 +112,38 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     sub: (ctx) => (<>{ctx.tt(MEAS.shapeSub)}</>),
     view: () => (
       <><KnowledgeShape /></>
+    ),
+  },
+  {
+    id: "gaps",
+    title: (ctx) => (<>{ctx.tt(MORE.gapHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(MORE.gapSub)}</>),
+    view: () => (
+      <><GapTaxonomy /></>
+    ),
+  },
+  {
+    id: "attention",
+    title: (ctx) => (<>{ctx.tt(MORE.attHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(MORE.attSub)}</>),
+    view: () => (
+      <><AttentionBurden /></>
+    ),
+  },
+  {
+    id: "autism",
+    title: (ctx) => (<>{ctx.tt(MORE.autHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(MORE.autSub)}</>),
+    view: () => (
+      <><AutismConvergence /></>
+    ),
+  },
+  {
+    id: "voidcells",
+    title: (ctx) => (<>{ctx.tt(MORE.voidHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(MORE.voidSub)}</>),
+    view: () => (
+      <><VoidCells /></>
     ),
   },
   {

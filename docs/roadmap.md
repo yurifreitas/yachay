@@ -306,15 +306,23 @@ the count — that is what the last attempt got wrong.
 The interface is where the epistemics either survive or get flattened into a badge. These are
 ordered by how badly the current version misrepresents what is underneath.
 
-### 6.1 The four measured results are rendered nowhere · **the A29 shape, again**
+### 6.1 The four measured results are rendered nowhere · **closed 2026-08-29**
 
-`build-data.mjs` carries a comment saying it exactly: *a dashboard that publishes twenty
+`build-data.mjs` carried a comment saying it exactly: *a dashboard that publishes twenty
 aggregate layers while its strongest result sits in a JSON file is publishing that result
-nowhere.* Four artefacts added under ADR 0007 — the only results in the repository with a
-governing ADR, a null and an interval — are not emitted to the bundle.
+nowhere.* Four artefacts added under ADR 0007 — `gap_taxonomy`, `attention_burden`,
+`autism_convergence` and `knowledge_void` — were emitted to no bundle and drawn in no view.
 
-**Cost.** Low to emit, medium to render well. **Do not emit without a view**: shipping data
-nothing renders is bundle weight and a second kind of dishonesty.
+**Closed by** four entries in `rareSections.tsx` and one component module,
+`features/rare/components/MorePanels.tsx`. The rare atlas is 25 sections no longer; it is 29,
+and `check-sections.mjs` confirms every one is reachable and described.
+
+**What the closure cost, and it is the point of ADR 0009.** One entry each. The registry made
+the marginal cost of publishing a measurement small enough that leaving one unpublished stopped
+being the cheaper option — which is the only durable fix for a failure that recurred twice.
+
+**What is still open in this shape.** `hiv_resistance.json` is written to `out/` rather than
+`out/rare/`, so it is outside the emit path and has no view. Same failure, one artefact.
 
 ### 6.2 Projections instead of pages
 

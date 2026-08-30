@@ -24,6 +24,7 @@ import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/n
 import { RARE } from "../../i18n/strings";
 import { TROP } from "../../i18n/tropical";
 import { MEAS } from "../../i18n/measured";
+import { MORE } from "../../i18n/more";
 import { useT } from "../../i18n";
 
 
@@ -123,6 +124,14 @@ const SECTIONS: NavSectionDef[] = [
   { id: "language", label: MEAS.sLang, group: "measured" },
   { id: "conflict", label: MEAS.sConflict, group: "measured" },
   { id: "shape", label: MEAS.sShape, group: "measured" },
+
+  // Measured under the same decision record and, until now, rendered nowhere — which is
+  // audit A29 committed again on the newest work. One registry entry each, which is the
+  // whole reason ADR 0009 was worth the churn.
+  { id: "gaps", label: MORE.sGaps, group: "measured" },
+  { id: "attention", label: MORE.sAtt, group: "measured" },
+  { id: "autism", label: MORE.sAut, group: "measured" },
+  { id: "voidcells", label: MORE.sVoid, group: "measured" },
 
   // 6. The argument and its provenance — a thesis and its bibliography are one thing.
   { id: "thesis", label: RARE.sThesis, group: "argument" },
