@@ -95,6 +95,12 @@ export function RaincloudPlot({
                 const cloudH = rowHeight * 0.42;
                 const rainY = top + rowHeight * 0.72;
 
+                // This group's own marker: the observed value the null beneath it exists to
+                // calibrate. Drawn per row rather than as one figure-wide rule, because four
+                // arms have four different observed values and collapsing them would be the
+                // same error as drawing one null line for a null indexed by count.
+                const marker = groups[gi]?.marker;
+
                 // The cloud. Its bandwidth is reported in the row label, because a density
                 // curve without its bandwidth is a claim about smoothness, not a measurement.
                 const { points, bandwidth } = kde1d(g.values, { grid: 128 });
@@ -136,6 +142,22 @@ export function RaincloudPlot({
                     </text>
 
                     <path d={area} className={css.cloud} style={{ fill: g.color }} />
+
+                    {/* THE OBSERVED VALUE, INSIDE ITS OWN NULL. This is the whole reading of
+                        the figure: the cloud is what a length-matched resample produces, and
+                        the rule is what the real gene set produced. Drawn over the cloud and
+                        under the rain so it is never hidden by a droplet. */}
+                    {marker && (
+                      <g>
+                        <line x1={x(marker.at)} x2={x(marker.at)}
+                              y1={top - 2} y2={top + cloudH + 26}
+                              className={css.observed} />
+                        <text x={x(marker.at)} y={top - 6} textAnchor="middle"
+                              className={css.observedLabel}>
+                          {marker.label}
+                        </text>
+                      </g>
+                    )}
 
                     {/* The box, drawn thin. It is the summary, not the subject. */}
                     <line x1={x(g.min)} x2={x(g.max)} y1={top + cloudH + 16} y2={top + cloudH + 16}

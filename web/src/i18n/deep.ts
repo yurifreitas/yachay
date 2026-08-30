@@ -55,6 +55,10 @@ export const DEEP = {
     + "estratificados por grau, nunca como escore bruto — uma propagação sem nulo pareado "
     + "por grau é uma lista das proteínas mais conectadas do grafo.",
   ),
+  conNulls: bi(
+    "the four nulls themselves, with each measured value marked inside its own",
+    "os quatro nulos em si, com cada valor medido marcado dentro do seu",
+  ),
   hivUncK: bi(
     "and which of these would survive sequencing a different set of isolates",
     "e quais destes sobreviveriam a sequenciar outro conjunto de isolados",

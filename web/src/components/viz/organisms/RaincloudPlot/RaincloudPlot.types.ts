@@ -6,6 +6,11 @@ export type RaincloudGroup = {
   /** One colour per group, used identically by cloud, box and rain — three encodings of the
    *  same group must never differ in hue, or they read as three groups. */
   color: string;
+  /** A value to mark inside THIS group's row, with its label. Used for the observed value a
+   *  null was built to calibrate: the whole reading of the figure is where that one number
+   *  falls in the cloud beneath it, and a single figure-wide rule cannot carry four of them.
+   */
+  marker?: { at: number; label: string };
 };
 
 export type RaincloudPlotProps = {

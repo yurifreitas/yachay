@@ -324,6 +324,17 @@ def matched_null(
             abs(mu - unmatched) / abs(observed - unmatched), 3)
         if abs(observed - unmatched) > 1e-9 else None,
         "draws": DRAWS,
+        # THE NULL ITSELF, AND NOT ONLY ITS SUMMARY. A mean and a standard deviation describe
+        # a distribution only if it is the shape you assume it is, and this one is a mean of
+        # length-matched resamples whose shape nobody had looked at. Publishing the draws
+        # costs 400 numbers and lets the figure show the distribution the z is measured
+        # against, with the observed value marked in it - which is the canonical picture of
+        # this repository's entire method and appeared on no page.
+        #
+        # Rounded to five places: the draws are means of thousands of LOEUF values and their
+        # spread here is 0.005, so five places keeps the shape and drops nothing a reader
+        # could see.
+        "null_draws": [round(v, 5) for v in draws],
     }
 
 

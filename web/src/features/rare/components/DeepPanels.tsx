@@ -10,6 +10,7 @@ import { fmtInt } from "../../../lib/scale";
 import ChoiceGroup from "../../../components/atoms/ChoiceGroup";
 import { Provenance } from "./Provenance";
 import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
+import { RaincloudPlot } from "../../../components/viz/organisms/RaincloudPlot";
 import { WhiskerScatter } from "../../../components/viz/organisms/WhiskerScatter";
 import css from "./MeasuredPanels.module.css";
 
@@ -588,6 +589,64 @@ export function GeneConstraint() {
           {att.reading}
         </p>
       </div>
+
+      {/* THE PICTURE OF THE METHOD ITSELF, which appeared on no page in this repository.
+          Every number this project publishes is an observation against a null, and until the
+          nulls were published the pages could only show the SUMMARY of one - a mean, a
+          standard deviation and a z, which describe a distribution only if you already assume
+          its shape. Here the distribution is drawn and the observed value is a rule through
+          it, four times over.
+
+          Read it as one sentence: the cloud is what a gene set matched on coding length
+          produces, and the red rule is what the real set produced. Recessive genes are the
+          arm to look at - the rule falls on the RIGHT of its cloud, which is the same
+          instrument returning the opposite sign, and is the best evidence on the page that
+          the matching is doing work rather than manufacturing the result. */}
+      {(() => {
+        const inh = arms.constraint_by_inheritance ?? {};
+        const nulls = [
+          ["all disease genes", arms.disease_genes_vs_matched, "var(--c1, #6c8cd5)"],
+          ["the autism-sign set", arms.autism_set_vs_matched, "var(--c2, #4fae91)"],
+          ["autosomal dominant", inh["autosomal dominant"], "var(--c3, #c39a4e)"],
+          ["autosomal recessive", inh["autosomal recessive"], "var(--c5, #a781c4)"],
+        ].filter(([, a]: any) => a?.null_draws?.length) as [string, any, string][];
+        if (!nulls.length) return null;
+        return (
+          <div className={css.block}>
+            <span className={css.blockK}>{tt(DEEP.conNulls)}</span>
+            <RaincloudPlot
+              groups={nulls.map(([label, a, color]) => ({
+                label,
+                values: a.null_draws,
+                color,
+                marker: { at: a.observed, label: `observed ${a.observed}` },
+              }))}
+              xLabel="mean LOEUF"
+              xNote="lower is more constrained"
+              xFormat={(v) => v.toFixed(3)}
+              /* The domain is forced wide enough to hold every observed value: two of the
+                 four fall well outside their own null, which is the finding, and a domain
+                 fitted to the clouds alone would push those rules onto the frame. */
+              domain={[
+                Math.min(...nulls.map(([, a]) => Math.min(a.observed, ...a.null_draws))) - 0.02,
+                Math.max(...nulls.map(([, a]) => Math.max(a.observed, ...a.null_draws))) + 0.02,
+              ]}
+              rowHeight={104}
+              ariaLabel="Length-matched null distributions with each observed mean LOEUF marked"
+              readAloud={
+                <>
+                  Each row is one gene set. The cloud and the droplets beneath it are 400
+                  resamples of genes matched to that set on coding length — what the statistic
+                  produces when the biology is removed and only the geometry is kept. The red
+                  rule is the real set. The distance between them, in units of the cloud's own
+                  width, is the z the page reports; two thirds of the disease-gene shift is
+                  already inside the cloud, which is length alone.
+                </>
+              }
+            />
+          </div>
+        );
+      })()}
 
       <div className={css.block}>
         <span className={css.blockK}>{tt(DEEP.conMatched)}</span>

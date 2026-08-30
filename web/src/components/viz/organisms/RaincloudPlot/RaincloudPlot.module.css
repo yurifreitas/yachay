@@ -22,3 +22,12 @@
 .numbers tbody th { text-align: left; font-weight: 600; color: var(--r-text); }
 .numbers tbody td { color: var(--r-text-2); }
 .numbers tbody tr + tr th, .numbers tbody tr + tr td { border-top: var(--r-hairline); }
+
+/* The measured value, against the distribution built to calibrate it. Heavier than the
+   median rule inside the box, because it is the subject of the figure and that is a summary
+   of the null. */
+.observed { stroke: var(--critical); stroke-width: 2; }
+.observedLabel {
+  font-size: 10.5px; fill: var(--critical); font-variant-numeric: tabular-nums;
+  paint-order: stroke; stroke: var(--r-surface); stroke-width: 3px; stroke-linejoin: round;
+}
