@@ -126,3 +126,72 @@
   .hitTable > li { grid-template-columns: minmax(72px, 96px) 44px 44px 52px; }
   .qv, .strata { display: none; }
 }
+
+
+/* ------------------------------------------------------------ the prediction, as a figure
+   Two bands, one axis. The prediction sorted these controls into two groups BEFORE the run;
+   the plot exists so a reader can see whether the two groups landed apart, which is the
+   claim. The table underneath is where an individual row gets checked. */
+.predWrap {
+  display: flex; flex-direction: column; gap: var(--sp-4);
+  margin: var(--sp-6) 0 var(--sp-8);
+}
+.predBand {
+  display: grid; grid-template-columns: minmax(150px, 200px) minmax(0, 1fr);
+  gap: var(--sp-4); align-items: center;
+}
+.predLabel {
+  display: flex; flex-direction: column; gap: 2px;
+  font-size: 12px; color: var(--r-text); text-align: right;
+}
+.predNote { font-size: 10.5px; line-height: 1.35; color: var(--r-text-3); }
+.predTrack {
+  position: relative; height: 44px;
+  border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2);
+}
+/* "Stratification changed nothing" — the reference the claim is a distance from. */
+.predRef {
+  position: absolute; top: -4px; bottom: -4px; width: 1px;
+  background: var(--r-border-hi);
+}
+.predDot {
+  position: absolute; top: 10px; transform: translateX(-50%);
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--r-text-3);
+}
+.predDotOk { background: var(--r-brand); }
+/* Directly labelled under the dot: two bands of five are readable, a legend is not. */
+.predDotL {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  font-family: var(--r-mono, ui-monospace, monospace);
+  font-size: 9.5px; color: var(--r-text-3); white-space: nowrap;
+}
+.predAxis {
+  display: flex; justify-content: space-between;
+  margin-left: calc(150px + var(--sp-4));
+  font-size: 10.5px; color: var(--r-text-3);
+}
+.predUntested {
+  margin: 0; font-size: 11.5px; line-height: 1.5; color: var(--r-text-2);
+  padding-left: var(--sp-4); border-left: var(--r-hairline);
+}
+
+/* The method, as a definition list rather than a paragraph: each key is a decision someone
+   made and a reader may want to disagree with exactly one of them. */
+.methodList { margin: var(--sp-4) 0 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.methodRow {
+  display: grid; grid-template-columns: minmax(120px, 160px) minmax(0, 1fr);
+  gap: var(--sp-4); align-items: baseline;
+}
+.methodRow dt {
+  font-size: 11px; letter-spacing: 0.03em; text-transform: uppercase;
+  color: var(--r-text-3); text-align: right;
+}
+.methodRow dd { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--r-text-2); }
+
+@media (max-width: 760px) {
+  .predBand, .methodRow { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
+  .predLabel, .methodRow dt { text-align: left; }
+  .predAxis { margin-left: 0; }
+}

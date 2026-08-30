@@ -53,8 +53,13 @@ export type Control = {
 
 export type Genotype = {
   generated: string;
-  gates?: { registered: { q: number; d: number; dependencyFloor: number;
-                          burdenProxyD?: number } };
+  gates?: {
+    registered: { q: number; d: number; dependencyFloor: number; burdenProxyD?: number };
+    /** Written by the tool, and the one sentence that changes how the reader should treat
+     *  the sliders: a threshold moved after seeing the data is calibrated, not
+     *  pre-registered. It was in the artefact and on no screen. */
+    says?: string;
+  };
   premise: string;
   confound: { statement: string; handling: string; minPerStratum: number };
   prediction: {

@@ -122,7 +122,95 @@ export default function GenotypeView() {
       </section>
 
       {chosen && <GatedLadder driver={chosen} registered={registered} />}
+
+      {/* THREE STATEMENTS THAT WERE IN THE ARTEFACT AND ON NO SCREEN.
+          `isNot`, `method` and `gates.says` are where this analysis says what it is not, how
+          it was computed, and — the one that actually changes how a reader should treat the
+          screen above — that moving a slider produces a calibrated number and not a
+          pre-registered one. An interface that offers the sliders and hides that sentence is
+          letting the distinction blur, which is the thing the sentence exists to prevent. */}
+      <section className={s.panel}>
+        <h3>What this is not, and how it was computed</h3>
+        <p className={g.caution}>{data.isNot}</p>
+        <dl className={g.methodList}>
+          {Object.entries(data.method ?? {}).map(([k, v]) => (
+            <div key={k} className={g.methodRow}>
+              <dt>{k.replace(/([A-Z])/g, " $1").toLowerCase()}</dt>
+              <dd>{String(v)}</dd>
+            </div>
+          ))}
+        </dl>
+        {data.gates?.says && <p className={s.axisNote}>{data.gates.says}</p>}
+      </section>
     </>
+  );
+}
+
+/** Predicted direction against what the stratification actually did.
+ *
+ *  One axis: the share of the naive effect still standing after lineage is removed. The
+ *  prediction sorts the controls into two groups before the run — should survive, should
+ *  shrink — and the question the plot answers is whether those two groups landed apart. If
+ *  they overlap completely, stratification is flattening everything and the procedure is
+ *  removing signal, which is the failure the prediction was written to detect.
+ *
+ *  Rows that could not be tested are drawn, greyed, on their own line rather than dropped: a
+ *  damaging-mutation matrix has no BRAF V600E in it, and that absence is a result about the
+ *  data. Deleting those rows would turn 6 of 8 into 6 of 6.
+ */
+function PredictionPlot({ data }: { data: Genotype }) {
+  const rows = data.controls.map((c) => {
+    const kept = c.dNaive && c.dNaive > 0 && c.dStratified != null
+      ? Math.max(0, Math.min(1.3, c.dStratified / c.dNaive))
+      : null;
+    return { c, kept };
+  });
+  const groups: { key: string; label: string; note: string }[] = [
+    { key: "survives", label: "predicted to survive",
+      note: "a within-cell mechanism with no lineage story" },
+    { key: "shrinks", label: "predicted to shrink",
+      note: "real, but concentrated in one lineage" },
+  ];
+
+  return (
+    <div className={g.predWrap}>
+      {groups.map((grp) => {
+        const mine = rows.filter(({ c }) => c.expected === grp.key);
+        if (!mine.length) return null;
+        return (
+          <div key={grp.key} className={g.predBand}>
+            <span className={g.predLabel}>
+              {grp.label}
+              <span className={g.predNote}>{grp.note}</span>
+            </span>
+            <div className={g.predTrack}>
+              {/* 100 % is "stratification changed nothing"; the mark is the reference the
+                  eye needs, because the claim is about distance from it. */}
+              <span className={g.predRef} style={{ left: `${(100 / 1.3)}%` }} />
+              {mine.map(({ c, kept }) => (
+                <span key={`${c.driver}-${c.target}`}
+                      className={c.observed && OBSERVED_TONE[c.observed] === "ok"
+                        ? `${g.predDot} ${g.predDotOk}` : g.predDot}
+                      style={{ left: kept == null ? "0%" : `${(100 * kept) / 1.3}%` }}
+                      title={`${c.driver} → ${c.target}: ${
+                        kept == null ? "not testable" : `${Math.round(100 * kept)} % kept`}`}>
+                      <span className={g.predDotL}>{c.target}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      <div className={g.predAxis}>
+        <span>0 %</span><span>the naive effect that survives stratification</span><span>130 %</span>
+      </div>
+      {rows.some(({ c }) => !c.observed) && (
+        <p className={g.predUntested}>
+          {rows.filter(({ c }) => !c.observed).length} of {rows.length} could not be tested at
+          all, and are counted in the denominator rather than dropped.
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -146,6 +234,16 @@ function Controls({ data }: { data: Genotype }) {
     <section className={s.panel}>
       <h3>The prediction, and what happened to it</h3>
       <p className={s.sub}>{data.prediction.claim}</p>
+
+      {/* THE CLAIM WAS DIRECTIONAL AND THE FIGURE WAS A TABLE.
+          The prediction does not say "these will be significant" — it says paralog synthetic
+          lethality should SURVIVE stratification and oncogene addiction should SHRINK, and
+          that if everything flattened equally the procedure would be removing signal rather
+          than confound. Eleven rows of eight numeric columns is where you check a row; it is
+          not where you see whether two predicted groups actually separated. They are the same
+          numbers, on one axis, split by what was predicted before the run. */}
+      <PredictionPlot data={data} />
+
       <div className={g.tableWrap}>
         <table className={s.table}>
           <thead>
