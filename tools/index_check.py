@@ -20,6 +20,10 @@ WHAT IT CHECKS, and each is a claim some document makes about the filesystem:
     stages      every registered pipeline stage has a tool or analysis that exists
     sources     every ingested source is named in docs/references/README.md
     adrs        every docs/adr/NNNN-*.md appears in the ADR index
+    thresholds  the summary inside manifests/thresholds.yaml matches the entries it
+                summarises — it was written at seven entries, the file grew to 25, and
+                the summary stayed. A file whose job is auditability was publishing a
+                wrong count of itself.
 
 WHAT IT DELIBERATELY DOES NOT CHECK. Whether the DESCRIPTION beside an entry is still true.
 A stale sentence next to a present filename is a real defect and this tool cannot see it; only
@@ -35,6 +39,7 @@ Stdlib only, so it runs before anything else in a cold checkout.
 from __future__ import annotations
 
 import argparse
+import collections
 import pathlib
 import re
 import sys
@@ -102,7 +107,54 @@ def check_adrs() -> tuple[str, list[str], int]:
     return "adrs", missing, len(files)
 
 
-CHECKS = [check_artefacts, check_tools, check_stages, check_sources, check_adrs]
+
+
+def check_thresholds() -> tuple[str, list[str], int]:
+    """The manifest's own summary against the entries beneath it.
+
+    A LIST THAT COUNTS ITSELF, which is the one kind of index that can go stale without any
+    file being added or removed anywhere else. This one did: the block said "pre-registered:
+    3, calibrated to seen data: 4" while the file held nineteen pre-registered and six
+    calibrated thresholds, because it was written when there were seven and never recounted.
+    """
+    path = ROOT / "manifests" / "thresholds.yaml"
+    if not path.exists():
+        return "thresholds", ["manifests/thresholds.yaml is missing"], 0
+
+    text = path.read_text(encoding="utf-8")
+    pre = collections.Counter(re.findall(r"pre_registered:\s*(true|false)", text))
+    kind = collections.Counter(re.findall(r"justification:\s*(\w+)", text))
+    total = sum(pre.values())
+
+    claimed = re.search(
+        r"pre-registered:\s*(\d+)\s+calibrated to seen data:\s*(\d+)", text)
+    kinds_claimed = re.search(
+        r"kinds:\s*(\d+) mechanistic,\s*(\d+) empirical,\s*(\d+) conventional", text)
+
+    missing = []
+    if not claimed:
+        missing.append("the summary block states no pre-registered/calibrated counts")
+    else:
+        want = (pre["true"], pre["false"])
+        got = (int(claimed.group(1)), int(claimed.group(2)))
+        if want != got:
+            missing.append(
+                f"summary says {got[0]} pre-registered and {got[1]} calibrated; "
+                f"the entries are {want[0]} and {want[1]}")
+    if not kinds_claimed:
+        missing.append("the summary block states no kind counts")
+    else:
+        want = (kind["mechanistic"], kind["empirical"], kind["conventional"])
+        got = tuple(int(kinds_claimed.group(i)) for i in (1, 2, 3))
+        if want != got:
+            missing.append(
+                f"summary says {got} mechanistic/empirical/conventional; "
+                f"the entries are {want}")
+    return "thresholds", missing, total
+
+
+CHECKS = [check_artefacts, check_tools, check_stages, check_sources, check_adrs,
+          check_thresholds]
 
 
 def main() -> int:

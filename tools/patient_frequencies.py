@@ -159,7 +159,10 @@ def main() -> int:
 
     # ---- 1. what the patients give us ---------------------------------------------------
     rows = []
-    for key in set(obs) | set(exc):
+    # Sorted: these rows are stable-sorted and truncated below, and a seeded bootstrap later
+    # indexes this same sequence — so an unordered source feeds a different sample into a
+    # deliberately reproducible interval.
+    for key in sorted(set(obs) | set(exc)):
         o, e = obs.get(key, 0), exc.get(key, 0)
         assessed = o + e
         if assessed < MIN_ASSESSED:

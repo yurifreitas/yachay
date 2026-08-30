@@ -42,6 +42,7 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+from sieve.pipeline.ontology import load_mondo  # noqa: E402
 from sieve.pipeline.sources import BY_KEY  # noqa: E402
 
 DEST = ROOT / "out" / "rare" / "single_cell_coverage.json"
@@ -86,35 +87,18 @@ def cellxgene_index():
 def mondo_crosswalk() -> tuple[dict[str, set[str]], dict[str, str]]:
     """MONDO term -> the OMIM/ORPHA ids it cross-references, and its label.
 
-    Read the same way tools/gap_taxonomy.py reads it, deliberately: two tools parsing the
-    same ontology two different ways is how two files come to disagree about what a disease
-    is while both looking correct.
+    THIS PARSED THE ONTOLOGY ITSELF UNTIL THE AUDIT FOUND FOUR SUCH PARSERS. The comment it
+    used to carry said the right thing — "two tools parsing the same ontology two different
+    ways is how two files come to disagree about what a disease is while both looking
+    correct" — and then parsed it a third way anyway. It now uses the shared loader, which is
+    what that comment was asking for.
     """
-    xwalk: dict[str, set[str]] = {}
-    label: dict[str, str] = {}
-    term: str | None = None
-    xrefs: list[str] = []
-    name: str | None = None
-
-    def flush() -> None:
-        if term:
-            ids = {f"OMIM:{x.split(':', 1)[1]}" for x in xrefs if x.startswith("OMIM:")}
-            ids |= {f"ORPHA:{x.split(':', 1)[1]}" for x in xrefs if x.startswith("Orphanet:")}
-            xwalk[term] = ids
-            if name:
-                label[term] = name
-
-    for line in BY_KEY["mondo"].dest.read_text(encoding="utf-8", errors="replace").splitlines():
-        if line.startswith("[Term]"):
-            flush()
-            term, xrefs, name = None, [], None
-        elif line.startswith("id: MONDO"):
-            term = line[4:].strip()
-        elif line.startswith("name:") and term:
-            name = line[5:].strip()
-        elif line.startswith("xref:") and term:
-            xrefs.append(line[6:].split()[0])
-    flush()
+    terms = load_mondo()
+    xwalk = {
+        tid: t.ids_in("OMIM") | t.ids_in("Orphanet")
+        for tid, t in terms.items()
+    }
+    label = {tid: t.name for tid, t in terms.items() if t.name}
     return xwalk, label
 
 

@@ -56,6 +56,8 @@ DATA = ROOT / "data" / "ontology"
 DEST = ROOT / "out" / "rare" / "tropical_gap.json"
 
 sys.path.insert(0, str(ROOT / "src"))
+
+from sieve.pipeline.ontology import live_terms  # noqa: E402
 sys.path.insert(0, str(ROOT / "tools"))
 
 from build_atlas import load_prevalence  # noqa: E402
@@ -102,30 +104,19 @@ OBSOLETE = re.compile(r"^obsolete\b", re.I)
 
 
 def load_mondo() -> list[dict]:
-    """Every non-obsolete MONDO term with its name, synonyms and cross-references."""
-    terms: list[dict] = []
-    block: list[str] = []
-    text = (DATA / "mondo.obo").read_text(encoding="utf-8", errors="replace")
-    for raw in text.split("[Term]"):
-        block = raw.split("\n")
-        cur: dict = {"xrefs": [], "synonyms": []}
-        for line in block:
-            if line.startswith("id: "):
-                cur.setdefault("id", line[4:].strip())
-            elif line.startswith("name: "):
-                cur["name"] = line[6:].strip()
-            elif line.startswith("xref: "):
-                cur["xrefs"].append(line[6:].strip().split(" ")[0])
-            elif line.startswith("synonym: "):
-                m = re.search(r'"([^"]+)"', line)
-                if m:
-                    cur["synonyms"].append(m.group(1))
-            elif line.startswith("is_obsolete: true"):
-                cur["obsolete"] = True
-        if cur.get("id") and cur.get("name") and not cur.get("obsolete"):
-            if not OBSOLETE.match(cur["name"]):
-                terms.append(cur)
-    return terms
+    """Every non-obsolete MONDO term with its name, synonyms and cross-references.
+
+    THIS READ `DATA / "mondo.obo"` DIRECTLY, bypassing the source registry that every other
+    tool goes through — so it would have broken silently the first time a source moved, and
+    one moved this week when `Source` gained a `subdir`. It now goes through
+    `sieve.pipeline.ontology`, which reads the path the registry names.
+    """
+    return [
+        {"id": t.id, "name": t.name, "xrefs": sorted(t.xrefs), "synonyms": list(t.synonyms)}
+        for t in live_terms().values()
+        if t.name and not OBSOLETE.match(t.name)
+    ]
+
 
 
 def load_hpo_counts() -> tuple[Counter, Counter]:

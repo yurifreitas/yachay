@@ -52,6 +52,7 @@ from __future__ import annotations
 
 import argparse
 import collections
+from collections.abc import Iterable
 import csv
 import gzip
 import io
@@ -180,20 +181,50 @@ def gene_cells() -> dict[str, set[str]]:
     return out
 
 
-def concentration(genes: set[str], mapping: dict[str, set[str]]) -> float | None:
+def concentration(genes: "Iterable[str]", mapping: dict[str, set[str]]) -> float | None:
     """Share of the set's total annotations that fall in the single commonest category.
 
     A concentration rather than a count, because a bigger set touches more categories by
     arithmetic. This asks: of everything this set is annotated to, how much lands in one place?
+
+    Takes any iterable, not a set, and counts repeats. That matters: a bootstrap resample is a
+    MULTISET, and the version of this file that passed it a set was measuring a different
+    statistic in its interval than in its point estimate.
     """
     counts: collections.Counter = collections.Counter()
-    for g in genes:
+    for g in sorted(genes):
         for c in mapping.get(g, ()):
             counts[c] += 1
     total = sum(counts.values())
     if total == 0:
         return None
     return counts.most_common(1)[0][1] / total
+
+
+def _verdict(arms: dict) -> str:
+    """The conclusion, assembled from the numbers it is a conclusion about."""
+    pw, ct = arms.get("pathway"), arms.get("cell_type")
+    if not pw or not ct:
+        return "Not enough arms completed to state a verdict."
+
+    def arm(a: dict) -> str:
+        ci = a.get("ci95")
+        span = f" [{ci[0]}, {ci[1]}]" if ci else ""
+        return f"{a['observed']}{span} against {a['null_mean']}, z = {a['z']:+g}"
+
+    overlap = ""
+    ci = pw.get("ci95")
+    if ci and ci[0] <= pw["null_mean"] <= ci[1]:
+        overlap = (" The pathway interval OVERLAPS its null mean, so the permutation z is "
+                   "carrying that arm on its own; read the direction as supported and the "
+                   "magnitude as uncertain.")
+
+    return (
+        "THE CONVERGENCE IS SPATIAL, NOT MECHANISTIC. The set is LESS pathway-concentrated "
+        f"than a size-matched random draw ({arm(pw)}) and MORE cell-type-concentrated "
+        f"({arm(ct)}). Seven hundred genes meet in a place, not in a reaction inventory. "
+        "The pathway arm confirms the prior stated before the run; the cell-type arm is the "
+        f"part that was not predicted.{overlap}")
 
 
 def main() -> int:
@@ -224,19 +255,36 @@ def main() -> int:
                 draws.append(v)
         mu = statistics.mean(draws)
         sd = statistics.pstdev(draws) or 1e-12
-        # A percentile interval on the observed value, over the genes themselves.
+        # AN INTERVAL ON THE OBSERVED VALUE, AND IT WAS WRONG TWICE OVER.
+        #
+        #  The first version resampled into a SET: `{gl[rng.randrange(len(gl))] for _ in ...}`.
+        #  Sampling with replacement and then deduplicating collapses the repeats, so every
+        #  replicate held about 1 - 1/e of the genes — 454 of 717, measured. `concentration`
+        #  is a share statistic and is biased in set size, so the published interval belonged
+        #  to a statistic computed on a smaller set than the point estimate it was supposed to
+        #  bracket. The null a few lines above is fine: `rng.sample` draws WITHOUT replacement,
+        #  so wrapping it in `set()` removes nothing.
+        #
+        #  It was also a raw percentile interval, which this repository has already documented
+        #  as the wrong tool for a statistic biased in n — `tools/gene_constraint.py` says so
+        #  where it switched to point +- 1.96 SE, and the same reasoning applies here.
+        #
+        #  So: a list, which keeps the repeats a bootstrap is supposed to have, at the right
+        #  size; and the bootstrap supplies the DISPERSION while the point stays the point.
         boot_rng = random.Random(SEED + 1)
         boots = []
         gl = sorted(genes)
         for _ in range(200):
-            s = {gl[boot_rng.randrange(len(gl))] for _ in range(len(gl))}
-            v = concentration(s, mapping)
+            resample = [gl[boot_rng.randrange(len(gl))] for _ in range(len(gl))]
+            v = concentration(resample, mapping)
             if v is not None:
                 boots.append(v)
-        boots.sort()
+        se = statistics.pstdev(boots) if len(boots) > 10 else None
         arms[label] = {
             "observed": round(observed, 4),
-            "ci95": [round(boots[4], 4), round(boots[-5], 4)] if len(boots) > 10 else None,
+            "ci95": ([round(observed - 1.96 * se, 4), round(observed + 1.96 * se, 4)]
+                     if se is not None else None),
+            "ci95_method": "point +- 1.96 bootstrap SE over the genes, 200 resamples. Not a percentile interval: this statistic is biased in set size, and a percentile interval on it need not contain its own point estimate.",
             "null_mean": round(mu, 4),
             "null_sd": round(sd, 5),
             "z": round((observed - mu) / sd, 2),
@@ -245,11 +293,11 @@ def main() -> int:
         }
 
     top_pathways = collections.Counter()
-    for g in genes:
+    for g in sorted(genes):
         for p in pathways.get(g, ()):
             top_pathways[p] += 1
     top_cells = collections.Counter()
-    for g in genes:
+    for g in sorted(genes):
         for c in cells.get(g, ()):
             top_cells[c] += 1
 
@@ -283,13 +331,19 @@ def main() -> int:
             "pathways": [{"id": p, "genes": n} for p, n in top_pathways.most_common(8)],
             "cell_types": [{"name": c, "genes": n} for c, n in top_cells.most_common(8)],
         },
-        "verdict": (
-            "THE CONVERGENCE IS SPATIAL, NOT MECHANISTIC. The set is LESS pathway-concentrated "
-            "than a size-matched random draw (0.1042 [0.0976, 0.1144] against 0.1159, "
-            "z = -2.32) and MORE cell-type-concentrated (0.0326 [0.0289, 0.0366] against "
-            "0.0249, z = +3.68). Seven hundred genes meet in a place, not in a reaction "
-            "inventory. The pathway arm confirms the prior stated before the run; the "
-            "cell-type arm is the part that was not predicted."),
+        # THE VERDICT IS COMPUTED, NOT TYPED.
+        #
+        #  It used to carry its four interval bounds as literals in the string. When an audit
+        #  found the bootstrap was resampling into a SET — collapsing every replicate to about
+        #  63 % of the gene count, so the interval belonged to a different statistic than the
+        #  point it bracketed — the numbers moved and the sentence did not. A conclusion with
+        #  hand-typed figures is a conclusion that can outlive them.
+        #
+        #  And the corrected interval changes what the pathway arm supports, so the sentence
+        #  says so itself rather than leaving a reader to notice: the permutation z is the
+        #  primary test and it stands, but the interval on the observed value now overlaps the
+        #  null mean, which the narrower wrong one did not.
+        "verdict": _verdict(arms),
         "chain": (
             "This is the third measurement in this repository to point the same way. "
             "scale_information.py found a pathway alphabet retains only 0.19 for the nervous "

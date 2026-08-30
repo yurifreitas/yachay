@@ -74,30 +74,21 @@ FIELDS = ["gene", "phenotype", "prevalence", "onset", "cell_type"]
 
 
 def crosswalk() -> tuple[dict[str, set[str]], dict[str, set[str]]]:
-    """MONDO's cross-references, read both ways: OMIM/ORPHA id -> the other catalogue's ids."""
-    omim_to_orpha: dict[str, set[str]] = collections.defaultdict(set)
-    orpha_to_omim: dict[str, set[str]] = collections.defaultdict(set)
-    term: str | None = None
-    xrefs: list[str] = []
+    """OMIM <-> ORPHA through MONDO, from the one shared parser.
 
-    def flush() -> None:
-        omims = [x for x in xrefs if x.startswith("OMIM:")]
-        orphas = [f"ORPHA:{x.split(':', 1)[1]}" for x in xrefs if x.startswith("Orphanet:")]
-        for o in omims:
-            omim_to_orpha[o].update(orphas)
-        for o in orphas:
-            orpha_to_omim[o].update(omims)
+    THIS USED TO PARSE MONDO ITSELF, and three other tools did too — four hand-rolled OBO
+    parsers over the same 53 MB file, free to disagree with each other and with no test
+    comparing them. They now share `sieve.pipeline.ontology`.
 
-    for line in BY_KEY["mondo"].dest.read_text(encoding="utf-8", errors="replace").splitlines():
-        if line.startswith("[Term]"):
-            flush()
-            term, xrefs = None, []
-        elif line.startswith("id: MONDO"):
-            term = line[4:].strip()
-        elif line.startswith("xref:") and term:
-            xrefs.append(line[6:].split()[0])
-    flush()
-    return dict(omim_to_orpha), dict(orpha_to_omim)
+    THE SWAP CHANGED A PUBLISHED FIGURE, and the old one was wrong. The previous
+    implementation used a defaultdict and wrote a key for every OMIM term it saw, whether or
+    not that term had an Orphanet counterpart — so `omim_terms_with_counterpart` counted
+    10,176 terms of which 6,321 had an empty counterpart set. The field name was a claim the
+    number did not support. Both figures are reported below now, under names that say which
+    is which.
+    """
+    from sieve.pipeline.ontology import crosswalk as shared
+    return shared()
 
 
 def catalogue_fields():
@@ -204,8 +195,14 @@ def main() -> int:
             "crosswalk": ("MONDO carries both OMIM and Orphanet cross-references, so a "
                           "disease missing a field can be asked whether a counterpart in the "
                           "other catalogue has it"),
+            # Named for what they are. The previous version wrote a key for every OMIM term
+            # MONDO carries, counterpart or not, and published the total under
+            # "with_counterpart" — 10,176, of which 6,321 had none.
             "omim_terms_with_counterpart": len(omim_to_orpha),
             "orpha_terms_with_counterpart": len(orpha_to_omim),
+            "counterpart_means": "the term is cross-referenced to at least one term in the "
+                                 "other catalogue, which is what makes an interoperability "
+                                 "gap closable by a join",
         },
         "kinds": {
             "epistemic": "nobody has it, here or in the counterpart. Closed by a study.",

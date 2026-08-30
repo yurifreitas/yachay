@@ -139,7 +139,11 @@ def main() -> int:
         if len(lof) < MIN_PER_GROUP or len(mis) < MIN_PER_GROUP:
             continue
         terms = {t for pats in (lof, mis) for f in pats for t in f}
-        for term in terms:
+        # Sorted: the tests below are collected into a list that is later stable-sorted by
+        # effect size and truncated, so an unordered source reshuffles which of several
+        # equal-effect terms survives the cut. Set iteration order is not stable across
+        # processes in Python.
+        for term in sorted(terms):
             a = sum(1 for f in lof if t_in(f, term, True))
             b = sum(1 for f in lof if t_in(f, term, False))
             c = sum(1 for f in mis if t_in(f, term, True))

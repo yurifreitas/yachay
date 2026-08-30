@@ -51,6 +51,7 @@ from xml.etree import ElementTree as ET
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+from sieve.pipeline.ontology import load_mondo  # noqa: E402
 from sieve.pipeline.sources import BY_KEY  # noqa: E402
 
 RARE = ROOT / "out" / "rare"
@@ -108,32 +109,23 @@ def orphanet_disorders() -> dict[str, dict]:
 
 
 def mondo_terms() -> dict[str, dict]:
-    """MONDO id -> name and cross-references.
+    """MONDO id -> name and cross-references, from the shared parser.
 
     MONDO IS THE ONE IDENTIFIER SPACE THAT CROSSES THE OTHERS, which is what makes it worth
-    ingesting and what makes this check stronger than the rest of the file. Every other
-    field here asks "does this id exist?". MONDO carries `xref:` lines to ORPHA and OMIM, so
-    it can be asked the harder question: **do the lexicon's three identifiers agree with
-    each other?** A row can have three ids that all resolve and still describe three
-    different diseases, and nothing before this could see that.
+    ingesting and what makes this check stronger than the rest of the file. Every other field
+    here asks "does this id exist?". MONDO carries `xref:` lines to ORPHA and OMIM, so it can
+    be asked the harder question: **do the lexicon's three identifiers agree with each
+    other?** A row can have three ids that all resolve and still describe three different
+    diseases, and nothing before this could see that.
+
+    The parsing moved to `sieve.pipeline.ontology` when an audit found four tools each
+    reading this 53 MB file with their own OBO parser. The shape returned here is unchanged,
+    so the checks below did not have to be touched.
     """
-    terms: dict[str, dict] = {}
-    tid = None
-    for line in BY_KEY["mondo"].dest.read_text(encoding="utf-8", errors="replace").splitlines():
-        line = line.rstrip()
-        if line == "[Term]":
-            tid = None
-        elif line.startswith("id: MONDO:"):
-            tid = line[4:].strip()
-            terms[tid] = {"name": None, "xrefs": set(), "obsolete": False}
-        elif tid:
-            if line.startswith("name:"):
-                terms[tid]["name"] = line[5:].strip()
-            elif line.startswith("xref: "):
-                terms[tid]["xrefs"].add(line[6:].split()[0].strip())
-            elif line.startswith("is_obsolete: true"):
-                terms[tid]["obsolete"] = True
-    return terms
+    return {
+        tid: {"name": t.name, "xrefs": set(t.xrefs), "obsolete": t.obsolete}
+        for tid, t in load_mondo().items()
+    }
 
 
 def annotated_diseases() -> dict[str, str]:

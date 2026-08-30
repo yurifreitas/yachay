@@ -151,10 +151,18 @@ thresholds:
 
 # ---------------------------------------------------------------------
 # THE HONEST SUMMARY, and it is the reason to keep this file:
-#   pre-registered: 3     calibrated to seen data: 4
-# And the three kinds: 1 mechanistic, 3 empirical, 3 conventional.
-# Four of the seven thresholds this project acts on were chosen after
-# looking. None of them was labelled as such until today.
+#   pre-registered: 19     calibrated to seen data: 6
+#   kinds: 9 mechanistic, 5 empirical, 11 conventional
+# 6 of the 25 thresholds this project acts on were chosen after looking.
+# None of them was labelled as such until this manifest existed.
+#
+# THIS BLOCK IS CHECKED, because it was wrong. It was written when the file held
+# seven entries and said "pre-registered: 3, calibrated: 4"; the file grew to
+# 25 and the summary did not move, so the one file whose entire job is to make
+# threshold provenance auditable was publishing a count of its own contents that
+# was off by a factor of three. `tools/index_check.py` now recomputes these
+# numbers from the entries and fails when they disagree — a summary nobody
+# recounts is a summary that goes stale, which is audit A36 in miniature.
 # ---------------------------------------------------------------------
 
   # ---- tools/cancer_subgroups.py ------------------------------------

@@ -209,8 +209,14 @@ def main() -> int:
         terms = all_terms & live_terms
         stale = len(all_terms) - len(terms)
         covered_annotations = sum(c for t, c in per_term.items() if t in terms)
+        # SORTED, AND THE TIE BROKEN EXPLICITLY. Python randomises string hashing per
+        # process, so iterating a set of ids puts them in a different order every run —
+        # and `min`/`max` return the FIRST extreme they meet, so a tie between two
+        # systems returned a different id each time. Measured: with PYTHONHASHSEED=7 the
+        # Spanish best system was HP:0000152 and with 99 it was HP:0001507. A published
+        # field that changes between runs is the drift verify_claims exists to catch.
         per_system = {}
-        for s in systems:
+        for s in sorted(systems):
             mass = system_mass.get(s, 0)
             if mass < 500:                    # too little annotation to carry a ratio
                 continue
@@ -218,8 +224,8 @@ def main() -> int:
                       if s in term_systems.get(t, ()) and t in terms)
             per_system[s] = hit / mass
         spread = (max(per_system.values()) - min(per_system.values())) if per_system else None
-        worst = min(per_system, key=per_system.get) if per_system else None
-        best = max(per_system, key=per_system.get) if per_system else None
+        worst = min(per_system, key=lambda k: (per_system[k], k)) if per_system else None
+        best = max(per_system, key=lambda k: (per_system[k], k)) if per_system else None
         rows.append({
             "language": code,
             "name": LANGUAGE_NAMES.get(code, code),
