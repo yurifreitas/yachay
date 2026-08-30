@@ -56,6 +56,7 @@ import pathlib
 import random
 import statistics
 import sys
+import xml.etree.ElementTree as ET
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
@@ -85,6 +86,24 @@ DRAWS = 400
 #: takes the same number from each bin as the observed set has. Ten bins is fine enough that
 #: within-bin length variation is small and coarse enough that every bin has candidates.
 LENGTH_BINS = 10
+
+#: Orphanet prevalence bands, mapped to the log10 midpoint of cases per 100,000. Copied
+#: verbatim from tools/attention_burden.py rather than imported, because the two files must
+#: be able to disagree loudly if either is edited — a shared constant would let a change in
+#: one silently move a number published by the other.
+PREVALENCE_MIDPOINT = {
+    "<1 / 1 000 000": math.log10(0.05),
+    "1-9 / 1 000 000": math.log10(0.5),
+    "1-9 / 100 000": math.log10(5.0),
+    "1-5 / 10 000": math.log10(30.0),
+    "6-9 / 10 000": math.log10(75.0),
+    ">1 / 1000": math.log10(200.0),
+}
+
+#: The two inheritance modes this tool can say anything about. LOEUF measures intolerance to
+#: losing ONE copy, so it is informative for dominant disease and close to mute for recessive
+#: — which is a caveat this repository has been printing in prose and can now measure.
+INHERITANCE = {"HP:0000006": "autosomal dominant", "HP:0000007": "autosomal recessive"}
 
 
 # --------------------------------------------------------------------------- loading
@@ -165,6 +184,39 @@ def autism_genes() -> set[str]:
             if symbol.get(gid):
                 out.add(symbol[gid])
     return out
+
+
+def prevalence_band() -> dict[str, float]:
+    """ORPHA disorder -> log10 midpoint of its rarest published band."""
+    out: dict[str, float] = {}
+    try:
+        root = ET.parse(BY_KEY["orpha_prevalence"].dest).getroot()
+    except (OSError, ET.ParseError):
+        return out
+    for disorder in root.iter("Disorder"):
+        code = disorder.findtext("OrphaCode")
+        if not code:
+            continue
+        best = None
+        for prev in disorder.iter("Prevalence"):
+            klass = prev.findtext("PrevalenceClass/Name")
+            if klass in PREVALENCE_MIDPOINT:
+                v = PREVALENCE_MIDPOINT[klass]
+                best = v if best is None else max(best, v)
+        if best is not None:
+            out[f"ORPHA:{code}"] = best
+    return out
+
+
+def inheritance_modes() -> dict[str, set[str]]:
+    """disease -> the inheritance terms annotated on it."""
+    out: dict[str, set[str]] = collections.defaultdict(set)
+    with BY_KEY["hpo_annotations"].dest.open(encoding="utf-8") as fh:
+        for row in csv.DictReader((l for l in fh if not l.startswith("#")), delimiter="	"):
+            term = (row.get("hpo_id") or "").strip()
+            if term in INHERITANCE:
+                out[(row.get("database_id") or "").strip()].add(term)
+    return dict(out)
 
 
 # --------------------------------------------------------------------------- statistics
@@ -310,6 +362,76 @@ def main() -> int:
                              [math.log10(pairs[i][1]) for i in idx]),
         random.Random(SEED + 2), draws=200)
 
+    # ---- arm 3b: THE CONFOUND, ANSWERED RATHER THAN NAMED.
+    #
+    #  attention_burden reported attention against prevalence at +0.331 and could not rule
+    #  out that both were riding on constraint. Constraint is on disk now, so the question
+    #  has an answer instead of a caveat: compute the SAME rank correlation inside each
+    #  constraint tercile. If +0.331 survives within bands, prevalence is carrying something
+    #  constraint does not; if it collapses, attention_burden's headline was constraint
+    #  wearing prevalence's name.
+    #
+    #  Stratify, do not adjust. The repository already made this argument for lineage in
+    #  tools/cancer_genotype.py: the contrast computed inside each stratum and then pooled is
+    #  the estimate to report, and the DIFFERENCE from the naive one is the size of the
+    #  confound — which is more informative than either alone.
+    prevalence = prevalence_band()
+    per_disease_attention: list[tuple[float, float, float]] = []
+    for disease in sorted(per_disease):
+        if disease not in prevalence:
+            continue
+        gids = sorted(per_disease[disease])
+        syms = [symbol[g] for g in gids if symbol.get(g) in pool]
+        cites = sum(citations.get(g, 0) for g in gids)
+        if not syms or cites <= 0:
+            continue
+        # The disease's LOEUF is the MINIMUM over its genes — the most intolerant gene is the
+        # one a reader would call the disease's gene, and a mean would be diluted by however
+        # many loci happen to be annotated.
+        per_disease_attention.append(
+            (min(pool[s]["loeuf"] for s in syms), prevalence[disease], math.log10(cites)))
+
+    strat = []
+    if len(per_disease_attention) >= 90:
+        ordered = sorted(per_disease_attention)
+        cut = len(ordered) // 3
+        for name, chunk in (("most constrained", ordered[:cut]),
+                            ("middle", ordered[cut:2 * cut]),
+                            ("most tolerant", ordered[2 * cut:])):
+            strat.append({
+                "band": name,
+                "diseases": len(chunk),
+                "loeuf_range": [round(chunk[0][0], 3), round(chunk[-1][0], 3)],
+                "attention_vs_prevalence": round(
+                    spearman([c[1] for c in chunk], [c[2] for c in chunk]), 4),
+            })
+
+    # ---- arm 3c: what LOEUF can and cannot see, measured instead of disclaimed.
+    #
+    #  Every version of this file has said in prose that LOEUF is about losing ONE copy and
+    #  therefore says little about recessive disease. That is a testable statement about this
+    #  catalogue, not a disclaimer, and leaving it in prose was the easy way out.
+    modes = inheritance_modes()
+    by_mode: dict[str, set[str]] = {t: set() for t in INHERITANCE}
+    for disease, terms in modes.items():
+        # A disease annotated BOTH ways tells us nothing about either, so it is dropped
+        # rather than counted twice.
+        if len(terms) != 1:
+            continue
+        term = next(iter(terms))
+        for gid in per_disease.get(disease, ()):
+            if symbol.get(gid) in pool:
+                by_mode[term].add(symbol[gid])
+    # A gene serving both a dominant and a recessive disorder is in neither arm: it is the
+    # case the contrast is least able to speak about.
+    shared = by_mode["HP:0000006"] & by_mode["HP:0000007"]
+    arm_inheritance = {
+        INHERITANCE[t]: matched_null(pool, by_mode[t] - shared, "loeuf",
+                                     random.Random(SEED + 10 + i))
+        for i, t in enumerate(sorted(INHERITANCE))
+    }
+    arm_inheritance["genes_in_both_and_dropped"] = len(shared)
+
     # ---- arm 3: the autism set, matched on length.
     aut = autism_genes()
     arm_autism = matched_null(pool, aut, "loeuf", random.Random(SEED + 3))
@@ -358,6 +480,17 @@ def main() -> int:
         "arms": {
             "disease_genes_vs_matched": arm_disease,
             "autism_set_vs_matched": arm_autism,
+            "attention_vs_prevalence_within_constraint": {
+                "terciles": strat,
+                "compare_with": "tools/attention_burden.py reports +0.331 over all diseases",
+                "reading": "the same rank correlation computed inside each constraint band. "
+                           "If it survives in every band, prevalence carries something "
+                           "constraint does not. Stratified rather than adjusted, for the "
+                           "reason cancer_genotype gives about lineage: the difference "
+                           "between the naive figure and the within-band ones IS the size "
+                           "of the confound.",
+            },
+            "constraint_by_inheritance": arm_inheritance,
             "attention_vs_constraint": {
                 # DISEASE GENES ONLY, and that is the right population for the question:
                 # attention_burden's coefficient was computed over diseases carrying causal
@@ -401,6 +534,13 @@ def main() -> int:
         print(f"  autism set:    LOEUF {arm_autism['observed']} vs matched null "
               f"{arm_autism['null_mean']} (z {arm_autism['z']})")
     print(f"  attention ~ constraint: rho {rho_attention:.4f} {rho_ci}")
+    for row in strat:
+        print(f"    within {row['band']:<16} ({row['diseases']:>4} diseases): "
+              f"attention~prevalence {row['attention_vs_prevalence']:+.4f}")
+    for mode, arm in arm_inheritance.items():
+        if isinstance(arm, dict) and arm:
+            print(f"  {mode:<22} LOEUF {arm['observed']} vs matched {arm['null_mean']} "
+                  f"(z {arm['z']}, n={arm['genes']})")
     return 0
 
 
