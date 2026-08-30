@@ -281,6 +281,24 @@ SOURCES: tuple[Source, ...] = (
         redistributable=False,
     ),
     Source(
+        key="fda_ai_devices",
+        name="FDA — Artificial Intelligence-Enabled Medical Devices",
+        url="https://www.fda.gov/media/178541/download?attachment",
+        filename="fda_ai_devices.csv",
+        approx_mb=0.13,
+        gives="THE REGULATOR'S OWN LIST of every AI-enabled device authorised for clinical "
+              "use in the United States: 1,524 rows, each with a decision date, a submission "
+              "number, the company and the FDA advisory PANEL that reviewed it. This is the "
+              "only source here that can distinguish a model that was published from a model "
+              "somebody is allowed to use on a patient, which is the distinction the medical "
+              "AI literature is worst at making. It supplies the top rung of a readiness "
+              "scale as an OBSERVATION rather than as a claim, and its distribution across "
+              "specialties is itself the finding: 1,164 of the 1,524 are radiology and the "
+              "list contains no dermatology device at all.",
+        licence="US Government work, public domain",
+        redistributable=True,
+    ),
+    Source(
         key="cellxgene_collections",
         name="CZ CELLxGENE Discover — collection and dataset index",
         url="https://api.cellxgene.cziscience.com/curation/v1/collections",
