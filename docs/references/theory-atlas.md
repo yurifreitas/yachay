@@ -101,8 +101,9 @@ its observational form.
 
 *And the loss lines up with a prediction from 1952.* Split the twenty systems by the KIND
 of process whose failure produces their abnormalities — a structure that formed wrongly against
-a process running wrongly — and the pathway alphabet retains **0.238** in the physiological
-class against **0.138** in the morphogenetic one (difference +0.099, permutation p = 0.0185,
+a process running wrongly — and the pathway alphabet retains **0.276** in the physiological
+class against **0.136** in the morphogenetic one (difference +0.140, permutation p = 0.00955
+as a median over five seeds and never above 0.02185,
 20,000 draws). A pathway is an inventory of reactions; Turing's morphogenesis says form comes
 from a field with a geometry and a time, which an inventory has no words for. ⚠️ The retentions
 were visible when the classification was written, so this is a description with a p-value

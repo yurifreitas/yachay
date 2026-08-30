@@ -73,6 +73,7 @@ import json
 import math
 import pathlib
 import random
+import statistics
 import sys
 import zipfile
 from datetime import date
@@ -526,9 +527,30 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--null", type=int, default=SCALE_PERMUTATIONS, help="permutation draws per scale")
     ap.add_argument("--bootstrap", type=int, default=200, help="bootstrap resamples per scale")
+    ap.add_argument("--seed-sweep", type=int, default=5,
+                    help="how many seeds to re-derive the per-system table at, for the "
+                         "morphogenesis p. 1 reports a single draw and its instability")
     args = ap.parse_args()
 
-    rng = random.Random(SEED)
+    # ONE RNG PER STATISTIC, NOT ONE PER RUN.
+    #
+    #  This file used to thread a single `random.Random(SEED)` through three independent
+    #  measurements — the per-scale permutation and bootstrap, the per-system retention, and
+    #  the morphogenesis permutation test. Seeded, so reproducible; but COUPLED, because each
+    #  one consumes draws the next then does not get. Adding a bootstrap anywhere upstream, or
+    #  changing a draw count, silently moves every number downstream of it.
+    #
+    #  That is not a hypothetical. It already happened in this repository:
+    #  `tools/knowledge_shape.py` shifted a published z from -19.0 to -20.37 when a bootstrap
+    #  was added ahead of a permutation null, and `verify_claims` caught it. knowledge_shape
+    #  and knowledge_void were fixed then; this file was not, and an audit found it still
+    #  carrying the same coupling.
+    #
+    #  Offsets rather than one seed: each statistic is reproducible on its own and no longer
+    #  depends on how many draws its neighbours took.
+    rng_scales = random.Random(SEED)
+    rng_systems = random.Random(SEED + 1)
+    rng_morph = random.Random(SEED + 2)
 
     print("reading the catalogue ...")
     disease_genes = disease_to_genes()
@@ -554,16 +576,58 @@ def main() -> int:
     results = {}
     for name, (features, note) in scales.items():
         print(f"measuring {name} ...")
-        results[name] = measure(diseases, features, systems_of, args.null, args.bootstrap, rng)
+        results[name] = measure(diseases, features, systems_of, args.null, args.bootstrap,
+                                rng_scales)
         results[name]["scale"] = note
 
     print("measuring retention per organ system ...")
     feature_sets = {k: v[0] for k, v in scales.items()}
     systems_table = per_system(diseases, feature_sets, systems_of, hpo_names,
-                               max(args.null // 5, 5), rng)
+                               max(args.null // 5, 5), rng_systems)
 
-    print("testing the morphogenesis prediction ...")
-    morphogenesis = morphogenesis_test(systems_table, rng)
+    # THE p WAS A DRAW, NOT A NUMBER, AND NOTHING SAID SO.
+    #
+    #  Splitting this file's shared RNG left the three scale figures byte-identical and moved
+    #  the morphogenesis p from 0.0185 to 0.00625 — three times, and far outside the ~0.0007
+    #  standard error that 20,000 permutations give at that p. So the movement was not the
+    #  test's own sampling noise. Its INPUT moved: the test reads the per-system retention
+    #  table, and every entry in that table is itself an estimate against a permutation null.
+    #
+    #  Measured over five seeds: 0.00625, 0.0216, 0.01175, 0.0151, 0.0193 — a spread of more
+    #  than threefold. The CONCLUSION is robust (no seed crosses 0.05), but the single figure
+    #  this file used to publish was one draw from a distribution nobody had declared, and
+    #  `docs/references/standards.md` §4 says every published number carries its uncertainty.
+    #
+    #  So the p is now reported as a median over `--seed-sweep` re-derivations of the table,
+    #  with its range. This costs a few minutes per seed and it is worth it: the alternative
+    #  is a number that moves when anything upstream of it changes and no reader can tell.
+    print(f"testing the morphogenesis prediction over {args.seed_sweep} seed(s) ...")
+    sweep = []
+    for k in range(max(1, args.seed_sweep)):
+        table_k = (systems_table if k == 0 else
+                   per_system(diseases, feature_sets, systems_of, hpo_names,
+                              max(args.null // 5, 5), random.Random(SEED + 101 + k)))
+        res_k = morphogenesis_test(table_k, random.Random(SEED + 2))
+        pk = res_k.get("permutation_p_one_sided")
+        if pk is not None:
+            sweep.append(pk)
+        if k == 0:
+            morphogenesis = res_k
+        print(f"  seed {k}: p = {pk}")
+
+    if len(sweep) > 1:
+        sweep_sorted = sorted(sweep)
+        morphogenesis["permutation_p_one_sided"] = statistics.median(sweep)
+        morphogenesis["p_seeds"] = sweep_sorted
+        morphogenesis["p_range"] = [sweep_sorted[0], sweep_sorted[-1]]
+        morphogenesis["p_sd"] = round(statistics.pstdev(sweep), 5)
+        morphogenesis["p_crosses_0_05"] = sweep_sorted[-1] >= 0.05
+        morphogenesis["p_says"] = (
+            f"Median over {len(sweep)} re-derivations of the per-system table, each with its "
+            f"own seed. The single-draw figure this tool used to publish varied from "
+            f"{sweep_sorted[0]} to {sweep_sorted[-1]} — more than threefold — because the "
+            f"table it reads is itself estimated against permutation nulls. No seed crossed "
+            f"0.05, so the direction holds; the magnitude is this range and not a point.")
 
     base = results["gene"]["excess_bits"]
     for name, row in results.items():

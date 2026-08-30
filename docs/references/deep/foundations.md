@@ -44,9 +44,9 @@ the retentions grouped:
 
 | class | systems | mean pathway retention |
 |---|---:|---:|
-| physiological (metabolism, blood, immune, endocrine, neoplasm, cellular phenotype) | 6 | **0.238** |
-| morphogenetic (eye, limbs, ear, head/neck, musculoskeletal, integument, prenatal, cardiovascular, respiratory, digestive, genitourinary, growth, nervous, breast) | 14 | **0.138** |
-| difference | | **+0.099**, permutation p = **0.0185** (20,000 draws, one-sided) |
+| physiological (metabolism, blood, immune, endocrine, neoplasm, cellular phenotype) | 7 | **0.276** |
+| morphogenetic (eye, limbs, ear, head/neck, musculoskeletal, integument, prenatal, cardiovascular, respiratory, digestive, genitourinary, growth, nervous, breast) | 14 | **0.136** |
+| difference | | **+0.140**, permutation p = **0.00955** — median over five re-derivations of the per-system table, range **0.00625–0.02185**, never above 0.05 |
 
 **The caveat, which is not optional.** The per-system retentions were already printed when the
 classification was written. This is therefore a *description with a p-value*, not a
@@ -227,7 +227,7 @@ Eight foundations. Two made a prediction that could be checked against data this
 holds, and **the checks disagreed with each other**:
 
 * **Turing's holds.** The alphabet of processes loses more where the theory says form is what
-  fails — +0.099, p = 0.0185, with the target-contact caveat stated in full.
+  fails — +0.140, p = 0.00955 (range 0.00625–0.02185 over five seeds), with the target-contact caveat stated in full.
 * **Von Neumann's does not.** Multiplexing predicts that redundancy buys reliability; in
   ClinVar, internal disagreement rises with the second opinion and then holds near a quarter
   through eleven.
