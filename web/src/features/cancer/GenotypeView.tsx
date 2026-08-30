@@ -223,6 +223,38 @@ function Ladder(
   }, [rows]);
   const y = (v: number) => 100 - ((v - span.lo) / (span.hi - span.lo)) * 100;
 
+  /** THE FIGURE WROTE A SENTENCE IT DID NOT DRAW.
+   *
+   *  The caption says a line that stays flat is an effect lineage and burden do not explain,
+   *  and one that falls to the right was largely the confound. Every line was drawn in the
+   *  same colour at the same weight, so the reader was asked to do that comparison by eye
+   *  across ten crossing polylines — which is the comparison the whole panel exists to make.
+   *
+   *  It is now in the ink. `kept` is the share of the naive effect that survives peeling the
+   *  confound back; a line that keeps most of it is drawn at full strength, one that loses
+   *  most of it fades toward the neutral. No new statistic — the same three numbers already
+   *  on the row, encoded instead of narrated. */
+  const survival = (h: GenoHit) => {
+    const end = h.dBurdenAdjusted ?? h.dStratified;
+    if (!h.dNaive || h.dNaive <= 0 || end == null) return 1;
+    return Math.max(0, Math.min(1.2, end / h.dNaive));
+  };
+
+  /** Ten labels placed at their own y collide: that is what direct labelling costs when the
+   *  values are close, and it is why the previous version was readable only at the top. A
+   *  single downward pass pushes each label below the one above it when they would overlap,
+   *  which keeps the order true even where the positions are nudged. */
+  const labelled = useMemo(() => {
+    const MIN = 4.2; // percent of the plot height, ~13px at 320px
+    const out = rows
+      .map((h) => ({ h, at: y(h.dBurdenAdjusted ?? h.dStratified) }))
+      .sort((a, b) => a.at - b.at);
+    for (let i = 1; i < out.length; i++) {
+      if (out[i].at - out[i - 1].at < MIN) out[i].at = out[i - 1].at + MIN;
+    }
+    return out;
+  }, [rows, span.lo, span.hi]);
+
   return (
     <section className={s.panel}>
       <h3>
@@ -269,16 +301,21 @@ function Ladder(
               const pts = ladder(h)
                 .map((p, i) => (p.value == null ? null : `${i * 50},${y(p.value)}`))
                 .filter(Boolean).join(" ");
+              const kept = survival(h);
               return (
-                <polyline key={h.gene} points={pts} className={g.slopeLine}
+                <polyline key={h.gene} points={pts}
+                          className={kept >= 0.85 ? g.slopeHeld : g.slopeLost}
+                          style={{ opacity: 0.35 + 0.6 * Math.min(1, kept) }}
                           vectorEffect="non-scaling-stroke" />
               );
             })}
           </svg>
-          {rows.map((h) => (
-            <span key={h.gene} className={g.endLabel}
-                  style={{ top: `${y(h.dBurdenAdjusted ?? h.dStratified)}%` }}>
+          {labelled.map(({ h, at }) => (
+            <span key={h.gene}
+                  className={survival(h) >= 0.85 ? `${g.endLabel} ${g.endHeld}` : g.endLabel}
+                  style={{ top: `${at}%` }}>
               {h.gene}
+              <span className={g.endKept}>{Math.round(100 * survival(h))} %</span>
             </span>
           ))}
         </div>

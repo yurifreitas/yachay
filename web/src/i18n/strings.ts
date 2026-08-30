@@ -143,6 +143,55 @@ export const CANCER = {
   sShared: bi("Private or shared", "Privado ou compartilhado"),
   sControls: bi("Positive controls", "Controles positivos"),
   sGenotype: bi("Mutation as the grouping", "A mutação como agrupamento"),
+
+  /* A SENTENCE PER PANEL, because the rail's label is a name and not a claim — the same gap
+     the gene page had before ADR 0009, still open here because this page was never migrated
+     and therefore never checked. Factual rather than interpretive: each names what the panel
+     draws and which tool wrote the artefact behind it. */
+  subScale: bi(
+    "Effect size and its cancellation, from tools/cancer_subgroups.py at the level chosen "
+    + "above. The contrast is a subgroup against every other line, so a dependency shared by "
+    + "the whole panel cancels and does not appear.",
+    "Tamanho de efeito e seu cancelamento, de tools/cancer_subgroups.py no nível escolhido "
+    + "acima. O contraste é um subgrupo contra todas as outras linhagens, então uma "
+    + "dependência comum ao painel inteiro se cancela e não aparece.",
+  ),
+  subPower: bi(
+    "Every subgroup plotted by how many lines it has against the smallest effect that size "
+    + "could detect. A subgroup below the curve produced no hits because it could not, which "
+    + "is not the same as having none.",
+    "Cada subgrupo plotado por quantas linhagens tem contra o menor efeito que esse tamanho "
+    + "detectaria. Um subgrupo abaixo da curva não produziu achados porque não podia, o que "
+    + "não é o mesmo que não ter nenhum.",
+  ),
+  subSubgroup: bi(
+    "One subgroup's dependencies with the registered gates exposed. Moving a gate after "
+    + "seeing the data is marked as re-gated, because a threshold chosen afterwards says "
+    + "something about the threshold rather than about the biology.",
+    "As dependências de um subgrupo com as portas registradas expostas. Mover uma porta "
+    + "depois de ver o dado é marcado como re-gated, porque um limiar escolhido depois diz "
+    + "algo sobre o limiar e não sobre a biologia.",
+  ),
+  subShared: bi(
+    "Whether a dependency belongs to one subgroup or to many. A gene that is private to a "
+    + "lineage is a different kind of claim from one that every panel needs.",
+    "Se uma dependência pertence a um subgrupo ou a muitos. Um gene privado de uma linhagem "
+    + "é uma afirmação de outra natureza que um gene de que todo painel precisa.",
+  ),
+  subControls: bi(
+    "The dependencies named before the run as ones any working method must recover. A "
+    + "shortlist whose positive controls fail is blocked rather than published.",
+    "As dependências nomeadas antes da execução como as que qualquer método funcional tem "
+    + "de recuperar. Uma lista cujos controles positivos falham é bloqueada, não publicada.",
+  ),
+  subGenotype: bi(
+    "The same dependencies grouped by mutation instead of by lineage, drawn at all three "
+    + "estimates from tools/cancer_genotype.py so the reader can see how much of each effect "
+    + "survives stratification.",
+    "As mesmas dependências agrupadas por mutação em vez de linhagem, desenhadas nas três "
+    + "estimativas de tools/cancer_genotype.py para que se veja quanto de cada efeito "
+    + "sobrevive à estratificação.",
+  ),
 } as const;
 
 /* ---------------------------------------------------------------- rare disease */

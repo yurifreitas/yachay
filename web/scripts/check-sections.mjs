@@ -26,7 +26,7 @@
  *  Read as text rather than imported: these are .tsx modules with JSX, and a checker that
  *  needs a bundler to run is a checker that gets skipped.
  */
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -47,15 +47,33 @@ const MIGRATED = [
     registry: join(SRC, "features/gene/geneSections.tsx"),
   },
   {
+    name: "cancer",
+    page: join(SRC, "features/cancer/CancerPage.tsx"),
+    registry: join(SRC, "features/cancer/cancerSections.tsx"),
+  },
+  {
     name: "run",
     page: join(SRC, "features/run/RunDash.tsx"),
     registry: join(SRC, "features/run/runSections.tsx"),
   },
 ];
 
-/** Pages still using a render chain. Empty is the goal and, as of 2026-08-29, the state —
- *  but the list stays so the next page added without a registry is named rather than silent. */
-const LEGACY = [];
+/** Pages still using a render chain.
+ *
+ *  Empty is the goal, and it was empty while the cancer page sat in NEITHER list — using
+ *  `useSectionNav` like the others, unmigrated, and therefore unchecked AND unreported. An
+ *  empty LEGACY list is only meaningful if every page is in MIGRATED, so the scan below now
+ *  finds pages that call `useSectionNav` and appear in neither, rather than trusting that
+ *  somebody remembered to add them. */
+const LEGACY = [
+  {
+    page: join(SRC, "features/docs/Docs.tsx"),
+    why: "its sections are DERIVED from the documents on disk — DOC_GROUPS filtered and "
+      + "mapped — so there are no literal ids for a registry to key on or for this checker "
+      + "to read. A registry of computed entries would still be one list, just one this "
+      + "check cannot verify, which is worse than an honest exemption.",
+  },
+];
 
 let failures = 0;
 
@@ -137,13 +155,33 @@ for (const { name, page, registry } of MIGRATED) {
   }
 }
 
-for (const page of LEGACY) {
-  if (!existsSync(page)) continue;
-  const n = (readFileSync(page, "utf8").match(/section === "/g) || []).length;
-  if (n > 0) {
-    console.log(`sections: ${page.split(/[\\/]/).pop()} — ${n} branches still in a render `
-      + `chain, unchecked. Migrating it to a registry brings it under this check.`);
+/** A page that navigates but is in neither list is the gap that hid the cancer page: the
+ *  check reported three pages clean and said nothing at all about the fourth. */
+const known = new Set([...MIGRATED.map((m) => m.page), ...LEGACY.map((l) => l.page)]);
+(function scan(dir) {
+  for (const f of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, f.name);
+    if (f.isDirectory()) scan(p);
+    else if (f.name.endsWith(".tsx") && !known.has(p)) {
+      if (readFileSync(p, "utf8").includes("useSectionNav(")) {
+        failures++;
+        console.error(`sections: ${f.name} publishes a nav tree and is in neither list — `
+          + `not checked, and not reported as unchecked. Add it to MIGRATED or LEGACY.`);
+      }
+    }
   }
+})(SRC);
+
+for (const { page, why } of LEGACY) {
+  if (!existsSync(page)) continue;
+  // A reason is required, for the same purpose it is required in check-artefacts.mjs: an
+  // exemption list without reasons is where things get put to stop the build complaining.
+  if (!why || why.length < 40) {
+    failures++;
+    console.error(`sections: ${page.split(/[\/]/).pop()} is exempt with no stated reason`);
+    continue;
+  }
+  console.log(`sections: ${page.split(/[\/]/).pop()} — exempt. ${why}`);
 }
 
 if (failures) {
