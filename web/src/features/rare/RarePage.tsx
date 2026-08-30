@@ -21,13 +21,8 @@ import { renderSection } from "../../lib/sectionRegistry";
 import { RARE_SECTIONS } from "./rareSections";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { SectionWalk } from "../../components/molecules/SectionWalk";
-import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
-import { RARE } from "../../i18n/strings";
-import { TROP } from "../../i18n/tropical";
-import { MEAS } from "../../i18n/measured";
-import { MORE } from "../../i18n/more";
-import { DEEP } from "../../i18n/deep";
-import { SAMP } from "../../i18n/sampled";
+import { useSectionNav } from "../../lib/nav";
+import type { RareView } from "./rareViews";
 import { useT } from "../../i18n";
 
 
@@ -84,124 +79,26 @@ const prefetchMeasured = () => {
  *
  *  Both levels are URL state, so every view in the dashboard is a link someone can send.
  */
-const GROUPS: NavGroupDef[] = [
-  /* ORDERED AS A LADDER, NOT AS A METHOD LIST.
-   *
-   *  These groups used to name how a thing was measured — what was measured, what biases the
-   *  register, the shape of the known — and scale was scattered across four of them. A reader
-   *  coming down from the body to the base pair had to know which method each rung belonged
-   *  to in order to find it. That is a map that describes the surveyor.
-   *
-   *  The middle three are the ladder this project argues about and the rungs where
-   *  scale_information measures its losses, so the navigation and the thesis now name the
-   *  same things. The groups that remain about method sit after them, because a reader who
-   *  has seen a rung is the reader ready to ask how it was established. */
-  { id: "known", label: RARE.gKnown, question: RARE.qKnown, tier: RARE.tCatalogue },
-  { id: "naming", label: RARE.gNaming, question: RARE.qNaming, tier: RARE.tCatalogue },
-
-  // the ladder
-  { id: "micro", label: MEAS.gMicro, question: MEAS.qMicro, tier: RARE.tLadder },
-  { id: "signal", label: MEAS.gSignal, question: MEAS.qSignal, tier: RARE.tLadder },
-  { id: "nano", label: MEAS.gNano, question: MEAS.qNano, tier: RARE.tLadder },
-
-  { id: "case", label: RARE.gCase, question: RARE.qCase, tier: RARE.tLadder },
-  { id: "decide", label: RARE.gDecide, question: RARE.qDecide, tier: RARE.tEstablished },
-
-  // how well any of it is established
-  { id: "knownshape", label: MEAS.gShape, question: MEAS.qShape, tier: RARE.tEstablished },
-  { id: "sampled", label: SAMP.group, question: SAMP.question, tier: RARE.tEstablished },
-  { id: "register", label: MEAS.gRegister, question: MEAS.qRegister, tier: RARE.tEstablished },
-  { id: "beyond", label: DEEP.gBeyond, question: DEEP.qBeyond, tier: RARE.tArgument },
-  { id: "argument", label: RARE.gArgument, question: RARE.qArgument, tier: RARE.tArgument },
-];
-
-const SECTIONS: NavSectionDef[] = [
-  // 1. The catalogue, and what its numbers are really measuring. First, because a reader who
-  //    meets one disease before meeting the denominator has no way to weigh it.
-  { id: "world", label: RARE.sWorld, group: "known" },
-  { id: "bias", label: RARE.sBias, group: "known" },
-  { id: "population", label: RARE.sPopulation, group: "known" },
-  { id: "patients", label: RARE.sPatients, group: "known" },
-  { id: "names", label: RARE.sNames, group: "naming" },
-  { id: "atlas", label: RARE.sAtlas, group: "naming" },
-  { id: "gaps", label: RARE.sGaps, group: "naming" },
-  { id: "tropical", label: TROP.section, group: "naming" },
-
-  // 2. What a disease is OF — the ladder's middle rungs, in order of scale.
-  { id: "cell", label: RARE.sCell, group: "micro" },
-  { id: "network", label: RARE.sNetwork, group: "signal" },
-  { id: "sparse", label: RARE.sSparse, group: "micro" },
-  { id: "nongene", label: RARE.sNongene, group: "nano" },
-  { id: "twin", label: DEEP.sTwin, group: "signal" },
-
-  // 3. One record in full, then the physics and the payroll a therapy would need.
-  { id: "disease", label: RARE.sDisease, group: "case" },
-  { id: "capability", label: RARE.sCapability, group: "case" },
-
-  // 4. Deciding: what the evidence carries, then choosing under constraint.
-  { id: "evidence", label: RARE.sEvidence, group: "decide" },
-  { id: "choose", label: RARE.sChoose, group: "decide" },
-  { id: "dims", label: RARE.sDims, group: "decide" },
-  { id: "genopheno", label: DEEP.sGeno, group: "nano" },
-
-  // 5. What was measured under ADR 0007 — eight results, each with a null and an interval,
-  //    and one of them negative. These carry a governing decision record the catalogue layers
-  //    do not, and a reader is entitled to know which is which.
-  //
-  //    THEY ARE FOUR QUESTIONS, NOT ONE. Held under a single heading they were a list of
-  //    eight labels whose only shared property was the ADR that governs them. What a coarser
-  //    alphabet costs, what biases the register, what shape the known region has, and where
-  //    many disorders meet are four different questions with four different answers, and the
-  //    rail is where a reader is supposed to be able to see that before clicking.
-  //
-  //    Contiguous by group, deliberately: the walker steps through this array in order, so a
-  //    sequence that zig-zags between groups would announce a boundary crossing every step.
-  { id: "scale", label: MEAS.sScale, group: "signal" },
-  { id: "language", label: MEAS.sLang, group: "register" },
-
-  { id: "conflict", label: MEAS.sConflict, group: "register" },
-  { id: "attention", label: MORE.sAtt, group: "register" },
-
-  { id: "shape", label: MEAS.sShape, group: "knownshape" },
-  { id: "gapkinds", label: MORE.sGaps, group: "nano" },
-  { id: "voidcells", label: MORE.sVoid, group: "knownshape" },
-
-  { id: "cells", label: DEEP.sCells, group: "micro" },
-  { id: "constraint", label: DEEP.sConstraint, group: "nano" },
-  { id: "autism", label: MORE.sAut, group: "signal" },
-  { id: "signalenergy", label: SAMP.sSignal, group: "signal" },
-
-  // 5a. Who was in the sample. Beside the constraint result rather than in a pillar of its
-  //     own: gene_constraint states in prose that gnomAD's panel is majority European, and
-  //     this turns that sentence into a count. Separated, it is a silo; here, it is an
-  //     argument about the result above it.
-  { id: "ancestrygwas", label: SAMP.sAncestry, group: "sampled" },
-  { id: "disorders", label: SAMP.sDisorders, group: "sampled" },
-  { id: "axes", label: SAMP.sAxes, group: "sampled" },
-  { id: "grid", label: SAMP.sMatrix, group: "sampled" },
-  { id: "joins", label: SAMP.sJoins, group: "sampled" },
-
-  // 5b. The method on a domain that did not produce it. Its own group, because the standing
-  //     is different again: this is not a fact about rare disease, it is evidence that the
-  //     instrument works where the instrument was not built.
-  { id: "hiv", label: DEEP.sHiv, group: "beyond" },
-
-  // 6. The argument and its provenance — a thesis and its bibliography are one thing.
-  { id: "thesis", label: RARE.sThesis, group: "argument" },
-  { id: "selfaudit", label: RARE.sSelfAudit, group: "argument" },
-  { id: "refmap", label: RARE.sRefmap, group: "argument" },
-  { id: "sources", label: RARE.sSources, group: "argument" },
-];
 
 
 
-export default function RarePage() {
+
+/** ONE COMPONENT, FOUR ROUTES.
+ *
+ *  The atlas was a single page of forty sections answering four different questions, so a
+ *  reader arriving for one of them scrolled past three. The bands over the groups were
+ *  already the seam — they named the KIND of question a run of groups answers — so each band
+ *  is now a view of its own, declared once in `rareViews.ts`.
+ *
+ *  The body is unchanged and shared: same registry, same hero, same walker. What differs per
+ *  route is which sections the rail offers, which is data rather than markup. */
+export default function RarePage({ view }: { view: RareView }) {
   const [sort, setSort] = useState<SortKey>("gaps");
   const [selected, setSelected] = useState<string | null>(null);
   // Both nav levels live in the URL and are drawn by the rail, not by this page.
   const tt = useT();
   const { section } = useSectionNav({
-    owner: "rare", groups: GROUPS, sections: SECTIONS, initial: "world",
+    owner: view.id, groups: view.groups, sections: view.sections, initial: view.initial,
   });
 
   // Intent, not arrival: the moment the reader is inside the measured group, the solved
@@ -214,7 +111,7 @@ export default function RarePage() {
     // The solved layouts back four panels — scale, language, conflict and shape — which now
     // sit in three different groups. Named by the groups that contain them rather than by a
     // list of section ids, because a list of ids is the thing that went stale last time.
-    const g = SECTIONS.find((s) => s.id === section)?.group;
+    const g = view.sections.find((s) => s.id === section)?.group;
     if (g === "measured" || g === "register" || g === "knownshape") prefetchMeasured();
   }, [section]);
 
@@ -225,7 +122,9 @@ export default function RarePage() {
   const focus = ordered.find((d) => d.name === selected) ?? ordered[0];
 
   /** The section a bare link opens on. Only there does the reader need the introduction. */
-  const entry = section === "world";
+  // The full hero belongs on the first panel of the first view only; every other route
+  // is somewhere a reader arrived deliberately.
+  const entry = view.id === "catalogue" && section === "world";
 
   // The lexicon is a build artifact and can legitimately be missing. Say so, and say how
   // to produce it, rather than rendering an atlas of nothing.

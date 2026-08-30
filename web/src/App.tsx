@@ -5,6 +5,8 @@ import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
 import { DEV } from "./i18n/devices";
 import { DISC } from "./i18n/discovery";
+import { RARE_VIEWS, viewHolding } from "./features/rare/rareViews";
+import { RARE_VIEW_LABEL } from "./i18n/rareviews";
 import { NavSidebar, type NavFamily, type NavView } from "./components/organisms/NavSidebar";
 import { CommandPalette } from "./components/organisms/CommandPalette";
 
@@ -66,8 +68,16 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
     blurb: S.viewGeneBlurb, render: () => <GenePage /> },
   { id: "cancer", label: S.viewCancer, family: "selection",
     blurb: S.viewCancerBlurb, render: () => <CancerPage /> },
-  { id: "rare", label: S.viewRare, family: "evidence",
-    blurb: S.viewRareBlurb, render: () => <RarePage /> },
+  /* FOUR ROUTES OVER ONE COMPONENT. The atlas was one entry answering four questions; the
+     bands that already grouped its sections are now the views themselves, declared once in
+     features/rare/rareViews.ts. */
+  ...RARE_VIEWS.map((v) => ({
+    id: v.id,
+    label: RARE_VIEW_LABEL[v.id].label,
+    blurb: RARE_VIEW_LABEL[v.id].blurb,
+    family: "evidence",
+    render: () => <RarePage view={v} />,
+  })),
   { id: "obesity", label: DISC.view, family: "selection",
     blurb: DISC.viewBlurb, render: () => <DiscoveryPage /> },
   { id: "devices", label: DEV.view, family: "tech",
@@ -93,7 +103,17 @@ function useHashView(): [ViewId, (v: ViewId) => void] {
     // A run hidden from the nav is still reachable by its link — hiding it from the bar is a
     // display decision, not a deletion.
     const known = VIEWS.some((v) => v.id === id) || runsIndex.some((r) => r.id === id);
-    return known ? id : VIEWS[0].id;
+    if (known) return id;
+    // THE ATLAS USED TO BE ONE ROUTE. Every link anyone sent says `#rare?s=<section>`, and
+    // the sections still exist — they are spread across four views now. Forwarding to the
+    // view that holds the section keeps those links working; dropping them to the first view
+    // would silently answer a different question than the one that was asked.
+    if (id === "rare") {
+      const wanted = new URLSearchParams(window.location.hash.split("?")[1] ?? "").get("s");
+      const holder = wanted ? viewHolding(wanted) : null;
+      return holder ?? RARE_VIEWS[0].id;
+    }
+    return VIEWS[0].id;
   };
   const [view, setView] = useState<ViewId>(read);
   useEffect(() => {

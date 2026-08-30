@@ -78,7 +78,11 @@ const MIGRATED = [
 
     name: "rare",
 
-    page: join(SRC, "features/rare/RarePage.tsx"),
+    // The atlas is four routes over one component, and its nav lives in rareViews.ts rather
+    // than in the page — so that is the file the rail is declared in, and the file this check
+    // must read. Pointing it at RarePage.tsx would report every section as unreachable, which
+    // is exactly what it did for one run.
+    page: join(SRC, "features/rare/rareViews.ts"),
 
     registry: join(SRC, "features/rare/rareSections.tsx"),
 
@@ -468,7 +472,13 @@ for (const { name, page, registry } of MIGRATED) {
 
  *  check reported three pages clean and said nothing at all about the fourth. */
 
-const known = new Set([...MIGRATED.map((m) => m.page), ...LEGACY.map((l) => l.page)]);
+const known = new Set([
+  ...MIGRATED.map((m) => m.page), ...LEGACY.map((l) => l.page),
+  // RarePage.tsx CALLS useSectionNav but declares nothing: it is one component rendered on
+  // four routes, and the nav it publishes is handed to it from rareViews.ts, which IS in
+  // MIGRATED. Listing it here says that out loud rather than adding a second, empty entry.
+  join(SRC, "features/rare/RarePage.tsx"),
+]);
 
 (function scan(dir) {
 
