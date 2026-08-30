@@ -1,7 +1,7 @@
 import { useT, fill } from "../../i18n";
 import { GEO } from "../../i18n/geometry";
 import { NeedlePlot } from "../../components/viz/organisms/NeedlePlot";
-import { fmt, fmtInt, pct } from "../../lib/scale";
+import { fmtInt, pct } from "../../lib/scale";
 import css from "./GenePage.module.css";
 
 /** The molecular geometry: where the damage falls, how it breaks, what it operates in.
@@ -26,7 +26,15 @@ export type GeoRecord = {
   bins?: number;
   hist?: Record<string, number[]>;
   recurrent?: { pos: number; n: number }[];
-  clustering?: { share: number; expected: number; ratio: number; n: number };
+  clustering?: {
+    share: number; expected: number; ratio: number; n: number;
+    /** The share a random scatter of `n` variants puts in the densest window, and
+     *  whether the measured share clears its 95th percentile. Added when the old
+     *  comparison — a maximum against a flat tenth — was found to call 95 % of genes
+     *  clustered. */
+    excess?: number; z?: number; null_p95?: number; above_null_p95?: boolean;
+    expected_single_window?: number; null_clamped?: boolean;
+  };
   pathways?: { id: string; name: string }[];
   pathwayTotal?: number;
 };
@@ -90,11 +98,21 @@ export function Needle({ geo, dom }: { geo?: GeoRecord; dom?: DomRecord }) {
         <h4 className={css.clusterTitle}>{t(GEO.clusterTitle)}</h4>
         {c ? (
           <>
-            <p className={c.ratio >= 1.5 ? css.clusterHead : css.clusterFlatHead}>
-              {c.ratio >= 1.5
+            {/* THE TEST IS AGAINST THE NULL, NOT AGAINST 1.5. The old threshold compared a
+                maximum over 55 overlapping windows to the share one fixed window would hold,
+                so it fired for 95.2 % of genes; against a null fitted at the same variant
+                count, 36.3 % clear it. A gene that does not clear it is not called flat
+                either — it is told what its own null was. */}
+            <p className={c.above_null_p95 ? css.clusterHead : css.clusterFlatHead}>
+              {c.above_null_p95
                 ? fill(t(GEO.clusterHead),
-                       { share: pct(c.share, 0), ratio: fmt(c.ratio, 1) })
-                : t(GEO.clusterFlat)}
+                       { share: pct(c.share, 0), n: String(c.n),
+                         expected: pct(c.expected, 0) })
+                : c.expected !== undefined
+                  ? fill(t(GEO.clusterBelowNull),
+                         { share: pct(c.share, 0), n: String(c.n),
+                           expected: pct(c.expected, 0) })
+                  : t(GEO.clusterFlat)}
             </p>
             {/* The comparison drawn, not just stated: the measured share against the share a
                 uniform spread would give. Two bars on one baseline is the whole argument. */}

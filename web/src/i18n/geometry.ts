@@ -80,10 +80,30 @@ export const GEO = {
   /* -------------------------------------------------------------- clustering */
   clusterTitle: bi("Is the hotspot real, or is it looking?", "O ponto quente é real, ou é o olhar?"),
   clusterHead: bi(
-    "{share} of the pathogenic variants fall in the densest tenth of the protein — {ratio}× "
-    + "what an even spread would put there.",
-    "{share} das variantes patogênicas caem no décimo mais denso da proteína — {ratio}× o "
-    + "que uma distribuição uniforme colocaria ali.",
+    "{share} of the pathogenic variants fall in the densest tenth of the protein. At {n} "
+    + "variants, scattering them at random already puts {expected} there — this clears the "
+    + "95th percentile of that null.",
+    "{share} das variantes patogênicas caem no décimo mais denso da proteína. Com {n} "
+    + "variantes, espalhá-las ao acaso já coloca {expected} ali — isto passa do percentil 95 "
+    + "desse nulo.",
+  ),
+  /* THE FIGURE THIS PANEL PUBLISHED WAS A MAXIMUM COMPARED AGAINST A SINGLE-WINDOW
+     EXPECTATION. The statistic is the densest of 55 overlapping windows; the expectation it
+     was divided by was the share ONE fixed window would hold. A maximum over many correlated
+     windows is above that by construction, and the gap grows as the variant count falls —
+     which is the bias this whole library exists to calibrate.
+
+     Measured with variants placed uniformly at random: ratio 3.0 at ten variants, 2.0 at
+     fifty. The median gene here carries 39, so most of what the panel called clustering was
+     the statistic's own floor. Under the old rule 95.2 % of genes read as clustered; against
+     a null fitted at the same variant count, 36.3 % do. */
+  clusterBelowNull: bi(
+    "{share} fall in the densest tenth — but at {n} variants a random scatter already puts "
+    + "{expected} there, so this does not clear its own null. The figure this panel used to "
+    + "show compared a maximum against a flat 10 %, and called that difference clustering.",
+    "{share} caem no décimo mais denso — mas com {n} variantes um espalhamento aleatório já "
+    + "coloca {expected} ali, então isto não passa do próprio nulo. A figura que este painel "
+    + "mostrava comparava um máximo contra 10 % fixos e chamava a diferença de agrupamento.",
   ),
   clusterFlat: bi(
     "The damage is spread: no tenth of this protein carries appreciably more than its share. "
@@ -94,11 +114,16 @@ export const GEO = {
     + "ausente, não por estar alterado.",
   ),
   clusterCaution: bi(
-    "Variant density tracks sequencing depth and curation attention as well as biology. Exons "
+    "The bar below the measured one is the null: the share a RANDOM scatter of this many "
+    + "variants puts in the densest window, not the flat tenth a single fixed window would "
+    + "hold. Variant density also tracks sequencing depth and curation attention as well as "
+    + "biology. Exons "
     + "are not sequenced equally and well-studied regions accumulate reports. A spike is "
     + "evidence of a hotspot OR of a well-studied stretch, and nothing measured here can "
     + "separate the two.",
-    "A densidade de variantes acompanha profundidade de sequenciamento e atenção de "
+    "A barra abaixo da medida é o nulo: a fração que um espalhamento ALEATÓRIO deste "
+    + "número de variantes coloca na janela mais densa, não o décimo fixo de uma janela só. "
+    + "A densidade de variantes também acompanha profundidade de sequenciamento e atenção de "
     + "curadoria tanto quanto biologia. Éxons não são sequenciados igualmente e regiões bem "
     + "estudadas acumulam relatos. Um pico é evidência de um ponto quente OU de um trecho bem "
     + "estudado, e nada medido aqui separa os dois.",

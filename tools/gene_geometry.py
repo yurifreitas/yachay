@@ -58,6 +58,7 @@ from __future__ import annotations
 import gzip
 import json
 import pathlib
+import random
 import re
 from collections import Counter, defaultdict
 
@@ -75,6 +76,88 @@ C_SPLICE = re.compile(r"c\.[-*]?\d+[+-]\d+")
 # Positions are binned rather than shipped one by one: a gene with 40,000 submitted variants
 # would otherwise be a megabyte on its own, and no plot resolves 40,000 needles anyway.
 BINS = 60
+
+#: Seed for the clustering null. Fixed so a gene's z does not move between runs.
+CLUSTER_SEED = 20260830
+
+#: Draws per observation count in the null table. 2,000 gives a median stable to about a
+#: hundredth at these window counts, which is finer than the two decimals published.
+CLUSTER_DRAWS = 2000
+
+
+def _cluster_null(bins: int, window: int, draws: int = CLUSTER_DRAWS) -> dict:
+    """What the densest-window ratio is worth when the variants are NOT clustered.
+
+    THE DEFECT THIS REPAIRS IS THIS REPOSITORY'S OWN THESIS, TURNED ON ITSELF.
+
+    The clustering figure is `max over 55 overlapping windows` divided by `the share one
+    fixed window would hold`. A maximum over many correlated windows is systematically above
+    the expectation for a single one, and the gap grows as the observation count falls —
+    which is precisely the bias `sieve` exists to calibrate, stated in its own README as
+    "maxima are positively biased and the bias grows with noise".
+
+    Measured, with variants placed UNIFORMLY AT RANDOM and no clustering whatsoever:
+
+        n =   10  ->  ratio 3.00
+        n =   20  ->  ratio 2.50
+        n =   50  ->  ratio 2.00
+        n =  200  ->  ratio 1.45
+        n = 1000  ->  ratio 1.20
+
+    The panel published `expected: 0.1` and a ratio against it, so a gene with ten scattered
+    variants read as three times clustered. The median gene here carries 41 variants and 56 %
+    carry fewer than 50, so most of the published figures sat in the regime where the null is
+    two or more.
+
+    So the ratio is now calibrated against a null fitted at the SAME observation count, which
+    is Stage 1 of this library applied to a tool that had skipped it.
+    """
+    import statistics as _st
+
+    rng = random.Random(CLUSTER_SEED)
+    table: dict[int, dict] = {}
+    grid = [5, 8, 10, 14, 20, 28, 40, 55, 75, 100, 140, 200, 300, 450, 700, 1000, 1600, 2500]
+    for n in grid:
+        vals = []
+        for _ in range(draws):
+            counts = [0] * bins
+            for _ in range(n):
+                counts[rng.randrange(bins)] += 1
+            best = max(sum(counts[i:i + window]) for i in range(bins - window + 1))
+            vals.append((best / n) / (window / bins))
+        vals.sort()
+        table[n] = {
+            "mean": _st.fmean(vals),
+            "sd": _st.pstdev(vals) or 1e-9,
+            "p95": vals[int(0.95 * len(vals))],
+        }
+    return table
+
+
+def _null_at(table: dict, n: int) -> dict:
+    """The null at an arbitrary n, interpolated between the fitted grid points.
+
+    Clamped rather than extrapolated at both ends, and the clamp is reported by the caller —
+    `src/sieve/stages/null.py` makes the same choice for the same reason: a null fitted
+    nowhere near the observation is not a null.
+    """
+    ks = sorted(table)
+    if n <= ks[0]:
+        return {**table[ks[0]], "clamped": True}
+    if n >= ks[-1]:
+        return {**table[ks[-1]], "clamped": True}
+    for a, b in zip(ks, ks[1:]):
+        if a <= n <= b:
+            t = (n - a) / (b - a)
+            return {
+                "mean": table[a]["mean"] + t * (table[b]["mean"] - table[a]["mean"]),
+                "sd": table[a]["sd"] + t * (table[b]["sd"] - table[a]["sd"]),
+                "p95": table[a]["p95"] + t * (table[b]["p95"] - table[a]["p95"]),
+                "clamped": False,
+            }
+    return {**table[ks[-1]], "clamped": True}
+
+
 # How many individually-named recurrent positions to keep. These are the ones a reader wants
 # to see labelled — a residue hit two hundred times is a fact about the gene.
 TOP_POSITIONS = 12
@@ -175,6 +258,11 @@ def main() -> int:
                     positions[sym].append((pos, sig))
 
     # ------------------------------------------------------------- per gene
+    # One null table for the whole run: the distribution of the densest-window ratio depends
+    # only on the number of variants and the binning, not on which gene carries them.
+    print("fitting the clustering null by observation count...", flush=True)
+    cluster_null = _cluster_null(BINS, max(1, BINS // 10))
+
     genes: dict[str, dict] = {}
     for sym, cons in consequence.items():
         pos_rows = positions.get(sym, [])
@@ -220,10 +308,24 @@ def main() -> int:
                 tenth = max(1, BINS // 10)
                 windows = [sum(path_bins[i:i + tenth]) for i in range(BINS - tenth + 1)]
                 densest = max(windows)
+                ratio = (densest / total_path) / (tenth / BINS)
+                null = _null_at(cluster_null, total_path)
                 rec["clustering"] = {
                     "share": round(densest / total_path, 3),
-                    "expected": round(tenth / BINS, 3),
-                    "ratio": round((densest / total_path) / (tenth / BINS), 2),
+                    # THE SHARE A UNIFORM SPREAD OF THIS MANY VARIANTS ACTUALLY PUTS IN THE
+                    # DENSEST WINDOW — which is not the share one FIXED window would hold.
+                    # The old field published the latter (a flat 0.1) and called the gap
+                    # clustering, so ten scattered variants read as three times clustered.
+                    # Kept as a share, in the same unit as the measured one, because the panel draws
+                    # the two on one baseline and a ratio there would be a unit error.
+                    "expected": round(null["mean"] * (tenth / BINS), 3),
+                    "expected_single_window": round(tenth / BINS, 3),
+                    "ratio": round(ratio, 2),
+                    "excess": round(ratio - null["mean"], 2),
+                    "z": round((ratio - null["mean"]) / null["sd"], 2),
+                    "null_p95": round(null["p95"], 2),
+                    "above_null_p95": ratio > null["p95"],
+                    "null_clamped": null["clamped"],
                     "n": total_path,
                 }
         genes[sym] = rec
