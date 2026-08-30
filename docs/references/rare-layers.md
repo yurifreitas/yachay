@@ -136,8 +136,23 @@ Testing the remaining seven authored layers is still the right call, and it is r
 
 ## Regenerating them
 
-Every layer is a pipeline stage, so staleness is tracked and a stale artefact is not
-silently served:
+Most layers are pipeline stages, and for those staleness is tracked and a stale artefact is
+not silently served. **Twenty-four of the sixty-four tools that write an artefact are not
+registered stages**, and for those it is not tracked: they are run by hand, and nothing
+detects that they have gone stale behind an input that moved. The worst is `build_atlas.py` —
+`dossier`, `atlas_bias`, `capability_math` and `gene_index` all read its output as an
+undeclared dependency.
+
+This sentence used to read "every layer is a pipeline stage". It was the strongest operational
+promise in this documentation and it was false for a third of the layers. `tools/index_check.py`
+now holds every artefact-writing tool to being either registered or exempt with a stated
+reason, and marks the unregistered ones as debt rather than letting a green check hide them:
+
+```bash
+python tools/index_check.py --check   # including the staging family
+```
+
+The stages that ARE registered regenerate like this:
 
 ```bash
 python tasks.py status          # what is fresh, what is stale, and why

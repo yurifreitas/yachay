@@ -20,6 +20,11 @@ WHAT IT CHECKS, and each is a claim some document makes about the filesystem:
     stages      every registered pipeline stage has a tool or analysis that exists
     sources     every ingested source is named in docs/references/README.md
     adrs        every docs/adr/NNNN-*.md appears in the ADR index
+    staging     every tool that writes an artefact is a registered pipeline stage, or is
+                exempt with a stated reason. docs/references/rare-layers.md says "every
+                layer is a pipeline stage, so staleness is tracked" — that was true of
+                40 of the 64 artefact-writing tools and false of 24, which is a claim
+                about the filesystem that the filesystem contradicted.
     thresholds  the summary inside manifests/thresholds.yaml matches the entries it
                 summarises — it was written at seven entries, the file grew to 25, and
                 the summary stayed. A file whose job is auditability was publishing a
@@ -153,8 +158,91 @@ def check_thresholds() -> tuple[str, list[str], int]:
     return "thresholds", missing, total
 
 
+
+
+#: Artefact-writing tools that are deliberately NOT pipeline stages, with the reason. A tool
+#: here is one `tasks.py build` will not run and `tasks.py status` will not call stale, so the
+#: reason has to say why that is acceptable — an exemption list without reasons is where
+#: things get put to stop a check complaining.
+NOT_A_STAGE = {
+    "ingest": "fetches from the network; deliberately outside the build graph so a rebuild "
+              "never depends on a remote being up",
+    "index_check": "this file. It audits the repository rather than producing a layer of it",
+    "verify_claims": "an audit of published numbers, not a producer of them",
+    "status": "reports on the pipeline; making it a stage would make the report a dependency "
+              "of itself",
+    "paper_numbers": "renders figures for prose from artefacts other stages produce",
+    "figure_data": "same — a rendering step over finished artefacts",
+    "pipeline_state": "reads the stage graph; a stage that reads the stage graph is a cycle",
+    "gene_shards": "splits a finished artefact into files the web fetches; runs after the "
+                   "gene layer and is driven by it",
+    "gene_facets": "derived from gene_index in the same pass; has no independent inputs",
+    "gene_space": "a layout over the gene layer, in the sense of ADR 0008",
+    # ⚠️ THE HONEST ENTRIES. These are not exempt on principle — they are unregistered, and
+    # saying so here is the point of the list. build_atlas is the worst of them: dossier,
+    # atlas_bias, capability_math and gene_index all read its output as an undeclared
+    # dependency, so nothing detects that they are stale when it changes.
+    "build_atlas": "⚠️ NOT exempt on merit — unregistered, and it should be a stage. Four "
+                   "downstream tools read its output as an undeclared dependency",
+    "atlas_bias": "⚠️ unregistered; reads build_atlas output with no declared edge",
+    "capability_math": "⚠️ unregistered; reads build_atlas output with no declared edge",
+    "barriers_seed": "⚠️ unregistered authored seed, bundled with no stage",
+    "nomenclature_seed": "⚠️ unregistered authored seed, bundled with no stage",
+    "dimensions": "⚠️ unregistered derived layer",
+    "dimensions_two": "⚠️ unregistered derived layer",
+    "gap_patterns": "⚠️ unregistered measurement",
+    "tropical_gap": "⚠️ unregistered measurement",
+    "gene_attention": "⚠️ unregistered gene-pivot layer",
+    "gene_constraint": "⚠️ unregistered measurement, added 2026-08-30",
+    "gene_datasheet": "⚠️ unregistered gene-pivot layer",
+    "gene_domains": "⚠️ unregistered gene-pivot layer",
+    "gene_geometry": "⚠️ unregistered gene-pivot layer",
+    "gene_index": "⚠️ unregistered gene-pivot layer",
+    "gene_insights": "⚠️ unregistered gene-pivot layer",
+    "gene_related": "⚠️ unregistered gene-pivot layer",
+    "gene_world": "⚠️ unregistered gene-pivot layer",
+    "psychiatric_gwas": "⚠️ unregistered measurement, added 2026-08-30",
+    "trait_atlas": "⚠️ unregistered measurement, added 2026-08-30",
+    "signal_energy": "⚠️ unregistered measurement, added 2026-08-30",
+    "single_cell_coverage": "⚠️ unregistered measurement, added 2026-08-30",
+    "cleared_devices": "⚠️ unregistered measurement, added 2026-08-30",
+}
+
+
+def check_staging() -> tuple[str, list[str], int]:
+    """Every artefact-writing tool is a stage, or says why it is not.
+
+    THE CLAIM THIS PROTECTS is in docs/references/rare-layers.md: "Every layer is a pipeline
+    stage, so staleness is tracked and a stale artefact is not silently served." That is the
+    strongest operational promise the documentation makes, and it was false for 24 of the 64
+    tools that write an artefact — including `build_atlas`, whose output four other tools read
+    with no declared edge, so nothing notices when they go stale behind it.
+
+    A missing entry here is not a crisis; an unnoticed one is. The exemption list carries a
+    reason per tool and marks with ⚠️ the ones that are unregistered rather than exempt, so
+    the count of real debt is readable rather than hidden behind a green check.
+    """
+    stages_src = (ROOT / "src" / "sieve" / "pipeline" / "stages.py").read_text(
+        encoding="utf-8", errors="replace")
+    writers = []
+    for path in sorted((ROOT / "tools").glob("*.py")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if re.search(r"DEST\s*=\s*ROOT\s*/\s*[\"']out|write_text\(json", text):
+            writers.append(path.stem)
+
+    missing = []
+    for name in writers:
+        registered = f'"{name}"' in stages_src or f"tools/{name}.py" in stages_src
+        if registered:
+            continue
+        reason = NOT_A_STAGE.get(name)
+        if not reason:
+            missing.append(f"{name} writes an artefact, is not a stage, and gives no reason")
+    return "staging", missing, len(writers)
+
+
 CHECKS = [check_artefacts, check_tools, check_stages, check_sources, check_adrs,
-          check_thresholds]
+          check_thresholds, check_staging]
 
 
 def main() -> int:

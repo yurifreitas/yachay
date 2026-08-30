@@ -1552,3 +1552,98 @@ red. A fifth case asserts this finding is still recorded here, because an xfail 
 in a passing run and that is exactly how a defect becomes permanent.
 
 **Still open:** the fix itself. The test is the instrument, not the repair.
+
+### A38 — a five-agent review, and the six defects it found in one day · **closed**
+
+*2026-08-30.* Five parallel read-only reviews were run over the repository — method against
+implementation, statistics, determinism, a full tool catalogue, and scaling. Every finding
+below was **verified independently before it was fixed**, and three findings from the reports
+were discarded because they did not survive that verification.
+
+**A published field that changed between runs.** `tools/language_coverage.py` iterated a set
+of organ-system ids and took `min`/`max` over it, which return the FIRST extreme they meet.
+Python randomises string hashing per process, so a tie returned a different id each time.
+Measured directly: with `PYTHONHASHSEED=7` the Spanish best system was `HP:0000152`, with 99
+it was `HP:0001507`. The same class was found and fixed in `genotype_phenotype.py` and
+`patient_frequencies.py`. **A seeded RNG is not reproducibility if the thing being iterated
+has no order** — the same lesson as the `gene_constraint` incident earlier the same day.
+
+**A bootstrap that resampled into a set.** `tools/autism_convergence.py` built each replicate
+as a set comprehension over draws with replacement, so duplicates collapsed and every
+replicate held about 1 − 1/e of the genes — measured, 454 of 717. The statistic is a share and
+is biased in set size, so the published interval belonged to a different statistic than the
+point it bracketed. Point estimates and z values were unaffected; the four interval bounds
+were not. The corrected pathway interval **now overlaps its null mean**, which the wrong
+narrower one did not, and the verdict string — which carried its bounds as literals — is
+computed from the arms and says so.
+
+**Four parsers for one 53 MB ontology.** `gap_taxonomy`, `lexicon_check`,
+`single_cell_coverage` and `tropical_gap` each hand-rolled OBO parsing over `mondo.obo`, and
+`tropical_gap` bypassed the source registry entirely. Unified into
+`src/sieve/pipeline/ontology.py`. The swap corrected a published figure: the old crosswalk
+used a `defaultdict` and wrote a key for every OMIM term it saw, then published the total
+under the name `omim_terms_with_counterpart` — 10,176, of which **6,321 had no counterpart**.
+Every gap classification is byte-identical, so the finding was untouched.
+
+**A manifest that miscounted itself.** `manifests/thresholds.yaml` exists to make threshold
+provenance auditable and its own summary said "pre-registered: 3, calibrated: 4". It was
+written when the file held seven entries; the file grew to 25 and the summary did not move.
+Real counts: 19 and 6. `index_check` now recomputes them.
+
+**A p-value that was a draw.** Splitting a shared RNG in `scale_information.py` left the three
+scale figures byte-identical and moved the morphogenesis p from 0.0185 to 0.00625 — far
+outside the sampling error 20,000 permutations give. Its INPUT had moved: the test reads the
+per-system retention table, itself estimated against permutation nulls. Over five
+re-derivations: 0.00625, 0.00715, 0.00955, 0.0196, 0.02185. The conclusion is robust (no seed
+crosses 0.05) but **the single figure was one draw from a distribution nobody had declared**.
+Now published as a median with its range.
+
+**And the largest: a maximum compared against the wrong expectation.** `tools/gene_geometry.py`
+published a clustering ratio on every gene page — the densest of 55 overlapping windows over
+the share ONE fixed window would hold. Simulated with variants placed uniformly at random and
+no clustering at all: ratio **3.00 at n=10, 2.00 at n=50**. The median gene carries 39
+variants and the panel fired its headline at 1.5×.
+
+| | |
+|---|---|
+| called clustered by the old rule | **2,637 of 2,771 — 95.2 %** |
+| clears a null fitted at the same n | **1,005 of 2,771 — 36.3 %** |
+
+This is the library's own thesis — maxima are biased and the bias grows as observations fall —
+violated by one of its own tools, which had skipped Stage 1 on itself. Now calibrated against
+a null fitted per observation count.
+
+**Two mistakes of the fix itself**, both caught before shipping: a ratio was put in a field the
+panel renders as a percentage, and removing a misplaced block took a loop's indentation with
+it and emptied every histogram — found because the output returned zero clustering records
+instead of 2,771.
+
+**Still open from this review**, in order of damage: 44 tools have no test, the worst being
+`knowledge_shape`/`knowledge_void` which feed a published z of −270.51; five independent
+Orphanet prevalence readers remain, the configuration that caused A11; and `status.py`'s
+`web_rows()` is the one confirmed super-linear check, scanning the whole web source once per
+artefact.
+
+### A39 — the documentation's strongest operational promise was false · **closed**
+
+*2026-08-30.* `docs/references/rare-layers.md` said: *"Every layer is a pipeline stage, so
+staleness is tracked and a stale artefact is not silently served."* That is the strongest
+operational promise the documentation makes, and it was false for **24 of the 64 tools that
+write an artefact**. Those are run by hand and nothing detects that they have gone stale
+behind an input that moved.
+
+The worst is `build_atlas.py`: `dossier`, `atlas_bias`, `capability_math` and `gene_index` all
+read its output as an **undeclared dependency**, so a change to the atlas leaves four
+downstream artefacts stale with nothing to notice.
+
+The sentence is corrected to what is true, with the count in it. `tools/index_check.py` gained
+a `staging` family that holds every artefact-writing tool to being either a registered stage
+or exempt with a stated reason — and the exemption list marks the 24 unregistered ones with
+⚠️ rather than letting a green check hide them, so the debt is readable. The check was
+verified to fail when an entry is removed.
+
+**What this does not do.** It does not register the 24. Turning them into stages means
+declaring inputs, outputs and dependency edges for each, which is a real change to the build
+graph and not a documentation fix. The debt is now counted and named, which is the
+precondition for paying it.
+
