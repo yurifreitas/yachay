@@ -297,4 +297,31 @@ export const MEAS = {
     "Governado pelo ADR 0007: uma ideia não vale nada aqui até que uma ferramenta a compute "
     + "a partir de dado público ingerido e escreva um número com nulo e intervalo.",
   ),
+
+  /* THE LADDER, AS NAVIGATION.
+   *
+   *  The rail grouped by METHOD — what was measured, what biases the register, the shape of
+   *  the known — and scale was scattered across four of those groups. A reader following a
+   *  disease down from the body to the base pair had to know which method each rung had been
+   *  measured by in order to find it, which is the map describing the surveyor.
+   *
+   *  These three groups are the middle of the ladder this project argues about: tissue and
+   *  cell, the signalling that patterns them, and the molecular base underneath. They are
+   *  where scale_information measures its losses, so the navigation and the thesis finally
+   *  name the same rungs. */
+  gMicro: bi("Micro-anatomy", "Micro-anatomia"),
+  qMicro: bi(
+    "Cells and tissues: where a gene is expressed, and whether anyone ever collected one.",
+    "Células e tecidos: onde um gene se expressa, e se alguém já coletou uma.",
+  ),
+  gSignal: bi("Signalling and fields", "Sinalização e campos"),
+  qSignal: bi(
+    "Pathways, propagation and the geometry a coarse alphabet cannot carry.",
+    "Vias, propagação e a geometria que um alfabeto grosso não carrega.",
+  ),
+  gNano: bi("Nano-molecular", "Nano-molecular"),
+  qNano: bi(
+    "Gene, variant and protein: constraint, consequence, and what a single copy costs.",
+    "Gene, variante e proteína: restrição, consequência, e o que custa uma cópia só.",
+  ),
 } as const;

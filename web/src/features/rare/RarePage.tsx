@@ -85,18 +85,34 @@ const prefetchMeasured = () => {
  *  Both levels are URL state, so every view in the dashboard is a link someone can send.
  */
 const GROUPS: NavGroupDef[] = [
-  { id: "known", label: RARE.gKnown, question: RARE.qKnown },
-  { id: "naming", label: RARE.gNaming, question: RARE.qNaming },
-  { id: "cause", label: RARE.gCause, question: RARE.qCause },
-  { id: "case", label: RARE.gCase, question: RARE.qCase },
-  { id: "decide", label: RARE.gDecide, question: RARE.qDecide },
-  { id: "measured", label: MEAS.group, question: MEAS.question },
-  { id: "register", label: MEAS.gRegister, question: MEAS.qRegister },
-  { id: "knownshape", label: MEAS.gShape, question: MEAS.qShape },
-  { id: "converge", label: MEAS.gConverge, question: MEAS.qConverge },
-  { id: "sampled", label: SAMP.group, question: SAMP.question },
-  { id: "beyond", label: DEEP.gBeyond, question: DEEP.qBeyond },
-  { id: "argument", label: RARE.gArgument, question: RARE.qArgument },
+  /* ORDERED AS A LADDER, NOT AS A METHOD LIST.
+   *
+   *  These groups used to name how a thing was measured — what was measured, what biases the
+   *  register, the shape of the known — and scale was scattered across four of them. A reader
+   *  coming down from the body to the base pair had to know which method each rung belonged
+   *  to in order to find it. That is a map that describes the surveyor.
+   *
+   *  The middle three are the ladder this project argues about and the rungs where
+   *  scale_information measures its losses, so the navigation and the thesis now name the
+   *  same things. The groups that remain about method sit after them, because a reader who
+   *  has seen a rung is the reader ready to ask how it was established. */
+  { id: "known", label: RARE.gKnown, question: RARE.qKnown, tier: RARE.tCatalogue },
+  { id: "naming", label: RARE.gNaming, question: RARE.qNaming, tier: RARE.tCatalogue },
+
+  // the ladder
+  { id: "micro", label: MEAS.gMicro, question: MEAS.qMicro, tier: RARE.tLadder },
+  { id: "signal", label: MEAS.gSignal, question: MEAS.qSignal, tier: RARE.tLadder },
+  { id: "nano", label: MEAS.gNano, question: MEAS.qNano, tier: RARE.tLadder },
+
+  { id: "case", label: RARE.gCase, question: RARE.qCase, tier: RARE.tLadder },
+  { id: "decide", label: RARE.gDecide, question: RARE.qDecide, tier: RARE.tEstablished },
+
+  // how well any of it is established
+  { id: "knownshape", label: MEAS.gShape, question: MEAS.qShape, tier: RARE.tEstablished },
+  { id: "sampled", label: SAMP.group, question: SAMP.question, tier: RARE.tEstablished },
+  { id: "register", label: MEAS.gRegister, question: MEAS.qRegister, tier: RARE.tEstablished },
+  { id: "beyond", label: DEEP.gBeyond, question: DEEP.qBeyond, tier: RARE.tArgument },
+  { id: "argument", label: RARE.gArgument, question: RARE.qArgument, tier: RARE.tArgument },
 ];
 
 const SECTIONS: NavSectionDef[] = [
@@ -112,11 +128,11 @@ const SECTIONS: NavSectionDef[] = [
   { id: "tropical", label: TROP.section, group: "naming" },
 
   // 2. What a disease is OF — the ladder's middle rungs, in order of scale.
-  { id: "cell", label: RARE.sCell, group: "cause" },
-  { id: "network", label: RARE.sNetwork, group: "cause" },
-  { id: "sparse", label: RARE.sSparse, group: "cause" },
-  { id: "nongene", label: RARE.sNongene, group: "cause" },
-  { id: "twin", label: DEEP.sTwin, group: "cause" },
+  { id: "cell", label: RARE.sCell, group: "micro" },
+  { id: "network", label: RARE.sNetwork, group: "signal" },
+  { id: "sparse", label: RARE.sSparse, group: "micro" },
+  { id: "nongene", label: RARE.sNongene, group: "nano" },
+  { id: "twin", label: DEEP.sTwin, group: "signal" },
 
   // 3. One record in full, then the physics and the payroll a therapy would need.
   { id: "disease", label: RARE.sDisease, group: "case" },
@@ -126,7 +142,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "evidence", label: RARE.sEvidence, group: "decide" },
   { id: "choose", label: RARE.sChoose, group: "decide" },
   { id: "dims", label: RARE.sDims, group: "decide" },
-  { id: "genopheno", label: DEEP.sGeno, group: "decide" },
+  { id: "genopheno", label: DEEP.sGeno, group: "nano" },
 
   // 5. What was measured under ADR 0007 — eight results, each with a null and an interval,
   //    and one of them negative. These carry a governing decision record the catalogue layers
@@ -140,20 +156,20 @@ const SECTIONS: NavSectionDef[] = [
   //
   //    Contiguous by group, deliberately: the walker steps through this array in order, so a
   //    sequence that zig-zags between groups would announce a boundary crossing every step.
-  { id: "scale", label: MEAS.sScale, group: "measured" },
-  { id: "language", label: MEAS.sLang, group: "measured" },
+  { id: "scale", label: MEAS.sScale, group: "signal" },
+  { id: "language", label: MEAS.sLang, group: "register" },
 
   { id: "conflict", label: MEAS.sConflict, group: "register" },
   { id: "attention", label: MORE.sAtt, group: "register" },
 
   { id: "shape", label: MEAS.sShape, group: "knownshape" },
-  { id: "gapkinds", label: MORE.sGaps, group: "knownshape" },
+  { id: "gapkinds", label: MORE.sGaps, group: "nano" },
   { id: "voidcells", label: MORE.sVoid, group: "knownshape" },
 
-  { id: "cells", label: DEEP.sCells, group: "knownshape" },
-  { id: "constraint", label: DEEP.sConstraint, group: "converge" },
-  { id: "autism", label: MORE.sAut, group: "converge" },
-  { id: "signalenergy", label: SAMP.sSignal, group: "converge" },
+  { id: "cells", label: DEEP.sCells, group: "micro" },
+  { id: "constraint", label: DEEP.sConstraint, group: "nano" },
+  { id: "autism", label: MORE.sAut, group: "signal" },
+  { id: "signalenergy", label: SAMP.sSignal, group: "signal" },
 
   // 5a. Who was in the sample. Beside the constraint result rather than in a pillar of its
   //     own: gene_constraint states in prose that gnomAD's panel is majority European, and

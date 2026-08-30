@@ -184,7 +184,19 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                     {on && tree && (
                       <div className={css.groups} role="group"
                            aria-label={`${t(S.questionsIn)} ${t(v.label)}`}>
-                        {tree.groups.map((g) => {
+                        {tree.groups.map((g, gi) => {
+                          // THE BAND HEADING, printed when the tier changes.
+                          //
+                          //  Twelve groups in a flat column is a list. The tier says what KIND
+                          //  of question the next few answer — what the catalogue holds, where
+                          //  in the organism it sits, how well it is established — so a reader
+                          //  looking for a rung of the ladder can skip the groups about
+                          //  provenance without reading them.
+                          //
+                          //  Derived by comparing with the previous group rather than stored,
+                          //  so the bands cannot disagree with the order the page declared.
+                          const prev = gi > 0 ? tree.groups[gi - 1] : null;
+                          const bandOpens = g.tier && (!prev || prev.tier !== g.tier);
                           const openGroup = !collapsed.has(g.id);
                           // The group the reader is actually IN, which may not be the one
                           // they are peeking at. Marked, so peeking never loses the anchor.
@@ -192,6 +204,9 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                           const sections = tree.sections.filter((s) => s.group === g.id);
                           return (
                             <Fragment key={g.id}>
+                              {bandOpens && (
+                                <span className={css.band}>{t(g.tier!)}</span>
+                              )}
                               <button
                                 type="button"
                                 className={isHere ? css.groupOn : openGroup ? css.groupPeek : css.group}

@@ -243,3 +243,21 @@
    semantics without inheriting a look nobody asked for. */
 .sections { list-style: none; margin-left: var(--sp-2); padding-left: var(--sp-3); }
 .sections li { display: contents; }
+
+/* THE BAND OVER A RUN OF GROUPS.
+   Set above the group headings rather than beside them, and separated by space rather than a
+   rule: the rail already carries one hairline down its left edge and a second horizontal one
+   every few rows would turn a column into a table. Louder than a group heading because it is
+   the only thing in the rail a reader is meant to be able to skip by. */
+.band {
+  display: block;
+  margin: var(--sp-6) var(--sp-2) var(--sp-1);
+  padding-bottom: var(--sp-1);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--r-text-2);
+  border-bottom: var(--r-hairline);
+}
+.band:first-child { margin-top: var(--sp-2); }

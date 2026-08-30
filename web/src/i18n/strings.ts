@@ -227,6 +227,14 @@ export const RARE = {
      "What is known" held the catalogue, its denominators, its naming, and the diseases that
      fall outside every register — four different questions wearing one label. Split at the
      seam that was already there: what the catalogue COUNTS, and what it CALLS things. */
+  /* THE FOUR BANDS. Each names a KIND of question rather than a subject, because the groups
+     inside them already name subjects and repeating that one level up would be a second
+     table of contents. */
+  tCatalogue: bi("The catalogue", "O catálogo"),
+  tLadder: bi("Where in the organism", "Onde no organismo"),
+  tEstablished: bi("How well it is established", "Quão bem está estabelecido"),
+  tArgument: bi("The argument", "O argumento"),
+
   gKnown: bi("The catalogue", "O catálogo"),
   qKnown: bi(
     "The whole catalogue first, because every later claim inherits its shape.",

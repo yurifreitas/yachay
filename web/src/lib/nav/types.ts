@@ -24,7 +24,22 @@ export type NavSectionDef = NavSection & { group: string };
 
 /** A question the page answers, stated as a question rather than as a category — the
  *  sections underneath are answers, and a reader arrives holding a question. */
-export type NavGroupDef = { id: string; label: Text; question: Text };
+export type NavGroupDef = {
+  id: string;
+  label: Text;
+  question: Text;
+  /** WHICH BAND OF THE PAGE THIS GROUP BELONGS TO.
+   *
+   *  Twelve groups in a flat list is a list, not a map. A reader looking for where a disease
+   *  sits in the body should not have to read past the groups about how well anything is
+   *  established to find the ones about scale — and the two kinds of question are not peers.
+   *
+   *  A tier is a band of groups that answer the same KIND of question: what the catalogue
+   *  holds, where in the organism it sits, how well any of it is established, and what the
+   *  whole thing argues. Optional, so a page with few groups pays nothing; a page that
+   *  declares one for any group must declare one for all, which check-sections enforces. */
+  tier?: Text;
+};
 
 /** The same group once the sections have been counted, so the depth of a group is visible
  *  from outside it: a group holding six sections says so before it is opened. */
