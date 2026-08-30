@@ -137,6 +137,7 @@ export const RUN = {
   sRidge: bi("Null by observation count", "O nulo por contagem de observações"),
   sControl: bi("Control calibration", "Calibração dos controles"),
   sField: bi("The calibration field", "O campo de calibração"),
+  sEvent: bi("The three populations", "As três populações"),
   sBump: bi("Where the raw top sixty went", "Para onde foram os sessenta primeiros"),
   sLineages: bi("One lineage, or all of them", "Uma linhagem, ou todas"),
   sShift: bi("Rank shift", "Deslocamento de posição"),

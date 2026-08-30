@@ -34,9 +34,10 @@ Stdlib only.
 
 from __future__ import annotations
 
+import csv
+import math
 import argparse
 import json
-import math
 import pathlib
 import sys
 from datetime import date
@@ -387,6 +388,175 @@ def lineage_matrix() -> dict:
     }
 
 
+# --------------------------------------------------------------- the screen as an event
+
+def screen_event() -> dict:
+    """The three populations of a CRISPR screen, and the threshold meant to separate them.
+
+    THIS VIEW WAS BUILT WRONG FIRST, AND THE WRONG VERSION IS WHY THE RIGHT ONE EXISTS.
+
+    The first attempt was a hexbin of all 17,916 genes over (observation count, raw score)
+    with the fitted null drawn across it as a fan. It is the obvious picture: this library's
+    thesis is that the threshold bends with n, so put n on an axis and show the data on it.
+
+    It came out as twenty hex cells with a peak of 8,069 — not a density, a bar. Checking why
+    produced a fact worth more than the figure: **95.4 % of these genes have exactly the same
+    observation count**, and the whole screen holds nineteen distinct values. There is no
+    second dimension. DepMap scores almost every gene in almost every line, so an (n, score)
+    plane is a line with a few strays beside it.
+
+    That does not make `calibration_field` wrong — the surface is real and its rule is right —
+    but the surface is fitted across a range where hardly any gene in this screen sits, and
+    nothing in this repository said so. It is said here.
+
+    SO THE FIGURE IS THE ONE THE DATA SUPPORTS: the score distribution of the three
+    populations a screen contains, as a ridgeline, with the null's own percentiles drawn
+    across them. Per `.claude/skills/viz-atlas`, a ridgeline answers how a distribution
+    changes BETWEEN GROUPS and is ordered by median rather than alphabetically; and the
+    nonessential controls, few enough to draw individually, are marks rather than a smoothed
+    curve, because below a couple of thousand points raw marks beat any smoothing.
+
+    The question it answers is the one a shortlist depends on: common-essential genes are a
+    confound Stage 3 removes, nonessential controls are supposed to be inert, everything else
+    is the candidate pool. Do they separate, and where does the threshold fall?
+
+    Coordinates solved here (ADR 0008).
+    """
+    genes_csv = ROOT / "out" / "depmap_genes.csv"
+    null_csv = ROOT / "out" / "depmap_null.csv"
+    if not genes_csv.exists() or not null_csv.exists():
+        return {}
+
+    with null_csv.open(encoding="utf-8") as fh:
+        blocks = [{k: float(v) for k, v in row.items()} for row in csv.DictReader(fh)]
+    blocks.sort(key=lambda b: b["n"])
+
+    genes = []
+    with genes_csv.open(encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            try:
+                genes.append({
+                    "entity": row["entity"],
+                    "score": float(row["score"]),
+                    "n": int(float(row["n"])),
+                    "z": float(row["z"]),
+                    "essential": row.get("is_common_essential") == "True",
+                    "control": row.get("is_nonessential_control") == "True",
+                })
+            except (KeyError, TypeError, ValueError):
+                continue
+    if not genes or not blocks:
+        return {}
+
+    counts_n: dict[int, int] = {}
+    for g in genes:
+        counts_n[g["n"]] = counts_n.get(g["n"], 0) + 1
+    modal_n = max(counts_n, key=counts_n.get)
+
+    s_lo = min(g["score"] for g in genes)
+    s_hi = max(g["score"] for g in genes)
+
+    # Monotone compression. The distribution is heavily right-skewed and a linear axis puts
+    # nine tenths of the screen in the bottom sixth of the frame. Nothing is reordered, and
+    # the ticks carry raw values so the compression is visible rather than silent.
+    def compress(v: float) -> float:
+        return math.log1p(v - s_lo)
+
+    c_hi = compress(s_hi) or 1.0
+
+    def sy(v: float) -> float:
+        return compress(v) / c_hi
+
+    groups = [
+        ("common-essential", [g for g in genes if g["essential"]],
+         "the confound Stage 3 removes - a high score here is not a discovery"),
+        ("nonessential control", [g for g in genes if g["control"]],
+         "designed to be inert; where these sit IS the calibration"),
+        ("everything else", [g for g in genes if not g["essential"] and not g["control"]],
+         "the candidate pool a shortlist is drawn from"),
+    ]
+
+    BINS = 90
+    curves = []
+    for name, members, note in groups:
+        if not members:
+            continue
+        hist = [0] * BINS
+        for g in members:
+            b = min(BINS - 1, max(0, int(sy(g["score"]) * BINS)))
+            hist[b] += 1
+        peak = max(hist) or 1
+        vals = sorted(g["score"] for g in members)
+        mid = vals[len(vals) // 2]
+        curves.append({
+            "group": name,
+            "note": note,
+            "members": len(members),
+            "median": round(mid, 4),
+            "median_at": round(sy(mid), 5),
+            # Normalised WITHIN the group. A ridgeline compares shapes; three groups of 277,
+            # 800 and 16,000 on a shared vertical scale would show only that one is bigger,
+            # which the member count already says in words.
+            "density": [round(h / peak, 4) for h in hist],
+            "points": ([{"at": round(sy(g["score"]), 5), "entity": g["entity"],
+                         "score": round(g["score"], 4)}
+                        for g in sorted(members, key=lambda x: x["score"])]
+                       if len(members) <= 800 else []),
+        })
+    curves.sort(key=lambda c: c["median_at"])
+
+    modal_block = min(blocks, key=lambda b: abs(b["n"] - modal_n))
+    rules = [
+        {"label": "null mean", "at": round(sy(modal_block["null_mean"]), 5),
+         "raw": round(modal_block["null_mean"], 4)},
+        {"label": "null p95", "at": round(sy(modal_block["p95"]), 5),
+         "raw": round(modal_block["p95"], 4)},
+        {"label": "null p99", "at": round(sy(modal_block["p99"]), 5),
+         "raw": round(modal_block["p99"], 4)},
+    ]
+
+    above = [g for g in genes if g["score"] > modal_block["p99"]]
+    return {
+        "axis": {
+            "label": "raw score (top-20 mean)",
+            "min": round(s_lo, 4), "max": round(s_hi, 4),
+            "scale": "log1p from the minimum - monotone, so nothing is reordered",
+            "ticks": [{"at": round(sy(v), 5), "raw": v}
+                      for v in (0.0, 0.25, 0.5, 1.0, 2.0, 3.0, 5.0) if s_lo <= v <= s_hi],
+        },
+        "curves": curves,
+        "rules": rules,
+        "degenerate_axis": {
+            "distinct_n": len(counts_n),
+            "modal_n": modal_n,
+            "share_at_modal_n": round(counts_n[modal_n] / len(genes), 4),
+            "reading": (
+                f"{100 * counts_n[modal_n] / len(genes):.1f} % of the screen was scored on "
+                f"exactly {modal_n} cell lines, and the whole screen holds {len(counts_n)} "
+                f"distinct observation counts. The calibration surface in the previous view "
+                f"is real and its rule is right, but it is fitted across a range where almost "
+                f"no gene in THIS screen sits - a statement about DepMap's completeness "
+                f"rather than about the method, and one nothing here had made until this "
+                f"figure failed to draw."
+            ),
+        },
+        "counts": {
+            "genes": len(genes),
+            "above_p99": len(above),
+            "essential_above_p99": sum(1 for g in above if g["essential"]),
+            "controls_above_p99": sum(1 for g in above if g["control"]),
+        },
+        "reading": (
+            f"The three populations a screen contains, on one axis, with the null fitted at "
+            f"n={modal_block['n']:.0f} drawn across them. {len(above):,} genes clear the 99th "
+            f"percentile and {sum(1 for g in above if g['essential']):,} of those are "
+            f"common-essential - the confound, not the finding. The controls are individual "
+            f"marks because there are few enough to name, and where they sit is what the "
+            f"calibration is judged on."
+        ),
+    }
+
+
 def main() -> int:
     argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
 
@@ -399,6 +569,7 @@ def main() -> int:
         "calibration_field": calibration_field(),
         "rank_shift": rank_shift(),
         "lineage_matrix": lineage_matrix(),
+        "screen_event": screen_event(),
     }
     payload = {
         "generated": date.today().isoformat(),

@@ -35,4 +35,24 @@ export const CRISPR = {
                  "genes foram indicados por mais de uma linhagem, de"),
   inLineage: bi("in", "em"),
   nominatedBy: bi("nominated by lineages:", "indicado por linhagens:"),
+
+  /* The figure that replaced one that did not work. */
+  sEvent: bi("The three populations", "As três populações"),
+  eventTitle: bi(
+    "where the controls sit is what the calibration is judged on",
+    "onde os controles caem é o que julga a calibração",
+  ),
+  eventSub: bi(
+    "A screen contains three populations: common-essential genes, which are the confound "
+    + "Stage 3 removes; nonessential controls, designed to be inert; and everything else, "
+    + "which is the candidate pool. This draws all three against the null's own percentiles, "
+    + "ordered by median. It replaced a figure that could not be drawn, and says why.",
+    "Uma triagem contém três populações: genes comumente essenciais, que são o confundidor "
+    + "que o Estágio 3 remove; controles não essenciais, feitos para serem inertes; e todo o "
+    + "resto, que é o conjunto de candidatos. Isto desenha as três contra os percentis do "
+    + "próprio nulo, ordenadas pela mediana. Substituiu uma figura que não pôde ser "
+    + "desenhada, e diz por quê.",
+  ),
+  eventRules: bi("which null percentile to emphasise",
+                 "qual percentil do nulo destacar"),
 } as const;

@@ -53,6 +53,7 @@ const TABS: NavSectionDef[] = [
   { id: "ridge", label: RUN.sRidge, group: "null" },
   { id: "control", label: RUN.sControl, group: "null" },
   { id: "field", label: RUN.sField, group: "null" },
+  { id: "event", label: RUN.sEvent, group: "null" },
   { id: "shift", label: RUN.sShift, group: "effect" },
   { id: "bump", label: RUN.sBump, group: "effect" },
   { id: "lineages", label: RUN.sLineages, group: "effect" },

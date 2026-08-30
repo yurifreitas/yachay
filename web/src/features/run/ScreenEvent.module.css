@@ -1,0 +1,141 @@
+/* A ridgeline of three populations against a shared axis.
+   Every position comes from tools/view_models.py; this decides how a mark looks and nothing
+   about where it goes. */
+
+.degenerate {
+  margin: 0 0 var(--sp-6);
+  max-width: 76ch;
+  padding-left: var(--sp-4);
+  border-left: 2px solid var(--r-border-hi);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--r-text-2);
+}
+
+/* ------------------------------------------------------------------ the rule switches */
+
+.rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-6);
+}
+.rule {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  padding: 4px var(--sp-3);
+  border: 1px solid var(--r-border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--r-text-2);
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: color 140ms var(--r-ease), border-color 140ms var(--r-ease);
+}
+.rule:hover { color: var(--r-text); border-color: var(--r-border-hi); }
+/* aria-pressed carries the state; this carries it visually. Toggles, not tabs — there is no
+   panel being swapped, only a line being emphasised. */
+.ruleOn { composes: rule; color: var(--r-text); border-color: var(--unknown); }
+.ruleV { font-variant-numeric: tabular-nums; color: var(--r-text-3); }
+
+/* ------------------------------------------------------------------ the lanes */
+
+.stack { display: flex; flex-direction: column; gap: var(--sp-8); }
+
+.lane { position: relative; }
+
+.laneHead {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-4);
+  margin-bottom: var(--sp-2);
+}
+.laneName { font-size: 13px; font-weight: 600; color: var(--r-text); }
+.laneN {
+  font-size: 11.5px; color: var(--r-text-2); font-variant-numeric: tabular-nums;
+}
+.laneNote { font-size: 11.5px; color: var(--r-text-3); }
+
+.plot { position: relative; height: 92px; }
+.svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* One hue for every lane. Three colours would say the groups are three kinds of thing when
+   the whole point is that they are the same measurement on three populations. */
+.area {
+  fill: color-mix(in oklch, var(--unknown) 34%, transparent);
+  stroke: var(--unknown);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.median { stroke: var(--r-text); stroke-width: 1.5; stroke-dasharray: 3 2; }
+
+.ruleLine { stroke: var(--r-border-hi); stroke-width: 1; }
+.ruleLineOn { stroke: var(--r-text-2); stroke-width: 1.6; }
+
+/* The controls, one mark each. Thin and overlapping on purpose: the density of the rug is
+   itself information, and 726 marks that never touch would be a different distribution. */
+.rug { position: absolute; left: 0; right: 0; bottom: -6px; height: 12px; }
+.tick {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 10px;
+  background: color-mix(in oklch, var(--r-text) 55%, transparent);
+}
+
+.medianLabel {
+  position: absolute;
+  bottom: -18px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--r-text-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ the shared axis */
+
+.axis {
+  position: relative;
+  height: 34px;
+  margin-top: var(--sp-6);
+  border-top: var(--r-hairline);
+}
+.tickLabel {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  font-size: 10px;
+  color: var(--r-text-3);
+  font-variant-numeric: tabular-nums;
+}
+.axisName {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  font-size: 10.5px;
+  color: var(--r-text-3);
+}
+
+.counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2) var(--sp-8);
+  margin-top: var(--sp-12);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--r-text-2);
+}
+.counts strong { color: var(--r-text); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 720px) {
+  .plot { height: 74px; }
+  .laneNote { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rule { transition: none; }
+}

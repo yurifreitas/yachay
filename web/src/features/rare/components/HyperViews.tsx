@@ -43,6 +43,21 @@ type Models = {
     links: { axis: number; from: number; to: number; n: number }[];
     diseases: number; reading: string;
   };
+  /** The three populations of a screen. Solved in tools/view_models.py; see the tool for why
+   *  this replaced an (n, score) field that could not be drawn. */
+  screen_event?: {
+    axis: { label: string; min: number; max: number; scale: string;
+            ticks: { at: number; raw: number }[] };
+    curves: { group: string; note: string; members: number; median: number;
+              median_at: number; density: number[];
+              points: { at: number; entity: string; score: number }[] }[];
+    rules: { label: string; at: number; raw: number }[];
+    degenerate_axis: { distinct_n: number; modal_n: number; share_at_modal_n: number;
+                       reading: string };
+    counts: { genes: number; above_p99: number; essential_above_p99: number;
+              controls_above_p99: number };
+    reading: string;
+  };
   knowledge_void?: {
     bins: number; axes: string[];
     faces: { x: string; y: string; grid: { n: number; anti: number }[][] }[];

@@ -10,6 +10,7 @@ import { Shortlist, Populations, Selectivity, Base, FlagOverlap } from "./Substa
 import Multiplicity from "./Multiplicity";
 import TailCalibration from "./TailCalibration";
 
+const ScreenEvent = lazy(() => import("./ScreenEvent").then((m) => ({ default: m.ScreenEvent })));
 const CalibrationField = lazy(() => import("./CrisprViews").then((m) => ({ default: m.CalibrationField })));
 const RankBump = lazy(() => import("./CrisprViews").then((m) => ({ default: m.RankBump })));
 const LineageMatrix = lazy(() => import("./CrisprViews").then((m) => ({ default: m.LineageMatrix })));
@@ -28,6 +29,20 @@ const LineageMatrix = lazy(() => import("./CrisprViews").then((m) => ({ default:
 export type RunCtx = { run: Run };
 
 export const RUN_SECTIONS: SectionRegistry<RunCtx> = [
+  {
+    id: "event",
+    title: "Where the controls sit is what the calibration is judged on",
+    sub:
+      "A screen contains three populations: common-essential genes, which are the confound "
+      + "Stage 3 removes; nonessential controls, designed to be inert; and everything else, "
+      + "the candidate pool a shortlist comes from. All three against the null's own "
+      + "percentiles, ordered by median. This replaced a figure that could not be drawn, and "
+      + "the panel says why rather than deleting the attempt.",
+    bare: true,
+    view: () => (
+      <><ScreenEvent /></>
+    ),
+  },
   {
     id: "shortlist",
     title: "The deliverable, and the rule that produced it",
