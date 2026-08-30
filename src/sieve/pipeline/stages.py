@@ -751,6 +751,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="community_stability",
+    summary=("Is the published partition in the graph or in the algorithm? Twelve seeds, "
+             "three algorithms, a resolution sweep and a per-gene consensus confidence."),
+    inputs=(paths.GENE_NETWORK,),
+    outputs=(paths.COMMUNITY_STABILITY,),
+    needs=("rare",),
+    code=sources("tools/community_stability.py"),
+    run=lambda: _run_tool("community_stability"),
+))
+
+_add(Stage(
     name="pipeline_state",
     summary="Publish which stages are fresh or stale, so freshness is not terminal-only.",
     outputs=(paths.PIPELINE_STATE,),

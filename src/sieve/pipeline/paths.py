@@ -139,6 +139,8 @@ INTERACTOME_SPARSE = OUT / "interactome_sparse.json"
 # the robustness check is part of the result, not a variant of it.
 INTERACTOME_STRING = OUT / "interactome_string_700.json"
 GENE_NETWORK = RARE / "gene_network.json"
+# The partition held to a null and an interval, which the partition itself never was.
+COMMUNITY_STABILITY = RARE / "community_stability.json"
 # The pipeline reporting on itself, so it can never be cached: any other stage
 # running changes the answer.
 PIPELINE_STATE = OUT / "pipeline.json"

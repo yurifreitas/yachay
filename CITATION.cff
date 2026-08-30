@@ -1067,6 +1067,46 @@ references:
       observes from outside the loop, and the co-evolving state and topology this implies is
       graded analogy in the theory atlas.
 
+  # --- clustering, and what a partition is worth ------------------------------------------
+  - type: article
+    title: "From Louvain to Leiden: guaranteeing well-connected communities"
+    authors:
+      - { family-names: Traag, given-names: "V. A." }
+      - { family-names: Waltman, given-names: L. }
+      - { family-names: "van Eck", given-names: "N. J." }
+    year: 2019
+    doi: "10.1038/s41598-019-41695-z"
+    notes: >-
+      Louvain can return communities whose own subgraph is disconnected. Named because
+      tools/community_stability.py CHECKED for that defect on our gene graph rather than
+      assuming it, and found none - the reason to add Leiden was that nothing had looked, not
+      that Louvain had broken. Leiden's partitions agree with Louvain's at ARI 0.87 here.
+  - type: article
+    title: "Resolution limit in community detection"
+    authors:
+      - { family-names: Fortunato, given-names: Santo }
+      - { family-names: "Barthelemy", given-names: Marc }
+    year: 2007
+    doi: "10.1073/pnas.0605965104"
+    notes: >-
+      Modularity cannot resolve a community joined to the rest by fewer than about sqrt(2m)
+      edges - 278 on our graph. Quantified rather than cited: sweeping the resolution
+      twelvefold moves modularity by 0.03 while the largest community falls from 777 genes to
+      192, so the objective is nearly indifferent across a range that changes the answer
+      fourfold.
+  - type: article
+    title: "Comparing partitions"
+    authors:
+      - { family-names: Hubert, given-names: Lawrence }
+      - { family-names: Arabie, given-names: Phipps }
+    year: 1985
+    doi: "10.1007/BF01908075"
+    notes: >-
+      The adjusted Rand index, the statistic behind every stability number we publish for the
+      gene partition. Its chance correction is the whole reason it works here: with 2,189
+      isolated genes each forming a community, two arbitrary partitions already agree on most
+      pairs. Our rewired null still scores 0.089, which is the level 0.90 is read against.
+
   # --- standards and provenance ---------------------------------------------------------
   - type: standard
     title: "Citation File Format (CFF) 1.2.0"

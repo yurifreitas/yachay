@@ -1,0 +1,14 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* 2px, per the craft rule: thinner reads as a gridline, thicker as an area boundary. */
+.line { fill: none; stroke: var(--known); stroke-width: 2; }
+.lineMuted { fill: none; stroke: var(--r-text-3); stroke-width: 2; }
+.dot { fill: var(--known); }
+.dotMuted { fill: var(--r-text-3); }
+
+.base { stroke: var(--r-border); stroke-width: 1; }
+.mark { stroke: var(--critical); stroke-width: 1; stroke-dasharray: 4 3; }
+.markLabel { font-size: 10px; fill: var(--critical); }
+.endLabel {
+  font-size: 11.5px; fill: var(--r-text); font-variant-numeric: tabular-nums;
+}

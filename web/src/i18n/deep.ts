@@ -19,6 +19,7 @@ export const DEEP = {
   ),
   sHiv: bi("HIV drug resistance", "Resistência do HIV"),
   sZAudit: bi("What is a z worth here?", "Quanto vale um z aqui?"),
+  sCluster: bi("Are the groups real?", "Os grupos são reais?"),
   hivHeading: bi(
     "the positive controls were named before the run, and they came back",
     "os controles positivos foram nomeados antes da execução, e voltaram",
@@ -55,6 +56,22 @@ export const DEEP = {
     + "genes causais de onze distúrbios. Reportado contra 200 conjuntos de sementes "
     + "estratificados por grau, nunca como escore bruto — uma propagação sem nulo pareado "
     + "por grau é uma lista das proteínas mais conectadas do grafo.",
+  ),
+  csHeading: bi(
+    "mean agreement between two runs of the same clustering, over twelve seeds",
+    "concordância média entre duas execuções do mesmo agrupamento, em doze sementes",
+  ),
+  csAgreement: bi(
+    "is the grouping in the graph, or in the objective function?",
+    "o agrupamento está no grafo ou na função objetivo?",
+  ),
+  csResolution: bi(
+    "the score is flat across a range that changes the answer fourfold",
+    "o escore é plano numa faixa que muda a resposta em quatro vezes",
+  ),
+  csConsensus: bi(
+    "and how firmly each gene belongs to the group it was given",
+    "e com que firmeza cada gene pertence ao grupo que recebeu",
   ),
   zaHeading: bi(
     "published z values on this site, and what a permutation null can actually support",

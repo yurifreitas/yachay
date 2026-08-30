@@ -7,7 +7,16 @@ requires-python = ">=3.10"
 # scipy and statsmodels became real dependencies with tools/multiplicity.py. They were on the
 # machine long before that and the project hand-rolled its statistics anyway, which for a
 # library about statistical care was the wrong kind of self-reliance.
-dependencies = ["numpy>=1.24", "pandas>=2.0", "scipy>=1.11", "statsmodels>=0.14"]
+# networkx has been a real dependency since tools/interactome_sparse.py - it produces the
+# modularity this site publishes - and was never declared. igraph, leidenalg and scikit-learn
+# arrived with tools/community_stability.py, which holds that partition to a null and an
+# interval: Leiden for the connectivity guarantee Louvain lacks, and sklearn for an adjusted
+# Rand index. Hand-rolling either to preserve a stdlib streak would be the same mistake the
+# comment above records for scipy.
+dependencies = [
+    "numpy>=1.24", "pandas>=2.0", "scipy>=1.11", "statsmodels>=0.14",
+    "networkx>=3.0", "scikit-learn>=1.4", "python-igraph>=0.11", "leidenalg>=0.10",
+]
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]

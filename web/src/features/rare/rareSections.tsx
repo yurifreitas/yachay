@@ -36,6 +36,7 @@ const NonGene = lazy(() => import("./components/NonGene").then((m) => ({ default
 const Ancestry = lazy(() => import("./components/Ancestry").then((m) => ({ default: m.Ancestry })));
 const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ default: m.SelfAudit })));
 const ZAudit = lazy(() => import("./components/ZAudit").then((m) => ({ default: m.ZAudit })));
+const CommunityStability = lazy(() => import("./components/CommunityStability").then((m) => ({ default: m.CommunityStability })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
@@ -305,6 +306,23 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
               not, and both are said here.</>,
     view: () => (
       <><ZAudit /></>
+    ),
+  },
+  {
+    id: "cluster",
+    title: <>Two thousand four hundred communities, from one run of one algorithm at one seed</>,
+    sub: <>This site publishes a gene network partitioned into communities and never asked the
+              partition a single question. It is asked three here. Run the same algorithm
+              twelve times and the partitions agree at 0.90 &mdash; not 1, and as low as 0.79
+              between one pair. Run a different algorithm and agreement falls to 0.29, so most
+              of what separates these groupings is the objective function rather than the
+              graph. Sweep the resolution twelvefold and the score moves by 0.03 while the
+              largest community falls from 777 genes to 192, which means the resolution was
+              never chosen by the data. What survives all of it is the membership:
+              83&thinsp;% of the 3,335 scored genes sit with the same partners in at least
+              nine runs of ten, and that number is now published per gene.</>,
+    view: () => (
+      <><CommunityStability /></>
     ),
   },
   {

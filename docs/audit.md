@@ -1787,3 +1787,51 @@ cannot see a name nobody thought of. The detector now matches by shape.
 `python tools/z_audit.py --check` joined the submission gate, verified to fail by stripping the
 intervals from a bundled artefact. The result is published as a section rather than filed here:
 a site that reports 3,166 z values owes the reader the figure that says what they are worth.
+
+### A42 — 2,408 communities from one run of one algorithm at one seed · **closed**
+
+*2026-08-30.* `out/rare/gene_network.json` publishes **2,408 gene communities at modularity
+0.8605**, and the number appears on the site. Every other statistic here carries a null and an
+interval. This one carried neither, and three questions had never been put to it.
+`tools/community_stability.py` puts all three, and takes this repository's first clustering
+dependency to do it — igraph, leidenalg and scikit-learn, declared in `pyproject.toml`
+alongside **networkx, which had been producing the published modularity since
+`interactome_sparse.py` and was never declared at all**.
+
+**Is it stable?** Twelve seeds of Louvain agree at **ARI 0.901 [0.888, 0.915]** — not 1, and
+as low as **0.791** for one pair. Leiden 0.855, label propagation 0.819. The ARI is read
+against a rewired graph with no communities to find, whose own runs still agree at **0.089**.
+
+**Does the algorithm decide it?** Leiden and Louvain agree at 0.870. Label propagation agrees
+with either at **0.29**. The modularity family agrees with itself and disagrees violently with
+a method that has no objective function — so most of what separates these partitions is the
+objective, not the graph.
+
+**Was the resolution chosen?** No. Sweeping gamma from 0.25 to 3 moves modularity from 0.842
+to 0.857 to 0.829 — a flat line — while the largest community falls from **777 genes to 192**
+and the count of real communities rises from 201 to 238. The objective is nearly indifferent
+across a range that changes the answer fourfold. The published partition inherited gamma = 1
+from a default.
+
+**What survives.** The membership. A consensus over the twelve runs gives every gene the share
+of runs in which it sat with the partners the consensus finally assigned it: **83.2% of the
+3,335 scored genes are at 0.9 or above** and 0.8% below 0.5. The 2,189 isolated genes are given
+**no** confidence rather than a perfect one — scoring them 1.0 would have lifted the headline
+by forty points on genes with no edges. That per-gene number is the interval this artefact
+never had.
+
+**Two things measured rather than assumed.** First, Louvain can return communities whose own
+subgraph is disconnected (Traag et al. 2019) — checked here, and it **does not happen** on this
+graph. The reason to add Leiden was that nothing had looked, not that Louvain had broken.
+Second, the count itself: **2,189 of the 2,408 communities are single isolated genes**. A count
+that is 91% singletons describes the ingestion, not the biology; the connected part carries
+about 219.
+
+**⚠️ The test found a defect in the tool the day it was written.** `tests/test_determinism.py`
+failed the moment the tool landed, because it holds every seeded tool to being either
+determinism-tested or excluded with a reason — the guard doing exactly its job. The tool is too
+slow for the unit suite (161 seconds), so `tests/test_community_stability.py` checks the same
+property on a planted-clique graph instead. Building that graph raised `IndexError`: the tool
+assumed node labels were array positions, which is true of the CSR file it reads and of nothing
+else. Positions are now computed once. The real artefact is byte-identical after the fix, which
+is the point — the bug was latent, and only a test on a different graph could reach it.

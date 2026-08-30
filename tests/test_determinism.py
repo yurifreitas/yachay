@@ -71,6 +71,14 @@ NOT_TESTED = {
                                  "excluded for runtime, not because it is unverified. This "
                                  "guard caught it the day it was written, which is the "
                                  "behaviour that justifies the guard.",
+    "tools/community_stability.py": "runs three clustering algorithms twelve times each, a "
+                                    "seven-point resolution sweep and twelve degree-preserving "
+                                    "rewirings over a 5,524-node graph — 161 seconds, far too "
+                                    "slow for a unit suite. Its determinism is covered "
+                                    "directly instead by test_community_stability.py, which "
+                                    "runs the same partitioners on a small synthetic graph and "
+                                    "checks that a seed fixes the answer. Excluded for "
+                                    "runtime, not for lack of a test.",
 }
 
 

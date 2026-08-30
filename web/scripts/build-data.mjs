@@ -72,6 +72,12 @@ const PROJECT = {
     // Two ranked lists of fifteen are what the view shows; the arms carry the rest.
     head: { most_neglected: 15, most_attended: 15 },
   },
+  community_stability: {
+    // One confidence per gene for 3,335 genes is the artefact's most useful output and the
+    // page renders three summary numbers from it. It stays on disk, where the gene layer can
+    // join it, and out of a bundle that would carry 58 kB to print "91%".
+    drop: ["per_gene"],
+  },
   knowledge_void: {
     // The ten faces are drawn from view_models, which already carries them.
     drop: ["faces"],
@@ -390,7 +396,9 @@ emit("figures", figures);
                       // Measured today and rendered nowhere until now — the A29 failure,
                       // committed again on the newest work.
                       "gap_taxonomy", "attention_burden", "autism_convergence",
-                      "knowledge_void"]) {
+                      "knowledge_void",
+                      // The published partition, held to a null and an interval at last.
+                      "community_stability"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
