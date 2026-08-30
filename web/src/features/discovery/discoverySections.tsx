@@ -5,6 +5,7 @@ import { useT } from "../../i18n";
 import { DISC } from "../../i18n/discovery";
 import { Provenance } from "../rare/components/Provenance";
 import { fmtInt } from "../../lib/scale";
+import { WhiskerScatter } from "../../components/viz/organisms/WhiskerScatter";
 import css from "../rare/components/MeasuredPanels.module.css";
 import own from "./DiscoveryPage.module.css";
 
@@ -122,6 +123,42 @@ function Floor() {
           than tenfold across the range this screen actually contains.
         </p>
       </div>
+
+      {/* THE SCREEN AGAINST ITS OWN FLOOR. Every panel here had the floor on one screen and
+          the perturbations on another, so the comparison the whole calibration exists to make
+          was left to the reader's memory. Both are one figure: 127 perturbations at the cell
+          count each was actually measured at, and the bar each has to clear drawn through
+          them. The eye does the join. */}
+      <WhiskerScatter
+        points={(d.rows ?? []).map((r: any) => ({
+          label: r.gene,
+          x: r.cells,
+          y: r.raw,
+          lo: r.raw_ci95?.[0] ?? null,
+          hi: r.raw_ci95?.[1] ?? null,
+          ok: r.interval_clears_p95,
+        }))}
+        curve={(d.null_by_count ?? []).map((r: any) => ({ x: r.cells, y: r.p95 }))}
+        curveLabel="the null's 95th percentile"
+        xLabel="cells behind the perturbation"
+        yLabel="top-3 aggregate score"
+        yScale="linear"
+        yFormat={(v) => v.toFixed(2)}
+        height={400}
+        ariaLabel="Perturbation score against cell count, with the control null's 95th percentile"
+        source={d.uncertainty?.method}
+        readAloud={
+          <>
+            One point per perturbation: the score it achieved against the number of cells it
+            was measured in, with its 95% interval as a whisker. The red line is what cells
+            perturbed with NOTHING reach at that same count. A filled point clears that line
+            at the bottom of its own interval; a hollow one clears it only on the point
+            estimate. The line falls steeply to the left — which is why a perturbation with
+            eight cells has to score 0.695 to mean anything, while the best perturbation of
+            the whole screen scores 0.548 on 224 cells.
+          </>
+        }
+      />
 
       <div className={css.block}>
         <span className={css.blockK}>the floor, and the bar to clear it, by cell count</span>

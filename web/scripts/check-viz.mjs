@@ -11,6 +11,7 @@
 import { symlog, quantile, percentileOf } from "../src/lib/viz/scales.ts";
 import { quantiles, silverman, kde1d, hexbin, beeswarm } from "../src/lib/viz/density.ts";
 import { upset } from "../src/lib/viz/sets.ts";
+import { intervalDomain, clears } from "../src/lib/viz/intervals.ts";
 
 let failures = 0;
 const near = (a, b, tol = 1e-6) => Math.abs(a - b) <= tol;
@@ -184,7 +185,39 @@ function check(name, ok, detail = "") {
   check("upset draws no empty combination", none.combinations.length === 0 && none.unflagged === 4);
 }
 
+/* ------------------------------------------------------- interval domains
+   The regression these guard is a figure that was actually shipped: a track built from the
+   point estimates and clamped at zero, which drew an interval spanning zero identically to
+   one bounded well above it. */
+{
+  const rows = [{ point: 1825, lo: -1753, hi: 5403 }, { point: 3, lo: 2, hi: 4 }];
+  const [d0, d1] = intervalDomain(rows);
+  check("domain reaches below the lowest LOWER bound", d0 < -1753, `${d0}`);
+  check("domain reaches above the highest UPPER bound", d1 > 5403, `${d1}`);
+
+  // A figure whose estimates are all positive still has to show the line they are judged
+  // against, or "does it clear zero" is a question the drawing cannot answer.
+  const pos = intervalDomain([{ point: 5, lo: 4, hi: 6 }]);
+  check("domain always contains zero", pos[0] <= 0 && pos[1] >= 6, pos.join(","));
+
+  // A reference the caller draws must be inside the domain or it lands on the frame edge and
+  // reads as the boundary of the plot rather than as a threshold.
+  const withRef = intervalDomain([{ point: 0.1, lo: 0.05, hi: 0.2 }], [1.96]);
+  check("domain contains a reference outside the data", withRef[1] > 1.96, withRef.join(","));
+
+  // A point with no interval must not collapse the domain onto itself.
+  const bare = intervalDomain([{ point: 7 }]);
+  check("a point with no interval still gets a domain with width", bare[1] > bare[0]);
+
+  const c = clears({ point: 0.55, lo: 0.41, hi: 0.69 }, 0.5);
+  check("clears distinguishes the point from the interval", c.point && !c.interval);
+  const c2 = clears({ point: 0.55, lo: 0.52, hi: 0.58 }, 0.5);
+  check("an interval above the bar clears on both", c2.point && c2.interval);
+  const c3 = clears({ point: 0.55 }, 0.5);
+  check("no interval never clears on the interval", c3.point && !c3.interval);
+}
+
 console.log(failures
   ? `\nviz: ${failures} check(s) failed.`
-  : "\nviz: scales, density, hexbin, beeswarm and set arithmetic all check out.");
+  : "\nviz: scales, density, hexbin, beeswarm, set arithmetic and interval domains all check out.");
 process.exit(failures ? 1 : 0);

@@ -3,6 +3,7 @@ import { useT } from "../../../i18n";
 import { SAMP } from "../../../i18n/sampled";
 import { fmtInt } from "../../../lib/scale";
 import { Provenance } from "./Provenance";
+import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
 import css from "./MeasuredPanels.module.css";
 
 /** A NEGATIVE RESULT AGAINST THIS SITE'S OWN READING OF ITS OWN MEASUREMENT.
@@ -107,6 +108,50 @@ export function SignalEnergy() {
           <strong>energy</strong> below it.
         </p>
       </div>
+
+      {/* EVERY PATHWAY, NOT FIVE FAMILY MEANS. The bars above average 29 measurements into
+          five numbers, and an average is exactly where a result like this can hide: two
+          families can differ in their means while most of their members overlap completely.
+          Here each pathway keeps its own interval, grouped by family, so a reader can see
+          whether the family difference is a shift of the whole group or two outliers pulling
+          a mean. It is the second, and that is why the contrast below is reported as fragile.
+
+          Ordered by the contrast itself rather than by family, because the prediction was
+          about SIGN: whatever leans towards form belongs at one end. */}
+      {drawn.some((r: any) => r.overall?.excess_ci95) && (
+        <div className={css.block}>
+          <span className={css.blockK}>{tt(SAMP.sePathways)}</span>
+          <IntervalPlot
+            rows={drawn
+              .filter((r: any) => r.overall?.excess_ci95)
+              .map((r: any) => ({
+                label: (r.name ?? r.pathway ?? "").slice(0, 30),
+                note: r.family,
+                point: r.overall.excess_bits,
+                lo: r.overall.excess_ci95[0],
+                hi: r.overall.excess_ci95[1],
+                ok: !r.overall.excess_spans_zero,
+              }))}
+            xLabel="excess mutual information, bits"
+            scale="linear"
+            rowH={22}
+            refs={[{ at: 0, label: "no excess over a permutation" }]}
+            format={(v) => v.toFixed(4)}
+            ariaLabel="Excess mutual information with 95% intervals, one row per Reactome pathway"
+            source="bootstrap over diseases"
+            readAloud={
+              <>
+                One row per Reactome pathway. The band is the 95% interval from resampling the
+                diseases; a hollow row is one whose interval contains zero, meaning the pathway
+                carries no more information about which organ system fails than a random set of
+                diseases of the same size would. Two of the 29 are in that position — the
+                per-pathway result is solid. What is fragile is the DIFFERENCE between the
+                family means below, which is a much smaller quantity than any row here.
+              </>
+            }
+          />
+        </div>
+      )}
 
       {contrast && (
         <div className={css.block}>

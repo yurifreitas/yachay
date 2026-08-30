@@ -9,6 +9,8 @@ import { DEEP } from "../../../i18n/deep";
 import { fmtInt } from "../../../lib/scale";
 import ChoiceGroup from "../../../components/atoms/ChoiceGroup";
 import { Provenance } from "./Provenance";
+import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
+import { WhiskerScatter } from "../../../components/viz/organisms/WhiskerScatter";
 import css from "./MeasuredPanels.module.css";
 
 /** THREE MEASUREMENTS THAT REACHED NO DELIVERY PATH.
@@ -94,6 +96,44 @@ export function HivResistance() {
               {cur.description} — {fmtInt(cur.isolates)} isolates, {fmtInt(cur.mutations_scored)}
               {" "}mutations scored over {cur.drugs?.length} drugs.
             </p>
+            {/* THE FIGURE BEFORE THE TABLE. The table below is the record - every field
+                of every row, exact. This is the reading: twenty estimates on one axis, so
+                "does this mutation's interval clear the null" is a glance rather than an
+                arithmetic exercise across two columns. */}
+            <IntervalPlot
+              rows={(cur.top ?? []).slice(0, 20).map((r: any) => ({
+                label: r.mutation,
+                note: r.drug,
+                point: r.score,
+                lo: r.score_ci95?.[0] ?? null,
+                hi: r.score_ci95?.[1] ?? null,
+                ok: r.interval_clears_null,
+                noInterval: r.censored_at_assay_ceiling ? "at the assay ceiling" : "too few resamples",
+              }))}
+              xLabel="log10 fold-resistance"
+              scale="linear"
+              /* ONLY THE CEILING IS DRAWN AS A LINE. The null here is indexed by carrier
+                 count - each mutation is calibrated against shuffles at its own n - so a
+                 single "null mean" rule would be four hundred different values collapsed
+                 into one, which is the error this whole library exists to catch. Whether a
+                 row clears ITS null is carried by the mark instead: filled and solid when
+                 the lower end of its interval is above it, hollow when only the point is. */
+              refs={[{ at: 2, label: "assay ceiling: >100-fold" }]}
+              ariaLabel={`Fold-resistance with 95% intervals for the top mutations of the ${openPanel} panel`}
+              source={`${fmtInt(cur.isolates)} isolates · bootstrap over isolates`}
+              readAloud={
+                <>
+                  Each row is one mutation. The band is its 95% interval from resampling the
+                  isolates; the tick inside is the observed fold-resistance. Each mutation is
+                  judged against a null drawn at its OWN carrier count, so there is no single
+                  null line to draw — a filled row clears its own null at the bottom of its
+                  interval, a hollow one only at the point. An open bracket means there is no
+                  interval at all — every carrier sits at the assay's reporting ceiling, so
+                  the resample cannot move the score and its rank comes from the null.
+                </>
+              }
+            />
+
             <div className={css.tableWrap}>
               <table className={css.table}>
                 <thead>
@@ -246,6 +286,38 @@ export function TwinPropagation() {
                 ? ` · not in the graph: ${cur.seedsMissing.join(", ")}`
                 : " · every seed is in the graph"}
             </p>
+            {/* THE MECHANISM, AS A FIGURE. The claim that ranking by z selects the rarely
+                reached is a relationship between three quantities at once - degree, z, and
+                how wide z's interval is - and no table shows a relationship. Here the whole
+                defect is one shape: the tall points with the tall whiskers sit on the left. */}
+            {cur.reached?.some((g: any) => g.z_ci95) && (
+              <WhiskerScatter
+                points={cur.reached.map((g: any) => ({
+                  label: g.gene,
+                  x: g.degree,
+                  y: g.z,
+                  lo: g.z_ci95?.[0] ?? null,
+                  hi: g.z_ci95?.[1] ?? null,
+                  ok: g.survives_interval,
+                }))}
+                xLabel="degree in the interactome"
+                yLabel="z against the degree-matched null"
+                refs={[{ at: 1.96, label: "1.96" }, { at: 0, label: "no effect" }]}
+                ariaLabel={`Degree against propagation z with 95% intervals, ${target}`}
+                source={d.uncertainty?.method}
+                readAloud={
+                  <>
+                    One point per reached gene: how connected it is against how far the walk
+                    reached it, with its 95% interval as a vertical whisker. The filled points
+                    keep a z above 1.96 at the bottom of that interval. The shape is the
+                    finding — the largest z values are at the LEFT, on genes of degree five or
+                    ten, and they carry the widest whiskers, because a null draw almost never
+                    reaches them and near-zero spread turns any reach into an enormous z.
+                  </>
+                }
+              />
+            )}
+
             {/* Degree is printed beside every z, because the whole point of the null is that
                 a high score and a high degree are the thing being told apart. */}
             <div className={css.rows}>

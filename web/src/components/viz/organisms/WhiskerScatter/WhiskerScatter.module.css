@@ -1,0 +1,23 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* The whisker carries the message, so it is the heavier mark; the dot only says where inside
+   it the point estimate fell. */
+.whisker { stroke: var(--known); stroke-width: 2.5; opacity: 0.4; }
+.whiskerOut { stroke: var(--r-text-3); stroke-width: 2.5; opacity: 0.28; }
+.dot { fill: var(--known); }
+.dotOut { fill: var(--r-surface); stroke: var(--r-text-3); stroke-width: 1.4; }
+
+.ref { stroke: var(--r-text-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.refLabel { font-size: 10px; fill: var(--r-text-3); }
+.tip {
+  font-size: 11px; fill: var(--r-text); paint-order: stroke;
+  stroke: var(--r-surface); stroke-width: 3px; stroke-linejoin: round;
+}
+
+/* The bar every point is being judged against. Heavier than a gridline and lighter than the
+   data, because it is neither. */
+.curve { fill: none; stroke: var(--critical); stroke-width: 2; opacity: 0.75; }
+.curveLabel {
+  font-size: 10.5px; fill: var(--critical); paint-order: stroke;
+  stroke: var(--r-surface); stroke-width: 3px; stroke-linejoin: round;
+}

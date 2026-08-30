@@ -1,0 +1,30 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* The band is the finding; the point is where inside it the estimate sits. So the band gets
+   the weight and the point gets the contrast, not the other way round. */
+.band { stroke: var(--known); stroke-width: 5; stroke-linecap: butt; opacity: 0.42; }
+.bandOut { stroke: var(--r-text-3); stroke-width: 5; stroke-linecap: butt; opacity: 0.26; }
+.cap { stroke: var(--known); stroke-width: 1.5; }
+.capOut { stroke: var(--r-text-3); stroke-width: 1.5; }
+.point { fill: var(--known); }
+
+/* Hollow, not just grey: colour alone is not a signal a tenth of readers can use. */
+.pointOut { fill: var(--r-surface); stroke: var(--r-text-3); stroke-width: 1.5; }
+
+.bracket { fill: none; stroke: var(--r-text-3); stroke-width: 1.5; }
+.bracketNote { font-size: 10.5px; fill: var(--r-text-3); font-style: italic; }
+
+.label { font-size: 12px; fill: var(--r-text-2); }
+.note { font-size: 10.5px; fill: var(--r-text-3); }
+.value { font-size: 12px; fill: var(--r-text); font-variant-numeric: tabular-nums; }
+
+.ref { stroke: var(--r-border-hi); stroke-width: 1; }
+.refDashed { stroke: var(--r-text-3); stroke-width: 1; stroke-dasharray: 3 3; }
+.refLabel { font-size: 10px; fill: var(--r-text-3); }
+
+.hit { fill: transparent; }
+.row { transition: opacity 140ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+.rowOn .band, .rowOn .bandOut { opacity: 0.7; }
+.rowOn .label, .rowOn .value { fill: var(--r-text); }
+
+@media (prefers-reduced-motion: reduce) { .row { transition: none; } }
