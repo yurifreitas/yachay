@@ -4,6 +4,7 @@ import { NavProvider } from "./lib/nav";
 import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
 import { DEV } from "./i18n/devices";
+import { DISC } from "./i18n/discovery";
 import { NavSidebar, type NavFamily, type NavView } from "./components/organisms/NavSidebar";
 import { CommandPalette } from "./components/organisms/CommandPalette";
 
@@ -15,6 +16,7 @@ const Docs = lazy(() => import("./features/docs/Docs"));
 const RarePage = lazy(() => import("./features/rare/RarePage"));
 const CancerPage = lazy(() => import("./features/cancer/CancerPage"));
 const DevicesPage = lazy(() => import("./features/devices/DevicesPage"));
+const DiscoveryPage = lazy(() => import("./features/discovery/DiscoveryPage"));
 const GenePage = lazy(() => import("./features/gene/GenePage"));
 
 /** THE VIEWS ARE FAMILIES NOW, not a row.
@@ -41,6 +43,9 @@ const FAMILIES: NavFamily[] = [
      is actually allowed to use on a patient. Its own family rather than a section inside a
      domain, because the question is not about any one disease. */
   { id: "tech", label: DEV.famTech, question: DEV.qFamTech },
+  /* THE METHOD ON WORK THIS REPOSITORY DID NOT CURATE, and the only adapter here with a
+     control that was designed rather than assumed. */
+  { id: "discovery", label: DISC.famDiscovery, question: DISC.qFamDiscovery },
   { id: "screens", label: S.famScreens, question: S.qFamScreens },
   { id: "method", label: S.famMethod, question: S.qFamMethod },
 ];
@@ -67,6 +72,8 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
     blurb: S.viewCancerBlurb, render: () => <CancerPage /> },
   { id: "rare", label: S.viewRare, family: "rare",
     blurb: S.viewRareBlurb, render: () => <RarePage /> },
+  { id: "obesity", label: DISC.view, family: "discovery",
+    blurb: DISC.viewBlurb, render: () => <DiscoveryPage /> },
   { id: "devices", label: DEV.view, family: "tech",
     blurb: DEV.viewBlurb, render: () => <DevicesPage /> },
   { id: "docs", label: S.viewDocs, family: "method",

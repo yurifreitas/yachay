@@ -285,6 +285,37 @@ SOURCES: tuple[Source, ...] = (
         redistributable=False,
     ),
     Source(
+        key="obesity_thermo_cells",
+        name="Broad / EWSC obesity challenge — TF150 thermogenic scores per cell",
+        url="local — supplied with the challenge, not fetched",
+        filename="TF150_ThermoScores_cell.csv",
+        subdir="obesity",
+        approx_mb=12.6,
+        gives="25,296 CELLS, each carrying twelve thermogenic signature z-scores and the gene "
+              "perturbation it received. The challenge ranks perturbations by the mean of "
+              "their top three signatures — a top-k over correlated scores, computed on "
+              "between 8 and 688 cells depending on the perturbation. That is the four-"
+              "question fit test passed on every question, and it comes with something no "
+              "other adapter here has had: a DESIGNED non-targeting control in the same "
+              "harness, 2,242 cells deep, so the null can be resampled instead of assumed.",
+        licence="challenge data; not redistributable — see the challenge terms",
+        redistributable=False,
+    ),
+    Source(
+        key="obesity_thermo_perturbation",
+        name="Broad / EWSC obesity challenge — TF150 scores per perturbation",
+        url="local — supplied with the challenge, not fetched",
+        filename="TF150_ThermoScores_perturbation.csv",
+        subdir="obesity",
+        approx_mb=0.03,
+        gives="The per-perturbation aggregate the challenge scores on, including its own "
+              "`agg_top3_z` column. Carried so the calibration in "
+              "analyses/obesity_thermogenesis.py can be read against the number the "
+              "competition itself used.",
+        licence="challenge data; not redistributable — see the challenge terms",
+        redistributable=False,
+    ),
+    Source(
         key="gwas_studies",
         name="GWAS Catalog — studies",
         url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/gwas-catalog-studies.tsv",

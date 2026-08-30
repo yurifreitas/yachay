@@ -115,7 +115,11 @@ const MIGRATED = [
   },
 
   {
-
+    name: "discovery",
+    page: join(SRC, "features/discovery/DiscoveryPage.tsx"),
+    registry: join(SRC, "features/discovery/discoverySections.tsx"),
+  },
+  {
     name: "run",
 
     page: join(SRC, "features/run/RunDash.tsx"),

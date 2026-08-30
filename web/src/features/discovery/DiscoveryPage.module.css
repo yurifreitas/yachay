@@ -1,0 +1,131 @@
+/* Predictive technologies. Borrows the measured-panel vocabulary rather than inventing a
+   second one — a new area that looks different from the rest of the site would read as a
+   different site, and the epistemics here are the same epistemics. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-12);
+  padding: var(--sp-8) 0 var(--sp-24);
+  max-width: 1180px;
+}
+
+.head { display: flex; flex-direction: column; gap: var(--sp-4); }
+.eyebrow {
+  margin: 0;
+  font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.head h2 {
+  margin: 0;
+  font-size: clamp(28px, 3.6vw, 44px);
+  font-weight: 600; line-height: 1.14; letter-spacing: -0.022em;
+  max-width: 22ch; text-wrap: balance;
+}
+.lede {
+  margin: 0; max-width: 68ch;
+  font-size: 16px; line-height: 1.6; color: var(--r-text-2);
+}
+.lede strong { color: var(--r-text); font-weight: 600; }
+
+/* Same two-column block the rare atlas uses: heading rail on the left, view on the right. */
+.block {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: var(--sp-8) var(--sp-16);
+  width: 100%;
+  align-items: start;
+}
+.block > div:first-child { grid-column: 1; position: sticky; top: var(--sp-16); }
+.block > *:not(:first-child) { grid-column: 2; }
+@media (max-width: 1200px) {
+  .block { grid-template-columns: minmax(0, 1fr); }
+  .block > div:first-child, .block > *:not(:first-child) { grid-column: 1; position: static; }
+}
+
+.h3 {
+  margin: 0 0 var(--sp-2);
+  font-size: 26px; font-weight: 600; line-height: 1.2; letter-spacing: -0.015em;
+  max-width: 24ch; text-wrap: balance;
+}
+.sub {
+  margin: 0; max-width: 44ch;
+  font-size: 15px; line-height: 1.62; color: var(--r-text-2);
+}
+
+.skel {
+  min-height: 320px;
+  border-radius: var(--r-radius);
+  background: var(--r-surface-2);
+}
+
+/* ------------------------------------------------------------------ the year columns
+   A column chart rather than the row bars used elsewhere, because the reading here is a
+   SHAPE over time and rows make a reader reconstruct it from lengths. Direct labels on every
+   column: thirty-odd years is few enough that a value axis would be chrome. */
+.cols {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 200px;
+  padding-top: var(--sp-6);
+  overflow-x: auto;
+}
+.col {
+  position: relative;
+  display: flex; flex-direction: column; justify-content: flex-end; align-items: center;
+  flex: 1 0 18px;
+  height: 100%;
+}
+.colBar {
+  width: 100%;
+  min-height: 1px;
+  border-radius: 2px 2px 0 0;
+  background: var(--unknown);
+}
+/* IN THE FLOW, not absolutely positioned at the top of the column.
+   The first version pinned every value 16px above the COLUMN, which is full height — so on a
+   two-device year the number floated a long way above a one-pixel bar and belonged, visually,
+   to nothing. In the flow above a bottom-aligned bar it sits on the bar it labels, whatever
+   the height. */
+.colN {
+  margin-bottom: 2px;
+  font-size: 9.5px; color: var(--r-text-3);
+  font-variant-numeric: tabular-nums;
+  writing-mode: vertical-rl;
+}
+/* Once the columns are narrow enough to need it, the label turns. Horizontal, a three-digit
+   count in an 18px column overlaps its neighbours. */
+@media (min-width: 900px) {
+  .colN { writing-mode: horizontal-tb; }
+}
+.colY {
+  margin-top: var(--sp-1);
+  font-size: 9.5px; color: var(--r-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ the floor bars
+   Three extents on one track: the mean of the control resample and the two percentiles a
+   claim has to clear. Stacked back to front so the solid mean sits on top of the lighter
+   percentile extents, which is the reading order — what zero is, then what beating it takes. */
+.floorMean, .floorP95, .floorP99 {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+}
+.floorP99 { background: color-mix(in oklch, var(--unknown) 18%, transparent); }
+.floorP95 { background: color-mix(in oklch, var(--unknown) 34%, transparent); }
+.floorMean { background: var(--unknown); }
+
+/* Its own track, because the shared one is not a positioning context and three stacked
+   extents need one. Same height and radius so the two read as the same kind of object. */
+.floorTrack {
+  position: relative;
+  height: 14px;
+  border-radius: 999px;
+  background: var(--r-surface-2);
+  overflow: hidden;
+}

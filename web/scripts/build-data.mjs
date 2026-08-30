@@ -419,6 +419,13 @@ emit("figures", figures);
     emit("trait_atlas", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
 
+  // Stage 1 on the obesity challenge's own aggregate — the first adapter here with a
+  // DESIGNED control pool, resampled rather than assumed.
+  {
+    const f = join(REPO, "out", "obesity", "obesity_thermogenesis.json");
+    emit("obesity_thermogenesis", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   // The predictive-technology layer's founding measurement: what a regulator has actually
   // permitted, which is the only rung of a readiness scale that can be observed rather than
   // asserted. Lives in out/devices/ because it is not about rare disease.
