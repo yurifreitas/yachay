@@ -132,6 +132,10 @@ export const SAMP = {
   ),
   seFamilies: bi("the two families the prediction named, and the three it did not",
                  "as duas famílias que a previsão nomeou, e as três que não"),
+  seContrast: bi(
+    "the difference the whole result rests on, with its own interval",
+    "a diferença sobre a qual todo o resultado repousa, com o próprio intervalo",
+  ),
   seObjection: bi("the objection to this result, tested",
                   "a objeção a este resultado, testada"),
   sePathways: bi("every pathway on its own", "cada via por si"),

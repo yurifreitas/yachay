@@ -330,14 +330,22 @@ Z_WITHOUT_INTERVAL = {
     "figures": "a rendering of finished artefacts, carrying whatever they carried",
     "tail_calibration": "reports the calibration curve rather than a per-entity estimate; an "
                         "interval would be on the curve and is not yet computed",
-    "hiv_resistance": "⚠️ DEBT. Permutation z per mutation with no bootstrap on the observed "
-                      "fold-resistance. The carrier sets overlap, so the resample has to be "
-                      "over isolates and is not written",
-    "twin_propagation": "⚠️ DEBT. Degree-stratified z per reached gene, no interval on the "
-                        "propagation score itself",
-    "signal_energy": "⚠️ DEBT. Per-pathway z against a permutation null with no bootstrap over "
-                     "diseases on the observed mutual information",
 }
+
+#: The three ⚠️ DEBT entries this dict carried on 2026-08-30 — hiv_resistance, twin_propagation
+#: and signal_energy — were PAID, each with the resample its own entry named, and each one
+#: changed what the artefact says:
+#:
+#:   twin_propagation  leave-one-out over the seed genes. 34 of 100 published reach genes keep
+#:                     a z above 1.96 at the bottom of their interval, and NOT ONE of the ten
+#:                     largest z values does. Ranking by z selects the rarely-reached, because
+#:                     the degree-matched null has almost no spread at degree 5.
+#:   hiv_resistance    bootstrap over isolates, rescoring every mutation on each resample so
+#:                     the carrier overlap survives. It found the assay's ceiling: 13 of the
+#:                     60 published mutations have every carrier at ">100-fold", so their
+#:                     scores are equal by construction and their ORDER comes from the null.
+#:   signal_energy     bootstrap over diseases. The negative verdict stands, and the contrast
+#:                     it rests on now carries an interval of its own.
 
 
 def check_intervals() -> tuple[str, list[str], int]:

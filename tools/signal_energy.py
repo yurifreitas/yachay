@@ -307,6 +307,65 @@ def main() -> int:
     # HOW MUCH OF THIS SURVIVES ITS OWN INTERVAL. Reported per arm, because the verdict is a
     # difference of two family means and a difference between two quantities that each span
     # zero is not a difference at all.
+    # THE VERDICT IS A DIFFERENCE, AND A DIFFERENCE NEEDS ITS OWN INTERVAL.
+    #
+    #  standards.md §4: "a difference smaller than its own interval is not a difference and
+    #  must not be reported as one." Everything above gives each PATHWAY an interval. The
+    #  claim this file actually makes is about two FAMILY MEANS, and until now that claim had
+    #  no uncertainty attached at either end - the negative verdict rested on comparing
+    #  -0.009477 with -0.005272 as though both were exact.
+    #
+    #  Each pathway's form-minus-process contrast carries the two arms' standard errors
+    #  combined in quadrature; the family mean's error is the quadrature sum over its members
+    #  divided by their count.
+    #
+    #  ⚠️ THE ASSUMPTION THIS MAKES IS FALSE, AND THE MARGIN IS SMALL. Combining that way
+    #  treats pathways within a family as independent. They are not: they share diseases, and
+    #  a disease that fails in one Signal Transduction pathway usually fails in several. So
+    #  the interval below is a LOWER BOUND on the width. The field-minus-energy contrast
+    #  clears zero by about a third of its own half-width, which means a true error only ~33%
+    #  larger than this estimate would put zero inside it. That is not a margin to build a
+    #  claim on, and the payload says so rather than reporting the contrast as established.
+    def family_interval(name: str) -> dict | None:
+        members = [r for r in rows if r.get("family") == name
+                   and r["morphogenetic"].get("observed_se")
+                   and r["physiological"].get("observed_se")]
+        if not members:
+            return None
+        diffs = [r["morphogenetic"]["excess_bits"] - r["physiological"]["excess_bits"]
+                 for r in members]
+        ses = [math.hypot(r["morphogenetic"]["observed_se"],
+                          r["physiological"]["observed_se"]) for r in members]
+        k = len(members)
+        mean = statistics.fmean(diffs)
+        se = math.sqrt(sum(e * e for e in ses)) / k
+        return {"pathways": k, "mean": round(mean, 6), "se": round(se, 6),
+                "ci95": [round(mean - 1.96 * se, 6), round(mean + 1.96 * se, 6)]}
+
+    fam_ci = {f: family_interval(f) for f in sorted({r.get("family") for r in rows} - {None})}
+    contrast = None
+    if fam_ci.get("field") and fam_ci.get("energy"):
+        a, b = fam_ci["field"], fam_ci["energy"]
+        dd = a["mean"] - b["mean"]
+        sd_ = math.hypot(a["se"], b["se"])
+        # How much wider the true error would have to be before zero enters the interval.
+        # Printed because it is the number that decides whether the correlation this ignores
+        # matters, and it is more useful than a p-value nobody can act on.
+        slack = abs(dd) / (1.96 * sd_) if sd_ else None
+        contrast = {
+            "field_minus_energy": round(dd, 6),
+            "se": round(sd_, 6),
+            "ci95": [round(dd - 1.96 * sd_, 6), round(dd + 1.96 * sd_, 6)],
+            "spans_zero": abs(dd) < 1.96 * sd_,
+            "width_multiple_that_would_reach_zero": round(slack, 2) if slack else None,
+            "says": ("The contrast the prediction was about runs the OPPOSITE way and its "
+                     "interval does not contain zero - but it clears zero by a factor of "
+                     "%.2f on an independence assumption that is false, since pathways in a "
+                     "family share diseases. An error a third wider swallows it. Reported as "
+                     "a direction with a stated fragility, NOT as an established contrast."
+                     % slack if slack else ""),
+        }
+
     spans = {
         "overall": sum(1 for r in rows if r["overall"].get("excess_spans_zero")),
         "morphogenetic": sum(1 for r in rows if r["morphogenetic"].get("excess_spans_zero")),
@@ -373,6 +432,8 @@ def main() -> int:
             "own numbers are published beside it."),
         "verdict": verdict,
         "excess_spanning_zero": spans,
+        "family_mean_intervals": fam_ci,
+        "contrast_with_its_interval": contrast,
         "family_means_form_minus_process": family_means,
         "family_means_normalised": family_means_norm,
         "arm_entropies_bits": {"morphogenetic": round(h_morph, 4),
@@ -418,6 +479,12 @@ def main() -> int:
     DEST.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nwrote {DEST.relative_to(ROOT)}")
     print(f"  family means (form - process): {family_means}")
+    if contrast:
+        print("  field - energy = %+.6f  95%% [%+.6f, %+.6f]%s"
+              % (contrast["field_minus_energy"], contrast["ci95"][0], contrast["ci95"][1],
+                 "  SPANS ZERO" if contrast["spans_zero"] else
+                 "  clears zero by x%.2f, on an independence assumption that is false"
+                 % contrast["width_multiple_that_would_reach_zero"]))
     print(f"  pathways whose excess interval SPANS ZERO: overall {spans['overall']}, "
           f"morphogenetic {spans['morphogenetic']}, physiological {spans['physiological']} "
           f"of {spans['of_pathways']}")

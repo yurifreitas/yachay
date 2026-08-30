@@ -97,7 +97,13 @@ export function HivResistance() {
             <div className={css.tableWrap}>
               <table className={css.table}>
                 <thead>
-                  <tr><th>mutation</th><th>drug</th><th>isolates</th><th>score</th><th>z</th></tr>
+                  <tr>
+                    <th>mutation</th><th>drug</th><th>isolates</th>
+                    {/* The score column carries the interval rather than sitting beside it:
+                        a number and its uncertainty are one quantity, and putting them in
+                        two columns invites reading the first without the second. */}
+                    <th>score, 95%</th><th>z</th>
+                  </tr>
                 </thead>
                 <tbody>
                   {(cur.top ?? []).slice(0, 12).map((r: any) => {
@@ -111,7 +117,22 @@ export function HivResistance() {
                         </td>
                         <td className={css.tdMuted}>{r.drug}</td>
                         <td className={css.tdMuted}>{fmtInt(r.n)}</td>
-                        <td>{r.score?.toFixed(3)}</td>
+                        <td>
+                          {r.score?.toFixed(3)}
+                          {r.score_ci95 ? (
+                            <span className={css.tdMuted}>
+                              {" "}[{r.score_ci95[0].toFixed(2)}, {r.score_ci95[1].toFixed(2)}]
+                            </span>
+                          ) : (
+                            /* No interval is a statement, not a blank. A censored score is
+                               at the assay's reporting ceiling, so the resample cannot move
+                               it and its rank among the other censored mutations comes from
+                               the null rather than from the data. */
+                            <span className={css.badgeCensored}>
+                              {r.censored_at_assay_ceiling ? " at assay ceiling" : " no interval"}
+                            </span>
+                          )}
+                        </td>
                         <td>{r.z?.toFixed(1)}</td>
                       </tr>
                     );
@@ -120,6 +141,14 @@ export function HivResistance() {
               </table>
             </div>
             <p className={css.note}>{cur.positive_control?.says}</p>
+
+            {cur.uncertainty && (
+              <>
+                <span className={css.blockK}>{tt(DEEP.hivUncK)}</span>
+                <p className={css.blockSub}>{cur.uncertainty.says}</p>
+                <p className={css.caveat}>{cur.uncertainty.method}</p>
+              </>
+            )}
 
             <span className={css.blockK}>{tt(DEEP.hivPassengers)}</span>
             <p className={css.blockSub}>
@@ -144,6 +173,13 @@ export function HivResistance() {
   );
 }
 
+/** Whether a gene appears in the other ordering. Both lists are short, so a scan is cheaper
+ *  than building two sets on every render, and the intent stays readable at the call site. */
+const inLb = (cur: any, gene: string) =>
+  (cur.reachedByLowerBound ?? []).slice(0, 8).some((g: any) => g.gene === gene);
+const inZ = (cur: any, gene: string) =>
+  (cur.reached ?? []).slice(0, 8).some((g: any) => g.gene === gene);
+
 /* ============================================================ propagation, against degree */
 
 export function TwinPropagation() {
@@ -152,7 +188,22 @@ export function TwinPropagation() {
   const results: any[] = d.results ?? [];
   const [target, setTarget] = useState(results[0]?.target ?? "");
   const cur = results.find((r) => r.target === target) ?? results[0];
-  const maxZ = Math.max(1, ...(cur?.reached ?? []).map((g: any) => g.z));
+  // THE SCALE HAS TO INCLUDE THE NEGATIVE HALF. The first version of this track ran from 0
+  // to the largest upper bound and clamped anything below zero to the left edge — which
+  // silently deleted the most important thing several of these intervals say. DNASE2B is
+  // published at z = 1825 with an interval of [-1753, +5403]: a track that starts at zero
+  // draws that as a band beginning at the edge, and the reader sees a wide estimate instead
+  // of an estimate that does not exclude no effect at all.
+  //
+  // So the domain spans min(0, lowest bound) to the highest bound, and zero is drawn on it.
+  const bounds = (cur?.reached ?? []).flatMap((g: any) =>
+    g.z_ci95 ? [g.z_ci95[0], g.z_ci95[1]] : [g.z],
+  );
+  const lo0 = Math.min(0, ...bounds);
+  const hi0 = Math.max(1, ...bounds);
+  const unc = d.uncertainty;
+  const pct = (v: number) =>
+    `${Math.max(0, Math.min(100, (100 * (v - lo0)) / (hi0 - lo0)))}%`;
 
   return (
     <div className={css.wrap}>
@@ -163,6 +214,18 @@ export function TwinPropagation() {
           {d.method?.whyTheNull}
         </p>
       </div>
+
+      {unc && (
+        <div className={css.finding}>
+          <span className={css.value}>
+            {unc.reached_genes_surviving}/{unc.reached_genes_scored}
+          </span>
+          <p>
+            <span className={css.answersK}>{tt(DEEP.twinUncK)}</span>
+            {unc.reading} {unc.what_it_holds_fixed}
+          </p>
+        </div>
+      )}
 
       <div className={css.block}>
         <span className={css.blockK}>
@@ -186,17 +249,88 @@ export function TwinPropagation() {
             {/* Degree is printed beside every z, because the whole point of the null is that
                 a high score and a high degree are the thing being told apart. */}
             <div className={css.rows}>
-              {(cur.reached ?? []).slice(0, 12).map((g: any) => (
-                <div key={g.gene} className={css.row}>
-                  <span className={css.rowLabel}>{g.gene}</span>
-                  <span className={css.track}>
-                    <span className={css.bar} style={{ width: `${(100 * g.z) / maxZ}%` }} />
-                  </span>
-                  <span className={css.rowVal}>{g.z?.toFixed(0)} z</span>
-                  <span className={css.rowNote}>degree {g.degree}</span>
-                </div>
-              ))}
+              {(cur.reached ?? []).slice(0, 12).map((g: any) => {
+                const ci = g.z_ci95 as [number, number] | null;
+                const out = ci ? !g.survives_interval : false;
+                return (
+                  <div key={g.gene} className={css.row}>
+                    <span className={css.rowLabel}>{g.gene}</span>
+                    {ci ? (
+                      <span className={css.ciTrack}>
+                        <span
+                          className={`${css.ciBand} ${out ? css.ciBandOut : ""}`}
+                          style={{ left: pct(ci[0]), right: `calc(100% - ${pct(ci[1])})` }}
+                        />
+                        <span
+                          className={`${css.ciPoint} ${out ? css.ciPointOut : ""}`}
+                          style={{ left: pct(g.z) }}
+                        />
+                        {/* Zero, and the threshold the survival judgement uses. They sit
+                            almost on top of each other whenever an interval is wide, which
+                            is the honest picture: at that width, 1.96 and no effect at all
+                            are the same distance away. */}
+                        <span className={css.ciZero} style={{ left: pct(0) }} />
+                        <span className={css.ciRule} style={{ left: pct(1.96) }} />
+                      </span>
+                    ) : (
+                      <span className={css.track}>
+                        <span className={css.bar} style={{ width: pct(g.z) }} />
+                      </span>
+                    )}
+                    <span className={`${css.rowVal} ${out ? css.rowValOut : ""}`}>
+                      {g.z?.toFixed(0)} z
+                    </span>
+                    <span className={css.rowNote}>
+                      degree {g.degree}
+                      {ci ? ` · ${ci[0].toFixed(1)} to ${ci[1].toFixed(1)}` : ""}
+                    </span>
+                  </div>
+                );
+              })}
             </div>
+            {!cur.reached?.[0]?.z_ci95 && (
+              <p className={css.blockSub}>{tt(DEEP.twinNoInterval)}</p>
+            )}
+
+            {/* THE SAME LIST IN BOTH ORDERS. Ranking by z and ranking by the bottom of each
+                gene's interval are different questions, and for two of the four disorders
+                that can be scored they return DISJOINT sets — so showing only one of them
+                is a choice about what the reader concludes, not a layout decision.
+
+                Two columns rather than a slopegraph: where the orderings share nothing there
+                are no lines to draw, and a slopegraph with no slopes reads as a rendering
+                failure instead of as the finding. A shared gene is marked in place. */}
+            {cur.reachedByLowerBound?.length > 0 && (
+              <div className={css.twoUp}>
+                <div>
+                  <span className={css.blockK}>{tt(DEEP.twinByZ)}</span>
+                  <ol className={css.rankList}>
+                    {cur.reached.slice(0, 8).map((g: any) => (
+                      <li key={g.gene}
+                          className={inLb(cur, g.gene) ? css.rankShared : undefined}>
+                        {g.gene} <span className={css.rowNote}>z {g.z?.toFixed(0)}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <div>
+                  <span className={css.blockK}>{tt(DEEP.twinByLb)}</span>
+                  <ol className={css.rankList}>
+                    {cur.reachedByLowerBound.slice(0, 8).map((g: any) => (
+                      <li key={g.gene}
+                          className={inZ(cur, g.gene) ? css.rankShared : undefined}>
+                        {g.gene} <span className={css.rowNote}>≥ {g.lower?.toFixed(1)}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </div>
+            )}
+            {cur.rankAgreement !== null && cur.rankAgreement !== undefined && (
+              <p className={css.caveat}>
+                {cur.rankAgreement} {tt(DEEP.twinAgreement)} {cur.reachedByLowerBound?.length}.
+              </p>
+            )}
           </>
         )}
       </div>

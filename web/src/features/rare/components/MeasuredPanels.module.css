@@ -250,3 +250,64 @@
   background: var(--r-surface-2); border-radius: var(--r-radius);
   font-size: 12.5px; line-height: 1.7; color: var(--r-text-2);
 }
+
+/* ------------------------------------------------- a point with its interval, on one track
+   The bar chart above encodes a point estimate as a length, which is the right encoding for
+   a quantity and the wrong one for an estimate: it draws the number as though it were known.
+   Where an interval exists, the track below draws the INTERVAL as the band and the point as
+   a tick inside it, so a wide estimate reads as wide rather than as long.
+
+   The dashed rule is the threshold the survival judgement uses (z = 1.96). It is drawn
+   because "survives its own interval" is otherwise a claim the reader has to take on faith:
+   with the rule on the track, whether the band's left edge clears it is visible. */
+.ciTrack {
+  position: relative; height: 14px; border-radius: 999px;
+  background: var(--r-surface-2);
+}
+.ciBand {
+  position: absolute; top: 0; bottom: 0; border-radius: 999px;
+  background: color-mix(in oklch, var(--unknown) 34%, transparent);
+}
+.ciBandOut { background: color-mix(in oklch, var(--r-text-3) 22%, transparent); }
+.ciPoint {
+  position: absolute; top: -2px; bottom: -2px; width: 2px; border-radius: 1px;
+  background: var(--unknown);
+}
+.ciPointOut { background: var(--r-text-3); }
+.ciZero {
+  position: absolute; top: -3px; bottom: -3px; width: 1px;
+  background: var(--r-text-3);
+}
+.ciRule {
+  position: absolute; top: -3px; bottom: -3px; width: 0;
+  border-left: 1px dashed var(--r-border-hi);
+}
+.rowValOut { color: var(--r-text-3); }
+
+/* A censored value, marked where the interval would have been. Muted rather than alarming:
+   it is a limit of the assay, not an error in the row. */
+.badgeCensored {
+  font-size: 11px; color: var(--r-text-3); font-style: italic;
+}
+
+/* ------------------------------------------------------ the same list, ordered two ways
+   minmax(0, 1fr) and not 1fr: a bare 1fr is minmax(auto, 1fr), whose min is the content's
+   min-content width, so a long gene symbol would push the grid wider than its container and
+   scroll the page sideways. */
+.twoUp {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-6);
+}
+.rankList {
+  margin: var(--sp-3) 0 0; padding-left: 2.2ch;
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  font-size: 13px; color: var(--r-text-2); font-variant-numeric: tabular-nums;
+}
+.rankShared { color: var(--r-text); font-weight: 500; }
+@media (max-width: 640px) { .twoUp { grid-template-columns: minmax(0, 1fr); } }
+
+/* The interval on a zero-centred family mean. A hairline band rather than a filled bar: it
+   sits ON the mean it qualifies, and filling it would read as a second quantity. */
+.corrCi {
+  position: absolute; top: 50%; height: 2px; transform: translateY(-50%);
+  background: var(--r-text-3); border-radius: 1px;
+}

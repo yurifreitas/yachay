@@ -1670,3 +1670,63 @@ by deleting a stage and by deleting one stage's `outputs=`.
 One ⚠️ entry remains: `capability_math`, which reads `build_atlas` output with no declared
 edge. It is the whole of the outstanding debt in this family.
 
+
+### A40 — three artefacts published a z with no interval, and paying the debt changed all three · **closed**
+
+*2026-08-30.* `docs/references/standards.md` §4 requires every published number to carry its
+uncertainty. An audit of the 55 bundled artefacts found **eight publishing a z and no
+interval**, four of them written that same week. Four were exempt on shape — a run manifest, a
+projection of it, a rendering, a calibration curve — and three were debt, recorded in
+`Z_WITHOUT_INTERVAL` in `tools/index_check.py` with the resample each one needed written into
+its own entry.
+
+A z is a distance from a null's mean in units of that null's spread. It says nothing about how
+far the observed value itself would move on a different sample. All three were paid, each with
+the resample its entry named, and **each one changed what its artefact says**:
+
+**`twin_propagation` — leave-one-out over the seed genes.** The seed sets are a handful of
+curated causal genes, so a bootstrap with replacement over four of them draws the same gene
+twice and calls it a replicate; the jackknife asks the honest version. A random walk with
+restart is linear in its restart vector, so the k replicates cost k solves. 34 of 100
+published reach genes keep a z above 1.96 at the bottom of their interval. **Not one of the
+ten largest z values does** — the largest, DNASE2B at z = 1825, has an interval of
+[−1753, +5403]. Seven of the eleven disorders have fewer than three seed genes in the graph
+and get no interval at all, which is itself the finding.
+
+The mechanism is measurable and it is a defect in the statistic this file publishes. The
+degree-matched null exists so hubs cannot win by being hubs, and at that end it works. At the
+other end it inverts: a gene of degree 5 is missed by almost every null draw, so the null's
+spread there is near zero and any reach at all divides into an enormous z. **Ranking by z
+selects the rarely reached** — median degree 8, against 15 for the interval's lower bound —
+and those are exactly the genes whose intervals are widest. The artefact now publishes both
+orderings, and for two of the four disorders that can be scored they share **no genes at all**:
+cystic fibrosis gives ANO2, CLCA2, ANO1 by z and ALB, TMPRSS15, XPNPEP2 by lower bound; lupus
+gives DNASE2B, DNASE2, CXorf21 against IFNG, CD28, PTPRC.
+
+**`hiv_resistance` — bootstrap over isolates.** The entry said the resample had to be over
+isolates because the carrier sets overlap, and that is what makes it worth doing: every
+mutation is rescored on each resample, so the dependence survives. The drug is held at the one
+the full data chose, or each draw would re-take the max over the panel and inflate the
+interval with the selection Stage 1 exists to remove.
+
+It found the assay's ceiling. The bootstrap returned a width of **exactly zero** for several
+top-ranked mutations, which is not perfect precision: `100` is the most common value in the
+dataset — **8.6% of every fold-resistance in the PI panel** — because the phenotype assay
+reports ">100-fold" as 100. 13 of the 60 published mutations have every carrier at that
+ceiling, including textbook majors 184V, 41L and 215Y. Their scores are equal by
+construction, so **their order in the ranking comes from the permutation null, not from the
+resistance data**. That is published as censoring rather than as a zero-width interval.
+
+**`signal_energy` — bootstrap over diseases.** The negative verdict stands: 2 of 29 pathways
+have an overall excess whose interval spans zero. The verdict is a difference of two family
+means, and standards.md §4 says a difference smaller than its own interval is not one — so the
+contrast now carries an interval computed from the members' own standard errors, with the
+assumption stated: combining them treats pathways in a family as independent, which is false,
+since they share diseases. The interval is therefore a lower bound on the width, and the
+contrast clears zero by a margin an error a third wider would swallow. Reported as a direction
+with a stated fragility, not as an established result.
+
+**What this cost the reader, honestly.** Before this, every one of these three artefacts read
+as a ranked list of findings. After it, one of them is a ranked list whose top ten do not
+survive, one is a list whose top is at an assay ceiling, and one is a negative result whose
+key contrast is fragile. Nothing was wrong that a rerun fixed; the numbers were always these.

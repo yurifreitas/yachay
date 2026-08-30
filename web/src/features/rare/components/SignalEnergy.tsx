@@ -33,8 +33,16 @@ export function SignalEnergy() {
   const raws: Record<string, number> = d.family_means_form_minus_process ?? {};
   const norm: Record<string, number> = d.family_means_normalised ?? {};
   const rows: any[] = d.pathways ?? [];
+  const cis: Record<string, any> = d.family_mean_intervals ?? {};
+  const contrast = d.contrast_with_its_interval;
   const families = Object.keys(raws).sort((a, b) => raws[a] - raws[b]);
-  const span = Math.max(...Object.values(raws).map((v) => Math.abs(v)), 1e-9);
+  // The half-width has to cover the INTERVALS and not just the means, or a whisker leaves
+  // its own track and the chart shows a narrower disagreement than the numbers hold.
+  const span = Math.max(
+    ...Object.values(raws).map((v) => Math.abs(v)),
+    ...Object.values(cis).flatMap((c: any) => (c ? c.ci95.map(Math.abs) : [])),
+    1e-9,
+  );
 
   const drawn = rows
     .filter((r) => r.form_minus_process != null)
@@ -74,6 +82,19 @@ export function SignalEnergy() {
                   <span className={css.corrZero} />
                   <span className={f === "field" ? css.corrBar : `${css.corrBar} ${css.corrBarNeg}`}
                         style={{ left: v < 0 ? `${50 - w}%` : "50%", width: `${w}%` }} />
+                  {/* The bar is the mean; the whisker is what the mean is worth. Drawn over
+                      the bar rather than beside it, because a family whose interval crosses
+                      the zero line has not established a sign — and sign is the entire
+                      prediction this chart was built to test. */}
+                  {cis[f] && (
+                    <span
+                      className={css.corrCi}
+                      style={{
+                        left: `${50 + (50 * cis[f].ci95[0]) / span}%`,
+                        width: `${(50 * (cis[f].ci95[1] - cis[f].ci95[0])) / span}%`,
+                      }}
+                    />
+                  )}
                 </span>
                 <span className={css.corrVal}>{v >= 0 ? "+" : ""}{v}</span>
               </div>
@@ -86,6 +107,28 @@ export function SignalEnergy() {
           <strong>energy</strong> below it.
         </p>
       </div>
+
+      {contrast && (
+        <div className={css.block}>
+          <span className={css.blockK}>{tt(SAMP.seContrast)}</span>
+          <div className={css.pair}>
+            <div className={css.stat}>
+              <span className={css.statVal}>
+                {contrast.field_minus_energy >= 0 ? "+" : ""}
+                {contrast.field_minus_energy}
+              </span>
+              <span className={css.statK}>field minus energy, bits</span>
+            </div>
+            <div className={css.stat}>
+              <span className={css.statVal}>
+                [{contrast.ci95[0]}, {contrast.ci95[1]}]
+              </span>
+              <span className={css.statK}>its 95% interval</span>
+            </div>
+          </div>
+          <p className={css.caveat}>{contrast.says}</p>
+        </div>
+      )}
 
       <div className={css.block}>
         <span className={css.blockK}>{tt(SAMP.seObjection)}</span>

@@ -216,6 +216,33 @@ def main() -> int:
         seed_idx = [index[g] for g in present]
         p = propagate(W, seed_idx, n)
 
+        # ---- an interval on the propagation itself ---------------------------------------
+        #
+        #  THE Z IS NOT AN UNCERTAINTY. Everything reported below is a distance from a
+        #  degree-matched null in units of that null's spread; none of it says how far the
+        #  propagation itself would move if the seed set had been curated slightly
+        #  differently. That question is not academic here, because the seed sets are TINY —
+        #  a handful of causal genes per disease — and a random walk from three genes is
+        #  substantially a walk from whichever of the three sits in the densest neighbourhood.
+        #
+        #  LEAVE-ONE-OUT OVER THE SEEDS, which is the resample the object admits. A bootstrap
+        #  with replacement over four genes draws the same gene twice and calls the result an
+        #  independent replicate; the jackknife asks the honest version of the same question —
+        #  how much of this reach survives dropping any single causal gene.
+        #
+        #  It is free, because a random walk with restart is LINEAR in its restart vector:
+        #  p(S) is the mean of the single-seed propagations over S, so the k replicates cost
+        #  k solves and no re-derivation.
+        #
+        #  WHAT IT HOLDS FIXED, said out loud: the null. Each replicate is scored against the
+        #  full seed set's degree-matched null rather than a null redrawn at k-1 seeds, which
+        #  would cost N_NULL x k propagations per disease. So this interval carries the
+        #  variation from the seed set and not the variation in the calibration, and is
+        #  therefore a LOWER bound on the total uncertainty. Reported as such.
+        singles = {i: propagate(W, [i], n) for i in seed_idx} if len(seed_idx) >= 3 else {}
+        loo = [np.mean([v for j, v in singles.items() if j != i], axis=0)
+               for i in seed_idx] if len(singles) >= 3 else []
+
         # ---- the degree-matched null -----------------------------------------------------
         null = np.zeros((N_NULL, n))
         for k in range(N_NULL):
@@ -229,7 +256,37 @@ def main() -> int:
         z = (p - mu) / sd
         z[seed_idx] = np.nan                      # a seed reaching itself is not a finding
 
+        # The jackknife standard error of the z, gene by gene. sqrt((k-1)/k * sum of squared
+        # deviations) is the jackknife's own variance estimator, not a bootstrap standard
+        # deviation: leave-one-out replicates are correlated by construction and the (k-1)/k
+        # factor is what corrects for it. Using pstdev here would understate the interval by
+        # roughly a factor of k, which is the classic way to publish a jackknife too narrow.
+        z_se = None
+        if loo:
+            zs = np.array([(q - mu) / sd for q in loo])          # (k, n)
+            k_ = len(loo)
+            z_se = np.sqrt((k_ - 1) / k_ * ((zs - zs.mean(axis=0)) ** 2).sum(axis=0))
+
         top = np.argsort(np.nan_to_num(z, nan=-np.inf))[::-1][: args.top]
+
+        # ---- the same list, ordered by the bottom of each interval ------------------------
+        #
+        #  THE ORDER ABOVE IS BY THE LEAST STABLE QUANTITY IN THE ARTEFACT. Sorting by z puts
+        #  first whichever gene the walk happens to reach hardest from this particular seed
+        #  set, and the jackknife says that is exactly the quantity a single seed gene moves
+        #  most: not one of the ten largest z values in this file keeps a positive interval.
+        #  The largest, DNASE2B at z = 1825, has an interval of [-1753, +5403].
+        #
+        #  So the artefact carries BOTH orderings, and the difference between them is a
+        #  measurement rather than a presentation choice. This is the same operation Stage 1
+        #  performs everywhere else in this library — rank on what survives calibration, not
+        #  on the raw statistic — applied here to the propagation's own uncertainty.
+        top_lb, agreement = [], None
+        if z_se is not None:
+            lb = np.where(np.isfinite(z), z - 1.96 * z_se, -np.inf)
+            lb[seed_idx] = -np.inf
+            top_lb = list(np.argsort(np.nan_to_num(lb, nan=-np.inf))[::-1][: args.top])
+            agreement = len(set(int(i) for i in top_lb) & set(int(i) for i in top))
         results.append({
             "target": name,
             "seeds": present,
@@ -237,16 +294,110 @@ def main() -> int:
             "seedsMissing": missing,
             "reached": [
                 {"gene": nodes[i], "z": round(float(z[i]), 3),
-                 "score": float(p[i]), "degree": int(degree[i])}
+                 "score": float(p[i]), "degree": int(degree[i]),
+                 # None when the seed set has fewer than three genes: a jackknife over two
+                 # points is one replicate, and reporting an interval from it would be
+                 # inventing a width. Which diseases those are is counted in the payload.
+                 "z_se": (round(float(z_se[i]), 3) if z_se is not None else None),
+                 "z_ci95": ([round(float(z[i] - 1.96 * z_se[i]), 3),
+                             round(float(z[i] + 1.96 * z_se[i]), 3)]
+                            if z_se is not None else None),
+                 # The honest version of "this gene is reached": the LOWER end of the
+                 # interval still clears the null, so the reach does not depend on one
+                 # curated causal gene.
+                 "survives_interval": (bool(z_se is not None
+                                            and float(z[i] - 1.96 * z_se[i]) > 1.96))}
                 for i in top if np.isfinite(z[i])
             ],
+            # The honest ordering: highest lower bound first. Empty when the seed set is too
+            # small for an interval, rather than falling back to the z ordering under a name
+            # that would claim it had been calibrated.
+            "reachedByLowerBound": [
+                {"gene": nodes[i], "z": round(float(z[i]), 3),
+                 "lower": round(float(z[i] - 1.96 * z_se[i]), 3),
+                 "degree": int(degree[i])}
+                for i in top_lb if np.isfinite(z[i])
+            ],
+            "rankAgreement": agreement,
         })
         print("  %-42s %2d seeds -> top reach %s"
               % (name[:42], len(present),
                  ", ".join(nodes[i] for i in top[:5] if np.isfinite(z[i]))))
 
+    # HOW MUCH OF THE REACH SURVIVES ITS OWN INTERVAL, across every disease. This is the
+    # number the earlier version of this artefact could not have printed, because it had no
+    # interval to survive.
+    # WHAT THE TWO ORDERINGS SELECT FOR, measured rather than asserted.
+    #
+    #  The degree-matched null exists so that hubs cannot win by being hubs. It works. What
+    #  nobody checked is what it does at the OTHER end: for a gene of degree 5, almost every
+    #  null draw fails to reach it at all, so the null's spread there is nearly zero and any
+    #  reach at all divides into an enormous z. The null built to stop hubs winning made the
+    #  rarely-reached win instead, and a z of 1825 is what that looks like.
+    #
+    #  The jackknife is what makes it visible, because those same genes carry the widest
+    #  intervals: reaching them depends entirely on which seed the walk started from. So the
+    #  median degree of the two orderings is the diagnostic, and it is one line.
+    import statistics as _stats
+    deg_z = [g["degree"] for r in results for g in r.get("reached", []) if r.get("rankAgreement") is not None]
+    deg_lb = [g["degree"] for r in results for g in r.get("reachedByLowerBound", [])]
+
+    with_interval = [r for r in results if any(g.get("z_ci95") for g in r.get("reached", []))]
+    reached_all = [g for r in results for g in r.get("reached", [])]
+    scored = [g for g in reached_all if g.get("z_ci95")]
+    survived = [g for g in scored if g["survives_interval"]]
+    too_few_seeds = [r["target"] for r in results
+                     if r.get("reached") and not any(g.get("z_ci95") for g in r["reached"])]
+
     payload = {
         "generated": "tools/twin_propagation.py",
+        "uncertainty": {
+            "method": ("leave-one-out over the seed genes; the jackknife standard error "
+                       "sqrt((k-1)/k * sum of squared deviations) on each reached gene's z, "
+                       "reported as point +/- 1.96 SE"),
+            "why_jackknife": ("the seed sets are a handful of curated causal genes. A "
+                              "bootstrap with replacement over four genes draws the same "
+                              "gene twice and calls that an independent replicate"),
+            "what_it_holds_fixed": ("the degree-matched null. Each replicate is scored "
+                                    "against the full seed set's null rather than one "
+                                    "redrawn at k-1 seeds, so this is a LOWER bound on the "
+                                    "total uncertainty, not the whole of it"),
+            "diseases_with_an_interval": len(with_interval),
+            "diseases_with_too_few_seeds": too_few_seeds,
+            "reached_genes_scored": len(scored),
+            "reached_genes_surviving": len(survived),
+            "orderings_disagree": (
+                "The list is published in both orders because they are not the same list. "
+                "Ranking by z puts first the gene the walk reaches hardest from this exact "
+                "seed set, which the jackknife shows is the quantity one seed gene moves "
+                "most: NOT ONE of the ten largest z values in this artefact keeps a positive "
+                "interval, and the largest of all sits at 1825 with an interval of "
+                "[-1753, +5403]. `rankAgreement` per disorder counts how many genes the two "
+                "orderings share."),
+            "what_the_orderings_select": ({
+                "median_degree_by_z": _stats.median(deg_z),
+                "median_degree_by_lower_bound": _stats.median(deg_lb),
+                "mean_degree_by_z": round(_stats.fmean(deg_z), 1),
+                "mean_degree_by_lower_bound": round(_stats.fmean(deg_lb), 1),
+                "says": ("The degree-matched null was built so hubs could not win by being "
+                         "hubs, and at that end it works. At the other end it inverts: a "
+                         "gene of degree 5 is missed by almost every null draw, so the "
+                         "null's spread there is near zero and any reach at all divides "
+                         "into an enormous z. Ranking by z therefore selects the "
+                         "RARELY REACHED - median degree %d against %d for the interval's "
+                         "lower bound - and those are exactly the genes whose intervals are "
+                         "widest, because reaching them depends on which single seed the "
+                         "walk started from. This is a defect in the statistic this file "
+                         "publishes, found by giving it an interval."
+                         % (_stats.median(deg_z), _stats.median(deg_lb))),
+            } if deg_z and deg_lb else None),
+            "reading": (f"{len(survived)} of {len(scored)} reported reach genes keep a z "
+                        f"above 1.96 at the LOWER end of their own interval; the rest are "
+                        f"carried by one causal gene, and dropping it takes the finding "
+                        f"with it." if scored else
+                        "no disease has three seed genes in the graph, so no interval is "
+                        "reported anywhere in this artefact."),
+        },
         "premise": (
             "tools/thesis_seed.py states the object being built: an ultra-rare disease as a "
             "multiscale dynamical system that can SIMULATE THE PROPAGATION OF PERTURBATIONS. "
@@ -285,6 +436,9 @@ def main() -> int:
     }
 
     RARE.mkdir(parents=True, exist_ok=True)
+    if scored:
+        print("  reach surviving its own interval: %d of %d (%d disease(s) have too few "
+              "seeds for one)" % (len(survived), len(scored), len(too_few_seeds)))
     dest = RARE / "twin_propagation.json"
     dest.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     print()

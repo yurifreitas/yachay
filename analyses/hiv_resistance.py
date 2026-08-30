@@ -77,6 +77,17 @@ MIN_CARRIERS = 3
 #: Permutation draws behind the null.
 HIV_PERMUTATIONS = 200
 
+#: Bootstrap resamples of the ISOLATES, behind the interval on each observed score.
+#:
+#: The resample has to be over isolates and not over each mutation's carriers separately,
+#: because the carrier sets overlap heavily - resistance mutations are selected together
+#: under a drug regime, so two mutations often ride on largely the same isolates. Resampling
+#: isolates once and rescoring every mutation on that resample keeps that dependence intact,
+#: which is the only version of the interval that means anything for a SHORTLIST: the
+#: question is not "would this mutation survive resequencing" one at a time, but "would this
+#: list".
+HIV_BOOTSTRAP = 200
+
 SEED = 20260829
 
 #: THE POSITIVE CONTROL, named before the run. ADR 0003: a failed positive control blocks the
@@ -200,6 +211,37 @@ def main() -> int:
                 if len(vals) >= MIN_CARRIERS:
                     by_n[rec["n"]].append(statistics.median(vals))
 
+        # ---- the interval on the observed score ------------------------------------------
+        #
+        #  A Z IS NOT AN UNCERTAINTY. Everything above measures how far each mutation's
+        #  fold-resistance sits from a label-permutation null. None of it says how far the
+        #  OBSERVED fold-resistance itself would move on a different sample of isolates - and
+        #  for a shortlist that is the operative question, because a clinician acting on this
+        #  list acts on the observed effect, not on its distance from a shuffle.
+        #
+        #  THE DRUG IS HELD AT THE ONE THE FULL DATA CHOSE. The score is a max over the drug
+        #  panel, so re-taking the max inside every resample would let each draw pick its own
+        #  best drug and inflate the interval with a selection this repository's own Stage 1
+        #  exists to remove. Fixing the drug makes the interval one about the fold-resistance,
+        #  which is what it claims to be.
+        boot_rng = random.Random(SEED + 11)
+        boot_scores: dict[str, list[float]] = collections.defaultdict(list)
+        n_iso = len(isolates)
+        for _ in range(HIV_BOOTSTRAP):
+            pick = [boot_rng.randrange(n_iso) for _ in range(n_iso)]
+            # Carriers of each mutation IN THIS RESAMPLE. Rebuilt rather than reweighted,
+            # because an isolate drawn twice must count twice in the median.
+            b_car: dict[str, list[int]] = collections.defaultdict(list)
+            for i in pick:
+                for m in isolates[i][0]:
+                    if m in scored:
+                        b_car[m].append(i)
+            for m, rec in scored.items():
+                d = rec["drug"]
+                vals = [isolates[i][1][d] for i in b_car.get(m, []) if d in isolates[i][1]]
+                if len(vals) >= MIN_CARRIERS:
+                    boot_scores[m].append(statistics.median(vals))
+
         rows = []
         for m, rec in scored.items():
             draws = by_n.get(rec["n"], [])
@@ -207,11 +249,65 @@ def main() -> int:
                 continue
             mu = sum(draws) / len(draws)
             sd = (sum((x - mu) ** 2 for x in draws) / (len(draws) - 1)) ** 0.5
+            reps = boot_scores.get(m, [])
+            # ---- the ceiling, found by the interval -------------------------------------
+            #
+            #  THE BOOTSTRAP RETURNED A WIDTH OF EXACTLY ZERO for several of the highest-
+            #  ranked mutations, which is not a mutation measured with perfect precision.
+            #  It is the assay's upper limit: `100` is the single most common value in this
+            #  dataset - 8.6% of every fold-resistance in the PI panel - because the
+            #  phenotype assay reports ">100-fold" as 100. Taking its log10 gives exactly
+            #  2.0, and every carrier of a strong mutation sits on that value, so every
+            #  resample returns the same median.
+            #
+            #  This matters for the SHORTLIST and not only for the interval. Among the
+            #  censored mutations the score is identical by construction, so their ORDER in
+            #  the ranking is not coming from the resistance data at all - it comes from
+            #  whatever the permutation null happened to give each carrier count. A reader
+            #  ranking 184V above 41L above 215Y is reading the null, not the assay.
+            #
+            #  So a censored score is published as censored rather than given a zero-width
+            #  interval, which would claim certainty the assay explicitly refuses to provide.
+            ceiling = max(v for iso in isolates for v in iso[1].values())
+            at_ceiling = sum(1 for i in carriers[m]
+                             for d in [rec["drug"]]
+                             if d in isolates[i][1] and isolates[i][1][d] >= ceiling - 1e-9)
+            censored = bool(reps) and statistics.pstdev(reps) == 0.0 \
+                and abs(rec["score"] - ceiling) < 1e-9
+            # A draw in which the mutation fell below MIN_CARRIERS produces no replicate, so
+            # the count is reported: an interval from 140 of 200 draws is a different object
+            # from one from 200, and a rare mutation is exactly where that happens.
+            se = statistics.pstdev(reps) if len(reps) >= 20 else None
+            if not se:
+                se = None
+            z_val = round((rec["score"] - mu) / sd, 3) if sd else None
             rows.append({
                 "mutation": m, "drug": rec["drug"], "n": rec["n"],
                 "score": round(rec["score"], 4),
                 "null_mean": round(mu, 4), "null_sd": round(sd, 4),
-                "z": round((rec["score"] - mu) / sd, 3) if sd else None,
+                "z": z_val,
+                "score_se": round(se, 4) if se else None,
+                "score_ci95": ([round(rec["score"] - 1.96 * se, 4),
+                                round(rec["score"] + 1.96 * se, 4)] if se else None),
+                "resamples": len(reps),
+                # The z with the observed score's own uncertainty carried through, and the
+                # honest version of "beats the null": the LOWER end of the interval does.
+                "z_ci95": ([round((rec["score"] - 1.96 * se - mu) / sd, 3),
+                            round((rec["score"] + 1.96 * se - mu) / sd, 3)]
+                           if se and sd else None),
+                "interval_clears_null": bool(se and sd and (rec["score"] - 1.96 * se) > mu),
+                # Why there is no interval, when there is none. An empty reason means the
+                # resample simply produced too few replicates.
+                "censored_at_assay_ceiling": censored,
+                "carriers_at_ceiling": at_ceiling,
+                "no_interval_because": (
+                    "every carrier sits at the assay's reporting ceiling (fold >= %g, "
+                    "log10 = %.1f), so the score is a lower bound and the resample cannot "
+                    "move it. Its rank among the other censored mutations is set by the "
+                    "null, not by the assay." % (10 ** ceiling, ceiling)
+                    if censored else (None if se else
+                                      "fewer than 20 resamples kept this mutation above the "
+                                      "minimum carrier count")),
             })
         rows.sort(key=lambda r: -(r["z"] or 0))
 
@@ -219,6 +315,9 @@ def main() -> int:
         # top mutations overlap? If the top of the list is one correlated block, it is not
         # twenty findings.
         top = rows[:20]
+        cens = [r for r in top if r["censored_at_assay_ceiling"]]
+        with_ci = [r for r in top if r["score_ci95"]]
+        clears = [r for r in with_ci if r["interval_clears_null"]]
         overlaps = []
         for i, a in enumerate(top):
             for b in top[i + 1:]:
@@ -257,6 +356,30 @@ def main() -> int:
             "isolates": len(isolates), "drugs": drugs,
             "mutations_scored": len(rows),
             "top": top,
+            # WHAT SURVIVES ITS OWN INTERVAL, and what has no interval to survive. The three
+            # numbers are reported together because they partition the published twenty and
+            # a reader has to see which bucket a mutation is in before acting on its rank.
+            "uncertainty": {
+                "method": ("bootstrap over ISOLATES with replacement at the same count, "
+                           "%d draws, rescoring every mutation on each resample so the "
+                           "overlap between carrier sets is preserved; the drug is held at "
+                           "the one the full data chose, so the interval is on the "
+                           "fold-resistance and not on the max over the panel"
+                           % HIV_BOOTSTRAP),
+                "published": len(top),
+                "with_an_interval": len(with_ci),
+                "clearing_the_null_on_the_lower_end": len(clears),
+                "censored_at_the_assay_ceiling": len(cens),
+                "censored_mutations": [r["mutation"] for r in cens],
+                "says": ("%d of the published %d carry an interval and %d of those keep the "
+                         "observed score above the null at its lower end. The remaining %d "
+                         "are CENSORED: every carrier sits at the assay's reporting ceiling, "
+                         "so their scores are identical by construction and their order in "
+                         "this table comes from the permutation null rather than from the "
+                         "resistance data. That is a limit of the assay, and it is stated "
+                         "here rather than hidden behind a zero-width interval."
+                         % (len(with_ci), len(top), len(clears), len(cens))),
+            },
             "carrier_overlap": {
                 "median_jaccard_top20": round(statistics.median(overlaps), 4) if overlaps else None,
                 "pairs": len(overlaps),

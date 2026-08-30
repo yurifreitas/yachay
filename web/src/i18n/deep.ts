@@ -55,6 +55,29 @@ export const DEEP = {
     + "estratificados por grau, nunca como escore bruto — uma propagação sem nulo pareado "
     + "por grau é uma lista das proteínas mais conectadas do grafo.",
   ),
+  hivUncK: bi(
+    "and which of these would survive sequencing a different set of isolates",
+    "e quais destes sobreviveriam a sequenciar outro conjunto de isolados",
+  ),
+  twinByZ: bi("ordered by z", "ordenado por z"),
+  twinByLb: bi("ordered by the bottom of the interval",
+               "ordenado pelo piso do intervalo"),
+  twinAgreement: bi("of these genes appear in both orderings, of",
+                    "destes genes aparecem nas duas ordenações, de"),
+  twinUncK: bi(
+    "and how much of that reach survives dropping one causal gene",
+    "e quanto desse alcance sobrevive a remover um gene causal",
+  ),
+  twinNoInterval: bi(
+    "This disorder has fewer than three causal genes in the graph, so no interval is drawn: "
+    + "a leave-one-out over two points is a single replicate, and a width computed from it "
+    + "would be invented rather than measured. Seven of the eleven disorders are in this "
+    + "position, which is itself the finding — most of the propagation here rests on one gene.",
+    "Este distúrbio tem menos de três genes causais no grafo, então nenhum intervalo é "
+    + "desenhado: um leave-one-out sobre dois pontos é uma única réplica, e uma largura "
+    + "calculada daí seria inventada, não medida. Sete dos onze distúrbios estão nessa "
+    + "situação, o que já é o achado — a maior parte da propagação aqui repousa sobre um gene.",
+  ),
   twinIsNot: bi("what this is not", "o que isto não é"),
   twinLadder: bi("the rung this moves, and the ones it does not",
                  "o degrau que isto move, e os que não"),
