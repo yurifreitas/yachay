@@ -371,6 +371,18 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="autism",
+    summary=("Do the 717 genes converging on an autism phenotype share a mechanism or only a "
+             "word? A domain layer, NOT a Stage 1 adapter - it fails question four."),
+    inputs=(paths.HPOA, paths.GENES_TO_DISEASE, paths.REACTOME_PATHWAYS,
+            paths.REACTOME_HIERARCHY, paths.HPA_SINGLE_CELL, paths.STRING_ALIASES,
+            paths.STRING_INFO),
+    outputs=(paths.AUTISM_CONVERGENCE,),
+    code=sources("tools/autism_convergence.py"),
+    run=lambda: _run_tool("autism_convergence"),
+))
+
+_add(Stage(
     name="hiv",
     summary=("Stage 1 on HIV drug resistance: a max over the drug panel, an n-indexed "
              "permutation null, and a positive control named before the run."),

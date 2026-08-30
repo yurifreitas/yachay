@@ -1,9 +1,9 @@
-# `tools/` — 64 scripts, grouped by what they are for
+# `tools/` — 65 scripts, grouped by what they are for
 
-> **Role:** the map of this directory. It grew to 21,539 lines without any declared
-> structure, and a flat listing of 64 filenames is not a structure — it is an inventory
+> **Role:** the map of this directory. It grew to 21,881 lines without any declared
+> structure, and a flat listing of 65 filenames is not a structure — it is an inventory
 > pretending to be one.
-> **Last revised:** 2026-08-29 · **State:** complete for the 64 files on disk. The groups
+> **Last revised:** 2026-08-29 · **State:** complete for the 65 files on disk. The groups
 > below are a reading order, not directories: renaming or moving a file would break the
 > pipeline's source tracking (`sieve.pipeline.stages` hashes each tool's path to decide
 > staleness), so the organisation is documentary and deliberately so.
@@ -69,6 +69,7 @@ uncomfortable findings.
 | `interactome_string.py` | 218 | our own weakest published claim against an independent graph — it survived |
 | `ecosystem.py` | 283 | which libraries are installed and unused, and which sources are named and not ingested |
 | `pipeline_state.py` | 123 | publishes staleness, so freshness is not a terminal-only fact |
+| `autism_convergence.py` | 342 | HPO, Reactome, HPA | 717 genes converge on one phenotype and the convergence is **spatial, not mechanistic**: less pathway-concentrated than chance (z = −2.32), more cell-type-concentrated (z = **+3.68**) |
 | `gene_ladder.py` | 348 | six sources | one gene from residue to organ system as a single object — and the finding that **only 2 of 6** steps between scales have ever been measured, with the other four carrying the reason instead of a number |
 | `gap_taxonomy.py` | 262 | MONDO, HPO, Orphanet | five kinds of hole told apart by what would close each: of **42,645** field gaps, **6,874** are interoperability — both halves already on this disk and the join is what failed |
 | `knowledge_void.py` | 283 | knowledge_shape | the void as an object: **318 of 1,024** cells occupied, z **−270.51** against independence, **95 %** of occupied cells on the frontier — a filament, not a blob — and **232 anti-forms** holding 4,286 expected diseases and none real |

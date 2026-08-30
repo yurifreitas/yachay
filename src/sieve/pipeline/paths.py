@@ -104,6 +104,7 @@ GAP_TAXONOMY = RARE / "gap_taxonomy.json"
 GENE_LADDER = RARE / "gene_ladder.json"
 # The second Stage 1 domain outside cancer: HIV drug resistance, where the observations are
 # tips of a phylogeny rather than independent draws.
+AUTISM_CONVERGENCE = RARE / "autism_convergence.json"
 HIV_RESISTANCE = OUT / "hiv_resistance.json"
 HIV_PI = DATA / "hiv" / "PI_DataSet.txt"
 VIEW_MODELS = RARE / "view_models.json"
