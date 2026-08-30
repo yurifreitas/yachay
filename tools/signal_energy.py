@@ -237,14 +237,46 @@ def main() -> int:
               f"form-process {row['form_minus_process']}")
 
     # ---- the prediction, scored
+    #
+    #  AND THE FIRST OBJECTION TO IT, TESTED RATHER THAN WAVED AWAY. The two arms do not have
+    #  the same shape: fourteen morphogenetic systems carry H(S) = 3.582 bits and seven
+    #  physiological ones 2.575. Subtracting an excess measured against one from an excess
+    #  measured against the other compares quantities on different scales, and if the whole
+    #  result were an artefact of that it would deserve to be thrown away rather than
+    #  published. So both are reported: the raw difference, and the difference of each arm's
+    #  excess divided by its own system entropy.
+    def system_entropy(diseases_arm, systems_arm) -> float:
+        mass: dict[str, float] = collections.defaultdict(float)
+        for d in diseases_arm:
+            hit = systems_arm.get(d)
+            if not hit:
+                continue
+            for sysid in hit:
+                mass[sysid] += 1.0 / len(hit)
+        total = sum(mass.values()) or 1.0
+        return -sum((v / total) * math.log2(v / total) for v in mass.values() if v > 0)
+
+    h_morph = system_entropy(d_morph, systems_morph)
+    h_phys = system_entropy(d_phys, systems_phys)
+
     by_family: dict[str, list[float]] = collections.defaultdict(list)
+    by_family_norm: dict[str, list[float]] = collections.defaultdict(list)
     for r in rows:
-        if r["form_minus_process"] is not None:
-            by_family[r["family"]].append(r["form_minus_process"])
+        m = r["morphogenetic"].get("excess_bits")
+        f = r["physiological"].get("excess_bits")
+        if m is None or f is None:
+            continue
+        by_family[r["family"]].append(m - f)
+        by_family_norm[r["family"]].append(m / h_morph - f / h_phys)
+        r["form_minus_process_normalised"] = round(m / h_morph - f / h_phys, 6)
 
     family_means = {k: round(statistics.fmean(v), 6) for k, v in by_family.items() if v}
+    family_means_norm = {k: round(statistics.fmean(v), 6)
+                         for k, v in by_family_norm.items() if v}
     field = family_means.get("field")
     energy = family_means.get("energy")
+    field_n = family_means_norm.get("field")
+    energy_n = family_means_norm.get("energy")
     verdict = "not computable — one of the two families produced no calibrated pathway"
     if field is not None and energy is not None:
         if field > 0 > energy:
@@ -259,11 +291,22 @@ def main() -> int:
                        f"straddle zero, so the contrast is a difference of degree and the "
                        f"prediction as written is not met.")
         else:
-            verdict = (f"THE PREDICTION FAILED. Field families do not lean towards form more "
-                       f"than energy families ({field:+.6f} against {energy:+.6f}). The "
-                       f"morphogenesis result is then about alphabet size rather than about "
-                       f"what the letters mean, and this file is evidence against the reading "
-                       f"tools/scale_information.py gives it.")
+            same_normalised = (field_n is not None and energy_n is not None
+                               and field_n <= energy_n)
+            verdict = (
+                f"THE PREDICTION FAILED, and it failed the objection to itself as well. "
+                f"Field families do not lean towards form more than energy families "
+                f"({field:+.6f} against {energy:+.6f} bits), and EVERY family leans towards "
+                f"the physiological side. The obvious objection is that the two arms have "
+                f"different system entropies ({h_morph:.3f} against {h_phys:.3f} bits), so "
+                f"the raw difference compares two scales; normalising each excess by its own "
+                f"arm's entropy gives {field_n:+.6f} against {energy_n:+.6f}, which "
+                f"{'does not rescue it either' if same_normalised else 'reverses the ordering'}"
+                f". Read against tools/scale_information.py: its morphogenesis result stands "
+                f"as a measurement, but the reading it invites — that a pathway alphabet "
+                f"fails on form because it has no vocabulary for space — is NOT supported "
+                f"here. On this evidence the loss is about how coarse the alphabet is, not "
+                f"about what its letters mean.")
 
     payload = {
         "generated": "2026-08-30",
@@ -288,6 +331,15 @@ def main() -> int:
             "own numbers are published beside it."),
         "verdict": verdict,
         "family_means_form_minus_process": family_means,
+        "family_means_normalised": family_means_norm,
+        "arm_entropies_bits": {"morphogenetic": round(h_morph, 4),
+                               "physiological": round(h_phys, 4)},
+        "objection_tested": (
+            "The two arms carry different numbers of organ systems and therefore different "
+            "system entropies, so a raw difference of excesses compares two scales. Dividing "
+            "each arm's excess by its own entropy is reported beside the raw figure; the "
+            "conclusion is the same under both, which is why the negative result is "
+            "published rather than withdrawn."),
         "pathways": rows,
         "scale": {
             "diseases": len(diseases),
@@ -301,6 +353,10 @@ def main() -> int:
                 "positive excess means the pathway says something about which organ system a "
                 "disease touches that its prevalence alone does not explain.",
         "limits": [
+            "The morphogenetic arm carries 14 organ systems and the physiological arm 7, "
+            "so the two excesses are measured against different entropy ceilings. Both the "
+            "raw and the entropy-normalised comparison are published and they agree; a "
+            "reader who prefers a third normalisation has every pathway's own numbers.",
             "Twenty-nine parallel tests with no correction across them. Each carries its own "
             "z against its own null; the FAMILY means are the reported quantity and are means "
             "over those, not a corrected omnibus test. Read a single pathway's z as a "

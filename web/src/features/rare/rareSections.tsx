@@ -50,6 +50,7 @@ const SampleDisorders = lazy(() => import("./components/SampledPanels").then((m)
 const SampleJoins = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleJoins })));
 const TraitAxes = lazy(() => import("./components/TraitAtlas").then((m) => ({ default: m.TraitAxes })));
 const TraitMatrix = lazy(() => import("./components/TraitAtlas").then((m) => ({ default: m.TraitMatrix })));
+const SignalEnergy = lazy(() => import("./components/SignalEnergy").then((m) => ({ default: m.SignalEnergy })));
 const TwinPropagation = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.TwinPropagation })));
 const GenotypePhenotype = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GenotypePhenotype })));
 const AttentionBurden = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AttentionBurden })));
@@ -180,6 +181,14 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     sub: (ctx) => (<>{ctx.tt(SAMP.matSub)}</>),
     view: () => (
       <><TraitMatrix /></>
+    ),
+  },
+  {
+    id: "signalenergy",
+    title: (ctx) => (<>{ctx.tt(SAMP.seHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(SAMP.seSub)}</>),
+    view: () => (
+      <><SignalEnergy /></>
     ),
   },
   {

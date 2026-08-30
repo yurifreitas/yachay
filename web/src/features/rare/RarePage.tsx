@@ -153,6 +153,7 @@ const SECTIONS: NavSectionDef[] = [
   { id: "cells", label: DEEP.sCells, group: "knownshape" },
   { id: "constraint", label: DEEP.sConstraint, group: "converge" },
   { id: "autism", label: MORE.sAut, group: "converge" },
+  { id: "signalenergy", label: SAMP.sSignal, group: "converge" },
 
   // 5a. Who was in the sample. Beside the constraint result rather than in a pillar of its
   //     own: gene_constraint states in prose that gnomAD's panel is majority European, and

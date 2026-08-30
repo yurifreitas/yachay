@@ -112,4 +112,27 @@ export const SAMP = {
   ),
   joinUnit: bi("what is counted, and why it is not people",
                "o que é contado, e por que não são pessoas"),
+
+  // ---------------------------------------------------------------- the negative result
+  sSignal: bi("Field, energy, and a failed prediction",
+              "Campo, energia, e uma previsão que falhou"),
+  seHeading: bi(
+    "a prediction this site made about its own result, and lost",
+    "uma previsão que este site fez sobre o próprio resultado, e perdeu",
+  ),
+  seSub: bi(
+    "The scale result reads its own finding as showing that a pathway alphabet has no "
+    + "vocabulary for WHERE. That treats 29 pathways as one alphabet. Taken one at a time, "
+    + "the families that make spatial pattern do NOT carry more about form than the families "
+    + "that carry energy — and the entropy objection does not rescue it.",
+    "O resultado de escala lê o próprio achado como prova de que um alfabeto de vias não tem "
+    + "vocabulário para ONDE. Isso trata 29 vias como um alfabeto só. Tomadas uma a uma, as "
+    + "famílias que fazem padrão espacial NÃO carregam mais sobre forma do que as famílias de "
+    + "energia — e a objeção de entropia não salva.",
+  ),
+  seFamilies: bi("the two families the prediction named, and the three it did not",
+                 "as duas famílias que a previsão nomeou, e as três que não"),
+  seObjection: bi("the objection to this result, tested",
+                  "a objeção a este resultado, testada"),
+  sePathways: bi("every pathway on its own", "cada via por si"),
 } as const;

@@ -427,6 +427,15 @@ emit("figures", figures);
     emit("cleared_devices", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
 
+  // The morphogenesis result decomposed by pathway family — and it comes back NEGATIVE
+  // against the reading scale_information gives its own finding. Published for the same
+  // reason knowledge_shape's negative is published: a site that only shows confirmations is
+  // advertising.
+  {
+    const f = join(REPO, "out", "rare", "signal_energy.json");
+    emit("signal_energy", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   // Whether anyone ever collected a cell from these diseases at all. Four layers of this
   // site reason over a cell-type axis taken from an atlas of NORMAL tissue; this is the
   // denominator none of them had.
