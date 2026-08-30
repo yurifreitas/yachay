@@ -62,8 +62,13 @@
 /* ---------- level 2: the question ---------- */
 /* Indented against a hairline rather than boxed. The rail already has one border; a second
    nested box would spend contrast on chrome that the sections need for themselves. */
+/* DENSITY IS THE PRICE OF SHOWING EVERYTHING.
+   With one group open the old spacing was generous and correct. With eleven open and
+   thirty-two panels underneath, the same spacing makes a column nobody reaches the bottom
+   of — so the rows tighten, and the space that is left is spent on the ONE distinction that
+   matters here: which panel is open. */
 .groups {
-  display: flex; flex-direction: column; gap: var(--sp-1);
+  display: flex; flex-direction: column; gap: 1px;
   margin: var(--sp-2) 0 var(--sp-2) var(--sp-3);
   padding-left: var(--sp-3);
   border-left: var(--r-hairline);
@@ -71,43 +76,57 @@
 .group {
   display: flex; align-items: baseline; gap: var(--sp-2); width: 100%; text-align: left;
   border: 0; background: transparent; cursor: pointer; font: inherit;
-  padding: var(--sp-2) var(--sp-2);
+  padding: var(--sp-1) var(--sp-2);
+  margin-top: var(--sp-2);
   border-radius: var(--r-radius-sm);
-  font-size: 12.5px; color: var(--r-text-2);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
   transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
 }
+/* A group is now a heading over a visible list rather than a door. Headings are set apart
+   by case and colour, not by size — eleven of them at 12.5px was a second list competing
+   with the one underneath it. */
 .group:hover { background: var(--r-surface-2); color: var(--r-text); }
 /* WHERE YOU ARE. Weight and colour, never a background — the background is the hover
    affordance and a permanent one reads as a button waiting to be pressed. */
-.groupOn { composes: group; color: var(--r-text); font-weight: 600; }
+.groupOn { composes: group; color: var(--r-text); }
 /* WHAT YOU ARE LOOKING AT, which since the rail stopped navigating on open may not be the
    same group. Marked more quietly than the anchor: peeking is temporary, being somewhere is
    not, and if the two looked alike the reader would lose track of where they were. */
-.groupPeek { composes: group; color: var(--r-text); }
+.groupPeek { composes: group; }
 .groupPeek .count, .groupOn .count { color: var(--r-text-2); }
 .groupLabel { flex: 1; }
 .count {
   font-variant-numeric: tabular-nums;
   font-size: 11px; color: var(--r-text-3);
 }
+/* Printed only under the group the reader is standing in — eleven at once is a wall. */
 .question {
   margin: 0 0 var(--sp-2) var(--sp-2);
   font-size: 11.5px; line-height: 1.45; color: var(--r-text-3);
 }
+/* Collapse state, drawn small and to the left of the count. Nothing starts collapsed; this
+   is for a reader who wants a shorter rail, not a door the interface closes on its own. */
+.caret {
+  font-size: 9px; color: var(--r-text-3); width: 8px; flex: none;
+  transition: transform 140ms var(--r-ease);
+}
+.caretOff { transform: rotate(-90deg); }
+@media (prefers-reduced-motion: reduce) { .caret { transition: none; } }
 
 /* ---------- level 3: the panel ---------- */
 .sections {
-  display: flex; flex-direction: column; gap: 2px;
-  margin: 0 0 var(--sp-2) var(--sp-2);
+  display: flex; flex-direction: column; gap: 1px;
+  margin: 0 0 var(--sp-1) var(--sp-2);
   padding-left: var(--sp-3);
   border-left: var(--r-hairline);
 }
 .section {
   display: flex; align-items: baseline; gap: var(--sp-2); width: 100%; text-align: left;
   border: 0; background: transparent; cursor: pointer; font: inherit;
-  padding: var(--sp-2) var(--sp-3);
+  padding: 3px var(--sp-2);
   border-radius: var(--r-radius-sm);
-  font-size: 12.5px; line-height: 1.45; color: var(--r-text-3);
+  font-size: 12.5px; line-height: 1.4; color: var(--r-text-2);
   transition: background 140ms var(--r-ease), color 140ms var(--r-ease);
 }
 .section:hover { background: var(--r-surface-2); color: var(--r-text); }

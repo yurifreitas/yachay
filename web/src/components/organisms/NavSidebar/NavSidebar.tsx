@@ -53,11 +53,27 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
    *  `peek` is null until the reader opens something, and null means "follow the tree" —
    *  so arriving anywhere, by link or by the [ and ] keys, expands the group you are in
    *  without this component having to synchronise a copy of it. */
-  const [peek, setPeek] = useState<string | null>(null);
-  const shown = peek ?? tree?.group ?? "";
-  // Walking into another group with [ or ] should open that group, not leave the reader
-  // looking at an expanded list that no longer contains them.
-  useEffect(() => { setPeek(null); }, [tree?.group]);
+  /* EVERY GROUP OPEN, ALL THE TIME.
+   *
+   *  The rail was an accordion: one group expanded, the other ten collapsed to a label and a
+   *  count. That hides the thing a reader came to the rail FOR. A count says a group holds
+   *  four panels; it does not say that one of them is the language coverage and another is
+   *  the attention bias, so finding a panel meant opening groups one at a time and reading
+   *  what fell out. Thirty-two panels behind eleven doors is a worse map than thirty-two
+   *  labels in a column, because a column can be scanned in one pass and doors cannot.
+   *
+   *  So the whole tree is drawn. The rail scrolls, which it already did, and the density is
+   *  paid for in the CSS: the section rows lost their padding and the questions moved out of
+   *  the always-on path — a paragraph under each of eleven groups is what would actually
+   *  make this unreadable, so the question prints only under the group the reader is in.
+   *
+   *  `collapsed` exists for a reader who wants a shorter rail; nothing starts in it. */
+  const [collapsed, setCollapsed] = useState<Set<string>>(() => new Set());
+  const toggle = (id: string) => setCollapsed((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
 
   // Escape closes, and the body does not scroll behind an open drawer — a drawer whose
   // backdrop scrolls is a drawer people close by accident.
@@ -162,7 +178,7 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                       <div className={css.groups} role="group"
                            aria-label={`${t(S.questionsIn)} ${t(v.label)}`}>
                         {tree.groups.map((g) => {
-                          const openGroup = g.id === shown;
+                          const openGroup = !collapsed.has(g.id);
                           // The group the reader is actually IN, which may not be the one
                           // they are peeking at. Marked, so peeking never loses the anchor.
                           const isHere = g.id === tree.group;
@@ -173,15 +189,20 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                                 type="button"
                                 className={isHere ? css.groupOn : openGroup ? css.groupPeek : css.group}
                                 aria-expanded={openGroup}
-                                onClick={() => setPeek(openGroup && !isHere ? null : g.id)}
+                                onClick={() => toggle(g.id)}
                               >
+                                <span className={openGroup ? css.caret : `${css.caret} ${css.caretOff}`}
+                                      aria-hidden="true">▾</span>
                                 <span className={css.groupLabel}>{t(g.label)}</span>
                                 <span className={css.count} aria-hidden="true">{g.count}</span>
                               </button>
 
                               {openGroup && (
                                 <>
-                                  <p className={css.question}>{t(g.question)}</p>
+                                  {/* Eleven questions at once is a wall of grey prose. The
+                                      one you are standing in is context; the other ten are
+                                      noise until you are standing in them. */}
+                                  {isHere && <p className={css.question}>{t(g.question)}</p>}
                                   <div className={css.sections} role="tablist"
                                        aria-label={`${t(S.panelsIn)} ${t(g.label)}`}>
                                     {sections.map((s) => (
