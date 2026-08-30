@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useRovingRadio } from "../../lib/useRovingRadio";
 import { useRemoteData } from "../../lib/useRemoteData";
 import { useT, fill } from "../../i18n";
 import { ATT } from "../../i18n/attention";
@@ -54,6 +55,7 @@ export function Attention(
 ) {
   const t = useT();
   const [highlight, setHighlight] = useState<string>("organismal");
+  const nav = useRovingRadio(RULES as readonly string[], highlight, setHighlight);
   const space = useRemoteData<Space>("data/gene/space.json");
 
   const att = rec?.att;
@@ -121,14 +123,13 @@ export function Attention(
       <section className={css.block}>
         <h4 className={css.blockTitle}>{t(ATT.spaceTitle)}</h4>
 
-        <div className={css.rules} role="tablist" aria-label={t(ATT.spaceTitle)}>
+        <div className={css.rules} {...nav.group} aria-label={t(ATT.spaceTitle)}>
           {RULES.filter((r) => space.state === "ready" && space.data.scope.perRule[r])
             .map((r) => (
               <button
                 key={r}
                 type="button"
-                role="tab"
-                aria-selected={r === highlight}
+                {...nav.option(r)}
                 className={r === highlight ? css.ruleOn : css.rule}
                 onClick={() => setHighlight(r)}
               >

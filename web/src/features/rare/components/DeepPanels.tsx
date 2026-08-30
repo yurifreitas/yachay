@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useT } from "../../../i18n";
 import { DEEP } from "../../../i18n/deep";
 import { fmtInt } from "../../../lib/scale";
+import ChoiceGroup from "../../../components/atoms/ChoiceGroup";
 import { Provenance } from "./Provenance";
 import css from "./MeasuredPanels.module.css";
 
@@ -71,15 +72,21 @@ export function HivResistance() {
 
       <div className={css.block}>
         <span className={css.blockK}>{tt(DEEP.hivPanels)}</span>
-        <div className={css.controls} role="tablist">
-          {panels.map(([id, p]) => (
-            <button key={id} type="button" role="tab" aria-selected={id === openPanel}
-                    className={id === openPanel ? css.chipOn : css.chip}
-                    onClick={() => setOpen(id)}>
-              {id} · {p.positive_control?.recovered}/{p.positive_control?.of}
-            </button>
-          ))}
-        </div>
+        {/* NOT TABS. These were `role="tab"` in a `role="tablist"` with no `tabpanel`
+            anywhere, no `aria-controls` and no keyboard model — a screen reader announcing
+            "tab, selected" with nothing to move to, and arrow keys that a tablist promises
+            and did not deliver. Choosing a drug panel re-renders the table beneath, which is
+            a radio group; ChoiceGroup carries that contract and implements the keys. */}
+        <ChoiceGroup
+          label="Drug panel"
+          value={openPanel}
+          onChange={setOpen}
+          choices={panels.map(([id, p]) => ({
+            id,
+            label: id,
+            note: `${p.positive_control?.recovered}/${p.positive_control?.of} controls`,
+          }))}
+        />
 
         {cur && (
           <>
@@ -161,15 +168,12 @@ export function TwinPropagation() {
         <span className={css.blockK}>
           {results.length} disorders · {d.method?.kernel}
         </span>
-        <div className={css.controls} role="tablist">
-          {results.map((r) => (
-            <button key={r.target} type="button" role="tab" aria-selected={r.target === target}
-                    className={r.target === target ? css.chipOn : css.chip}
-                    onClick={() => setTarget(r.target)}>
-              {r.target}
-            </button>
-          ))}
-        </div>
+        <ChoiceGroup
+          label="Disorder"
+          value={target}
+          onChange={setTarget}
+          choices={results.map((r) => ({ id: r.target, label: r.target }))}
+        />
 
         {cur && (
           <>

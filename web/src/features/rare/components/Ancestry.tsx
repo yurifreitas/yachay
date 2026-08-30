@@ -19,6 +19,7 @@
  *  paraphrase written here.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useRovingRadio } from "../../../lib/useRovingRadio";
 import { EChart } from "../../../components/organisms/EChart";
 import { categorical, chartInk, diverging, resolveMode } from "../../../lib/palette";
 import { DATA_URL, useRemoteData } from "../../../lib/useRemoteData";
@@ -46,6 +47,7 @@ const int = (n: number) => n.toLocaleString("en-US");
 export function Ancestry() {
   const remote = useRemoteData<AncestryGeography>(DATA_URL("ancestry_geography"));
   const [view, setView] = useHashParam("a", "parity");
+  const nav = useRovingRadio(VIEWS.map((v) => v.id), view, setView);
 
   if (remote.state === "loading") return <Skeleton />;
   if (remote.state === "error") {
@@ -80,13 +82,12 @@ export function Ancestry() {
         {d.caveat}
       </p>
 
-      <div className={css.viewNav} role="tablist" aria-label="Population views">
+      <div className={css.viewNav} {...nav.group} aria-label="Population views">
         {VIEWS.map((v) => (
           <button
             key={v.id}
             type="button"
-            role="tab"
-            aria-selected={view === v.id}
+            {...nav.option(v.id)}
             className={view === v.id ? css.viewOn : css.view}
             onClick={() => setView(v.id)}
           >

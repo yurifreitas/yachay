@@ -52,6 +52,11 @@ const MIGRATED = [
     registry: join(SRC, "features/cancer/cancerSections.tsx"),
   },
   {
+    name: "devices",
+    page: join(SRC, "features/devices/DevicesPage.tsx"),
+    registry: join(SRC, "features/devices/devicesSections.tsx"),
+  },
+  {
     name: "run",
     page: join(SRC, "features/run/RunDash.tsx"),
     registry: join(SRC, "features/run/runSections.tsx"),

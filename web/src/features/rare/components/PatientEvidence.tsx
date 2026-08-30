@@ -22,6 +22,7 @@
  *  the dashboard back where the prose was before that correction.
  */
 import { useMemo, useState } from "react";
+import { useRovingRadio } from "../../../lib/useRovingRadio";
 import { EChart } from "../../../components/organisms/EChart";
 import { chartInk, diverging } from "../../../lib/palette";
 import { useHashParam } from "../../../lib/useHashParam";
@@ -41,6 +42,7 @@ const nf = (v: number) => v.toLocaleString("en-US");
 
 export function PatientEvidence() {
   const [view, setView] = useHashParam("p", "bias");
+  const nav = useRovingRadio(VIEWS.map((v) => v.id), view, setView);
   const pf = patientFrequencies;
 
   return (
@@ -50,9 +52,9 @@ export function PatientEvidence() {
         {pf.caveat}
       </p>
 
-      <div className={css.viewNav} role="tablist" aria-label="Patient evidence views">
+      <div className={css.viewNav} {...nav.group} aria-label="Patient evidence views">
         {VIEWS.map((v) => (
-          <button key={v.id} type="button" role="tab" aria-selected={view === v.id}
+          <button key={v.id} type="button" {...nav.option(v.id)}
                   className={view === v.id ? css.viewOn : css.view}
                   onClick={() => setView(v.id)}>
             {v.label}

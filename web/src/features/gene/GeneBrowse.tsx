@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useRovingRadio } from "../../lib/useRovingRadio";
 import { useRemoteData } from "../../lib/useRemoteData";
 import { useHashParam } from "../../lib/useHashParam";
 import { useT, fill } from "../../i18n";
@@ -43,6 +44,8 @@ type Kind = (typeof KINDS)[number];
 export function GeneBrowse({ onPick }: { onPick: (symbol: string) => void }) {
   const t = useT();
   const [kind, setKind] = useHashParam("f", "domain");
+  const nav = useRovingRadio(KINDS as readonly string[], kind,
+                             (k) => { setKind(k); setValue(""); setFilter(""); });
   const [value, setValue] = useHashParam("v", "");
   const [filter, setFilter] = useState("");
 
@@ -76,13 +79,12 @@ export function GeneBrowse({ onPick }: { onPick: (symbol: string) => void }) {
         <p className={css.lede}>{t(BROWSE.lede)}</p>
       </div>
 
-      <div className={css.kinds} role="tablist" aria-label={t(BROWSE.title)}>
+      <div className={css.kinds} {...nav.group} aria-label={t(BROWSE.title)}>
         {KINDS.filter((k) => data.data.facets[k]?.values.length).map((k) => (
           <button
             key={k}
             type="button"
-            role="tab"
-            aria-selected={k === kind}
+            {...nav.option(k)}
             className={k === kind ? css.kindOn : css.kind}
             onClick={() => { setKind(k); setValue(""); setFilter(""); }}
           >

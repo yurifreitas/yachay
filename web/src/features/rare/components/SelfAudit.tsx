@@ -22,6 +22,7 @@
  *  badly-measured systems are the large ones.
  */
 import { useMemo, useState } from "react";
+import { useRovingRadio } from "../../../lib/useRovingRadio";
 import { EChart } from "../../../components/organisms/EChart";
 import { chartInk } from "../../../lib/palette";
 import { useHashParam } from "../../../lib/useHashParam";
@@ -40,6 +41,7 @@ const nf = (v: number) => v.toLocaleString("en-US");
 
 export function SelfAudit() {
   const [view, setView] = useHashParam("q", "contradictions");
+  const nav = useRovingRadio(VIEWS.map((v) => v.id), view, setView);
 
   return (
     <div className={css.root}>
@@ -47,13 +49,12 @@ export function SelfAudit() {
         {consistency.premise} <strong>{consistency.caveat}</strong>
       </p>
 
-      <div className={css.viewNav} role="tablist" aria-label="Self-audit views">
+      <div className={css.viewNav} {...nav.group} aria-label="Self-audit views">
         {VIEWS.map((v) => (
           <button
             key={v.id}
             type="button"
-            role="tab"
-            aria-selected={view === v.id}
+            {...nav.option(v.id)}
             className={view === v.id ? css.viewOn : css.view}
             onClick={() => setView(v.id)}
           >

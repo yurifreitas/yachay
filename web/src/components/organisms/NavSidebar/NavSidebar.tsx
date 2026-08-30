@@ -210,14 +210,22 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                                       one you are standing in is context; the other ten are
                                       noise until you are standing in them. */}
                                   {isHere && <p className={css.question}>{t(g.question)}</p>}
-                                  <div className={css.sections} role="tablist"
-                                       aria-label={`${t(S.panelsIn)} ${t(g.label)}`}>
+                                  {/* A LIST, NOT A TABLIST — and this one is the clearest
+                                      case of the seven. These buttons change the whole page
+                                      beneath the rail; a tab swaps a labelled panel that
+                                      keeps its place in the reading order. Declaring
+                                      `role="tab"` with no `tabpanel` anywhere told a screen
+                                      reader "tab, 4 of 8" and offered a panel that does not
+                                      exist. A navigation list with `aria-current` says the
+                                      true thing: these are destinations, and this is the one
+                                      you are at. */}
+                                  <ul className={css.sections}
+                                      aria-label={`${t(S.panelsIn)} ${t(g.label)}`}>
                                     {sections.map((s) => (
+                                      <li key={s.id}>
                                       <button
-                                        key={s.id}
                                         type="button"
-                                        role="tab"
-                                        aria-selected={s.id === tree.section}
+                                        aria-current={s.id === tree.section ? "true" : undefined}
                                         className={s.id === tree.section
                                           ? css.sectionOn : css.section}
                                         onClick={() => { tree.onSection(s.id); setOpen(false); }}
@@ -225,8 +233,9 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
                                         <span>{t(s.label)}</span>
                                         {s.badge && <span className={css.badge}>{s.badge}</span>}
                                       </button>
+                                      </li>
                                     ))}
-                                  </div>
+                                  </ul>
                                 </>
                               )}
                             </Fragment>

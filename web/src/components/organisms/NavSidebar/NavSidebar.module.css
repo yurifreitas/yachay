@@ -237,3 +237,9 @@
 @media (prefers-reduced-motion: reduce) {
   .rail :is(button) { transition: none; }
 }
+
+/* The section list became a real <ul> when it stopped claiming to be a tablist. Markers and
+   the browser's default indent are removed here rather than in a reset, so the list keeps its
+   semantics without inheriting a look nobody asked for. */
+.sections { list-style: none; margin-left: var(--sp-2); padding-left: var(--sp-3); }
+.sections li { display: contents; }

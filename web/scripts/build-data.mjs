@@ -403,6 +403,14 @@ emit("figures", figures);
   // hiv_resistance: the method outside rare disease entirely — an adapter that passed the
   // four-question gate, whose positive controls were named before the run, and which breaks
   // an assumption the core smuggles in. That last part is why it is worth a screen.
+  // The predictive-technology layer's founding measurement: what a regulator has actually
+  // permitted, which is the only rung of a readiness scale that can be observed rather than
+  // asserted. Lives in out/devices/ because it is not about rare disease.
+  {
+    const f = join(REPO, "out", "devices", "cleared_devices.json");
+    emit("cleared_devices", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   // Whether anyone ever collected a cell from these diseases at all. Four layers of this
   // site reason over a cell-type axis taken from an atlas of NORMAL tissue; this is the
   // denominator none of them had.

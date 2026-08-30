@@ -3,6 +3,7 @@ import { runsIndex } from "./lib/data/runsIndex";
 import { NavProvider } from "./lib/nav";
 import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
+import { DEV } from "./i18n/devices";
 import { NavSidebar, type NavFamily, type NavView } from "./components/organisms/NavSidebar";
 import { CommandPalette } from "./components/organisms/CommandPalette";
 
@@ -13,6 +14,7 @@ const RunView = lazy(() => import("./features/run/RunView"));
 const Docs = lazy(() => import("./features/docs/Docs"));
 const RarePage = lazy(() => import("./features/rare/RarePage"));
 const CancerPage = lazy(() => import("./features/cancer/CancerPage"));
+const DevicesPage = lazy(() => import("./features/devices/DevicesPage"));
 const GenePage = lazy(() => import("./features/gene/GenePage"));
 
 /** THE VIEWS ARE FAMILIES NOW, not a row.
@@ -35,6 +37,10 @@ const FAMILIES: NavFamily[] = [
   { id: "entity", label: S.famEntity, question: S.qFamEntity },
   { id: "rare", label: S.famRare, question: S.qFamRare },
   { id: "cancer", label: S.famCancer, question: S.qFamCancer },
+  /* THE THIRD PILLAR. The atlas asks what is known about a disease; this asks what anyone
+     is actually allowed to use on a patient. Its own family rather than a section inside a
+     domain, because the question is not about any one disease. */
+  { id: "tech", label: DEV.famTech, question: DEV.qFamTech },
   { id: "screens", label: S.famScreens, question: S.qFamScreens },
   { id: "method", label: S.famMethod, question: S.qFamMethod },
 ];
@@ -61,6 +67,8 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
     blurb: S.viewCancerBlurb, render: () => <CancerPage /> },
   { id: "rare", label: S.viewRare, family: "rare",
     blurb: S.viewRareBlurb, render: () => <RarePage /> },
+  { id: "devices", label: DEV.view, family: "tech",
+    blurb: DEV.viewBlurb, render: () => <DevicesPage /> },
   { id: "docs", label: S.viewDocs, family: "method",
     blurb: S.viewDocsBlurb, render: () => <Docs /> },
 ];
