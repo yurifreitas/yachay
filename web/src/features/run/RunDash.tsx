@@ -16,25 +16,14 @@
  *  A summary computed on a sample and presented as if it were the population is the same
  *  mistake this whole project is about.
  */
-import { lazy, useMemo } from "react";
+import { useMemo } from "react";
 import type { Run } from "../../lib/dataTypes";
 import { runs } from "../../lib/data/runs";
+import { renderSection } from "../../lib/sectionRegistry";
+import { RUN_SECTIONS } from "./runSections";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { RUN } from "../../i18n/strings";
-import CountVariation from "../overview/CountVariation";
-import ControlCalibration from "../nullfloor/ControlCalibration";
-import RankShift from "../ranking/RankShift";
-// The hyperdimensional views of the same run. Lazy and fetched: they read the solved layouts
-// in view_models.json, which the rare group may already have pulled.
-const CalibrationField = lazy(() => import("./CrisprViews").then((m) => ({ default: m.CalibrationField })));
-const RankBump = lazy(() => import("./CrisprViews").then((m) => ({ default: m.RankBump })));
-const LineageMatrix = lazy(() => import("./CrisprViews").then((m) => ({ default: m.LineageMatrix })));
-import NullRidgeline from "../nullfloor/NullRidgeline";
-import { NoiseFloor, Movers, Headline } from "./panels";
-import { Shortlist, Populations, Selectivity, Base, FlagOverlap } from "./Substance";
-import Multiplicity from "./Multiplicity";
-import TailCalibration from "./TailCalibration";
 // The design tokens live in their own sheet and were previously imported only by the
 // rare-disease page, so every --sp-* and --r-* used here resolved to nothing: the grid
 // gaps collapsed to zero and the layout looked broken rather than unstyled.
@@ -170,175 +159,16 @@ export default function RunDash({ runId }: { runId: string }) {
 
       <SectionHeading />
 
-      {section === "shortlist" && (
-        <Block title="The deliverable, and the rule that produced it"
-               sub="Ranked by calibrated z with the common-essential genes removed, because a
-                    gene every line needs is a real dependency and a useless selective one. The
-                    rule sits above the table rather than in a footnote: a shortlist whose
-                    inclusion rule is invisible is an opinion with a table around it.">
-          <Shortlist run={run} />
-        </Block>
-      )}
-
-      {section === "overlap" && (
-        <Block title="The flags are sets, and they overlap"
-               sub="Everywhere else on this site a gene gets one class, because a legend wants
-                    three colours. Here the flags are counted as the overlapping sets they
-                    actually are — including the raw and calibrated top hundreds, whose
-                    intersection with common-essential is the whole argument for calibrating,
-                    stated as a number.">
-          <FlagOverlap run={run} />
-        </Block>
-      )}
-
-      {section === "selectivity" && (
-        <Block title="The two axes that define the word selective"
-               sub="How strong the dependency is where it exists, against how few lines carry
-                    it. Both columns were already in the data and neither had ever been
-                    plotted.">
-          <Selectivity run={run} />
-        </Block>
-      )}
-
-      {section === "populations" && (
-        <Block title="Three populations that should not look alike"
-               sub="Controls should sit at zero with unit spread; common essentials should sit
-                    far above it; candidates should be somewhere a person has to think about.
-                    If the three collapse together, the calibration has flattened the screen
-                    rather than corrected it.">
-          <Populations run={run} />
-        </Block>
-      )}
-
-      {section === "multiplicity" && (
-        <Block title="Ranking 17,916 genes is itself a selection operator"
-               sub="Calibrating each gene against a null of the right shape fixes half the
-                    problem. The other half is that the top of seventeen thousand numbers is
-                    extreme for free. This panel converts z to a p-value, tests the assumption
-                    that conversion rests on, and reports what a false-discovery-rate cut
-                    actually buys over the threshold the shortlist was using.">
-          <Multiplicity />
-        </Block>
-      )}
-
-      {section === "tail" && (
-        <Block title="The normality test failed. This is by how much, and where"
-               sub="A goodness-of-fit p-value says a distribution is wrong and nothing about
-                    where. At this many observations almost anything fails a normality test, so
-                    the only question that matters is whether the failure lives in the middle,
-                    where nobody looks, or in the tail, where the entire shortlist lives.">
-          <TailCalibration />
-        </Block>
-      )}
-
-      {section === "counts" && (
-        <Block title="If the counts do not vary, nothing downstream can"
-               sub="Calibration divides by a null that depends on n. Where n is constant the
-                    correction is a constant, and every ranking claim collapses to the raw one.
-                    This panel is first because it can end the argument.">
-          <CountVariation runId={run.id} />
-        </Block>
-      )}
-
-      {section === "floor" && (
-        <Block title="The floor every score is measured against"
-               sub="A maximum over many observations rises with the number of observations even
-                    when nothing is happening. The null says how much, at each n.">
-          <NoiseFloor run={run} />
-        </Block>
-      )}
-
-      {section === "ridge" && (
-        <Block title="The null, by observation count"
-               sub="One distribution per n. If these overlap, calibration is cosmetic; if they
-                    march, the raw score was measuring the count.">
-          <NullRidgeline runId={run.id} />
-        </Block>
-      )}
-
-      {section === "control" && (
-        <Block title="The control, which is where this was caught being wrong"
-               sub="Entities that should score at zero. A control that comes back at −4 is not a
-                    finding, it is a broken null — and that is exactly what a pooled resample
-                    produced before the null was drawn block-shaped.">
-          <ControlCalibration runId={run.id} />
-        </Block>
-      )}
-
-      {section === "field" && (
-        <Block title="The same score is a different result at a different n"
-               sub="The library's claim as a surface rather than as a sentence: raw score on
-                    one axis, how many cell lines produced it on the other, and where the
-                    pan-essential genes concentrate marked on top.">
-          <CalibrationField />
-        </Block>
-      )}
-
-      {section === "bump" && (
-        <Block title="Where the raw top sixty went"
-               sub="A reordering cannot be drawn as a bar chart of either ranking. The lines
-                    that fall are the genes the raw metric over-rewarded, and the marked ones
-                    are known pan-essential.">
-          <RankBump />
-        </Block>
-      )}
-
-      {section === "lineages" && (
-        <Block title="One lineage, or all of them"
-               sub="Rows are cancer lineages, columns the genes they nominated. A column with
-                    one mark is a lineage-specific dependency; a column with many is a gene
-                    the metric likes everywhere, which is the failure mode Stage 7 exists for.">
-          <LineageMatrix />
-        </Block>
-      )}
-
-      {section === "shift" && (
-        <Block title="What the calibration moves"
-               sub="Raw rank against calibrated rank. A diagonal means the correction changed
-                    nothing; the departures from it are the entire result.">
-          <RankShift runId={run.id} />
-        </Block>
-      )}
-
-      {section === "movers" && (
-        <Block title="Who moved, and by how much"
-               sub="The table behind the shift, with both ranks and the distance between them.">
-          <Movers run={run} />
-        </Block>
-      )}
-
-      {section === "base" && (
-        <Block title="What every number on this page rests on"
-               sub="The dataset, the statistic and why its shape is the problem, the sampling
-                    model of the null, the controls — and, at the end, what would show the whole
-                    thing is wrong.">
-          <Base run={run} />
-        </Block>
-      )}
-
-      {section === "provenance" && (
-        <Block title="Where these numbers came from"
-               sub="The manifest the analysis wrote. Nothing on this page is typed by hand; a
-                    new adapter appears here without the interface knowing its name.">
-          <Headline run={run} />
-        </Block>
-      )}
+      {/* ONE CALL. The seventeen branches that were here are declared in runSections.tsx,
+          because a render chain and a nav array drift apart the moment nothing connects them —
+          which is the failure this repository keeps finding in its own prose. */}
+      {renderSection(RUN_SECTIONS, section, { run }, {
+        className: css.block, headingClass: css.h3, subClass: css.sub, bodyClass: css.blockBody,
+      })}
     </section>
   );
 }
 
-function Block({ title, sub, children }:
-               { title: string; sub: string; children: React.ReactNode }) {
-  return (
-    <section className={css.block}>
-      <div>
-        <h3 className={css.h3}>{title}</h3>
-        <p className={css.sub}>{sub}</p>
-      </div>
-      <div className={css.blockBody}>{children}</div>
-    </section>
-  );
-}
 
 function Cell({ l, v, s }: { l: string; v: string; s: string }) {
   return (

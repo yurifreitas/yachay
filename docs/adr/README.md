@@ -3,7 +3,7 @@
 > **Role:** decisions recorded with their context and consequences, written **before** the
 > change where possible — *nemawashi*, laying the groundwork rather than narrating it
 > afterwards (`../references/standards.md` §2).
-> **Last revised:** 2026-08-29 · **State:** eight records. 0001-0003 are ⚠️ back-filled from
+> **Last revised:** 2026-08-29 · **State:** nine records. 0001-0003 are ⚠️ back-filled from
 > decisions already taken; 0004 was written before the work and scored correct; 0005, 0006 and
 > 0007 are open. **0006 is written *after* the thresholds it governs**, and it says so — it
 > registers four thresholds chosen after seeing the data rather than pretending otherwise.
@@ -25,3 +25,4 @@ accepted — it is superseded by a later record that names it.
 | [0006](0006-pre-registered-thresholds.md) | Thresholds are pre-registered, dated, and frozen against target contact | proposed |
 | [0007](0007-theory-enters-by-measurement.md) | A theory enters this repository only as a measurement | proposed |
 | [0008](0008-layouts-are-computed-once.md) | A layout is computed once, in Python, and versioned with the artefact | proposed (⚠️ back-filled same day) |
+| [0009](0009-sections-are-declared.md) | A section is declared once, and nothing can offer one that cannot be drawn | proposed |
