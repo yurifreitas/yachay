@@ -155,6 +155,49 @@ for (const { name, page, registry } of MIGRATED) {
   }
 }
 
+/** THE TOP LEVEL DRIFTS TOO.
+ *
+ *  A view names a family; a family is declared in App.tsx. Nothing connected those two
+ *  either, and the failure is quieter than a blank panel: a view whose family does not exist
+ *  is filtered out of the rail by `views.filter(v => v.family === f.id)` and simply never
+ *  appears. No error, no empty heading — the page is just not in the navigation, and it is
+ *  still reachable by URL so nothing else notices.
+ *
+ *  A family with no question is the other half: every other level of this rail explains
+ *  itself, and the level that decides which screen you land on is the one that must.
+ */
+{
+  const app = join(SRC, "App.tsx");
+  if (existsSync(app)) {
+    const src = readFileSync(app, "utf8");
+    const famBlock = src.slice(src.indexOf("const FAMILIES"), src.indexOf("const VIEWS"));
+    const fams = [...famBlock.matchAll(/\{\s*id:\s*"([a-z_]+)"/g)].map((m) => m[1]);
+    const noQ = [...famBlock.matchAll(/\{\s*id:\s*"([a-z_]+)"(?![^}]*question:)[^}]*\}/g)]
+      .map((m) => m[1]);
+    const used = [...src.matchAll(/family:\s*"([a-z_]+)"/g)].map((m) => m[1]);
+    const stray = [...new Set(used.filter((f) => !fams.includes(f)))];
+    const empty = fams.filter((f) => !used.includes(f));
+    for (const f of stray) {
+      failures++;
+      console.error(`families: a view names family "${f}", which App.tsx does not declare — `
+        + `it is filtered out of the rail and appears nowhere`);
+    }
+    for (const f of empty) {
+      failures++;
+      console.error(`families: "${f}" is declared and holds no view`);
+    }
+    for (const f of noQ) {
+      failures++;
+      console.error(`families: "${f}" has no question — the level that decides which screen `
+        + `a reader lands on is the one that has to say what it answers`);
+    }
+    if (!stray.length && !empty.length && !noQ.length) {
+      console.log(`families: ${fams.length} at the top level, each holding views and stating `
+        + `what it answers.`);
+    }
+  }
+}
+
 /** A page that navigates but is in neither list is the gap that hid the cancer page: the
  *  check reported three pages clean and said nothing at all about the fourth. */
 const known = new Set([...MIGRATED.map((m) => m.page), ...LEGACY.map((l) => l.page)]);

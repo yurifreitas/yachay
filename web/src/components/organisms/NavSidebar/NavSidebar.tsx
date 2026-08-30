@@ -154,9 +154,16 @@ export function NavSidebar({ families, views, activeView, onView }: NavSidebarPr
         {families.map((f) => {
           const inFamily = views.filter((v) => v.family === f.id);
           if (!inFamily.length) return null;
+          const familyIsHere = inFamily.some((v) => v.id === activeView);
           return (
             <div key={f.id} className={css.family}>
               <span className={css.familyLabel}>{t(f.label)}</span>
+              {/* The question prints under the family the reader is standing in — the same
+                  rule the groups follow, for the same reason: six at once is a paragraph of
+                  grey text nobody reads, one is an answer to "am I in the right place". */}
+              {familyIsHere && f.question && (
+                <p className={css.familyQ}>{t(f.question)}</p>
+              )}
               {inFamily.map((v) => {
                 const on = v.id === activeView;
                 return (

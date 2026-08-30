@@ -42,10 +42,35 @@ export const S = {
   ),
 
   /* Families of views, in the sidebar. */
+  /* SIX FAMILIES WHERE THERE WERE FOUR, and every one of them now says what it answers.
+     "Domains" held rare disease and cancer under one word — two different questions, two
+     different literatures, and a reader holding one of them had to open the other to find
+     out. The families name the reader's starting point, not the method's taxonomy. */
   famEntity: bi("By gene", "Por gene"),
+  qFamEntity: bi(
+    "You arrived holding a symbol. Everything this repository knows about one gene, in one place.",
+    "Você chegou com um símbolo. Tudo o que este repositório sabe sobre um gene, num lugar só.",
+  ),
+  famRare: bi("Rare disease", "Doença rara"),
+  qFamRare: bi(
+    "The catalogue, what it does not contain, and eight results measured against a null.",
+    "O catálogo, o que ele não contém, e oito resultados medidos contra um nulo.",
+  ),
+  famCancer: bi("Cancer", "Câncer"),
+  qFamCancer: bi(
+    "What each cancer needs that the others do not — by lineage, and by mutation.",
+    "O que cada câncer precisa e os outros não — por linhagem, e por mutação.",
+  ),
   famScreens: bi("Screens", "Triagens"),
-  famDomains: bi("Domains", "Domínios"),
-  famMethod: bi("Method", "Método"),
+  qFamScreens: bi(
+    "One pipeline run end to end: its stages, its calibration, and the shortlist it produced.",
+    "Uma execução do pipeline de ponta a ponta: estágios, calibração, e a lista que produziu.",
+  ),
+  famMethod: bi("Method and proof", "Método e prova"),
+  qFamMethod: bi(
+    "The ten stages, the decision records, and what this repository got wrong on the way.",
+    "Os dez estágios, os registros de decisão, e o que este repositório errou pelo caminho.",
+  ),
 
   /* Views. */
   viewGene: bi("Gene navigator", "Navegador de genes"),

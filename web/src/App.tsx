@@ -24,11 +24,19 @@ const GenePage = lazy(() => import("./features/gene/GenePage"));
 const FAMILIES: NavFamily[] = [
   /* THE GENE COMES FIRST, and the order is the argument. Every other family is organised by
      METHOD — a screen, a domain, the ten stages — and people do not arrive holding a method.
-     They arrive holding a symbol. */
-  { id: "entity", label: S.famEntity },
-  { id: "screens", label: S.famScreens },
-  { id: "domains", label: S.famDomains },
-  { id: "method", label: S.famMethod },
+     They arrive holding a symbol.
+
+     AND "DOMAINS" IS GONE. One word held rare disease and cancer: two literatures, two
+     questions, and a reader carrying one of them had to open the other to discover it was
+     the wrong door. A family is now the reader's starting point rather than a shelf the
+     method put things on, and each states what it answers — every level below this one
+     already did, and the top level is the one that decides which of six screens you land
+     on. */
+  { id: "entity", label: S.famEntity, question: S.qFamEntity },
+  { id: "rare", label: S.famRare, question: S.qFamRare },
+  { id: "cancer", label: S.famCancer, question: S.qFamCancer },
+  { id: "screens", label: S.famScreens, question: S.qFamScreens },
+  { id: "method", label: S.famMethod, question: S.qFamMethod },
 ];
 
 /** Views are registered here, so adding one is a single entry — the navigation, the
@@ -49,9 +57,9 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
     })),
   { id: "gene", label: S.viewGene, family: "entity",
     blurb: S.viewGeneBlurb, render: () => <GenePage /> },
-  { id: "cancer", label: S.viewCancer, family: "domains",
+  { id: "cancer", label: S.viewCancer, family: "cancer",
     blurb: S.viewCancerBlurb, render: () => <CancerPage /> },
-  { id: "rare", label: S.viewRare, family: "domains",
+  { id: "rare", label: S.viewRare, family: "rare",
     blurb: S.viewRareBlurb, render: () => <RarePage /> },
   { id: "docs", label: S.viewDocs, family: "method",
     blurb: S.viewDocsBlurb, render: () => <Docs /> },

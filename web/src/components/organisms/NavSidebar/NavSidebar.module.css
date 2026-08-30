@@ -42,6 +42,13 @@
   font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--r-text-3);
 }
+/* The family's own sentence, printed only under the one the reader is in. Indented to the
+   label rather than to the views underneath, so it reads as belonging to the heading and
+   not as a first item in the list. */
+.familyQ {
+  margin: 0 var(--sp-2) var(--sp-2);
+  font-size: 11px; line-height: 1.45; color: var(--r-text-3);
+}
 
 /* ---------- level 1: the view ---------- */
 .view {
