@@ -29,11 +29,14 @@ WHAT IT CHECKS, and each is a claim some document makes about the filesystem:
                 sieve-doc skill's rule is that a reference with no stated purpose is
                 decoration and gets deleted; nothing enforced it, and five works were
                 cited twice.
-    staging     every tool that writes an artefact is a registered pipeline stage, or is
-                exempt with a stated reason. docs/references/rare-layers.md says "every
-                layer is a pipeline stage, so staleness is tracked" — that was true of
-                40 of the 64 artefact-writing tools and false of 24, which is a claim
-                about the filesystem that the filesystem contradicted.
+    staging     every script that writes an artefact is a registered pipeline stage AND
+                its artefact is some stage's declared output. docs/references/rare-layers.md
+                says "every layer is a pipeline stage, so staleness is tracked" — that was
+                false for 24 of 64 artefact-writing tools when this check was written. All
+                24 were registered on 2026-08-30, and the check was strengthened in the same
+                move: it imports the graph instead of grepping stages.py, so a tool merely
+                NAMED in a comment no longer passes, and a stage that declares no output —
+                which always runs and can never report freshness — now fails.
     thresholds  the summary inside manifests/thresholds.yaml matches the entries it
                 summarises — it was written at seven entries, the file grew to 25, and
                 the summary stayed. A file whose job is auditability was publishing a
@@ -183,71 +186,79 @@ NOT_A_STAGE = {
     "paper_numbers": "renders figures for prose from artefacts other stages produce",
     "figure_data": "same — a rendering step over finished artefacts",
     "pipeline_state": "reads the stage graph; a stage that reads the stage graph is a cycle",
-    "gene_shards": "splits a finished artefact into files the web fetches; runs after the "
-                   "gene layer and is driven by it",
-    "gene_facets": "derived from gene_index in the same pass; has no independent inputs",
-    "gene_space": "a layout over the gene layer, in the sense of ADR 0008",
-    # ⚠️ THE HONEST ENTRIES. These are not exempt on principle — they are unregistered, and
-    # saying so here is the point of the list. build_atlas is the worst of them: dossier,
-    # atlas_bias, capability_math and gene_index all read its output as an undeclared
-    # dependency, so nothing detects that they are stale when it changes.
-    "build_atlas": "⚠️ NOT exempt on merit — unregistered, and it should be a stage. Four "
-                   "downstream tools read its output as an undeclared dependency",
-    "atlas_bias": "⚠️ unregistered; reads build_atlas output with no declared edge",
-    "capability_math": "⚠️ unregistered; reads build_atlas output with no declared edge",
-    "barriers_seed": "⚠️ unregistered authored seed, bundled with no stage",
-    "nomenclature_seed": "⚠️ unregistered authored seed, bundled with no stage",
-    "dimensions": "⚠️ unregistered derived layer",
-    "dimensions_two": "⚠️ unregistered derived layer",
-    "gap_patterns": "⚠️ unregistered measurement",
-    "tropical_gap": "⚠️ unregistered measurement",
-    "gene_attention": "⚠️ unregistered gene-pivot layer",
-    "gene_constraint": "⚠️ unregistered measurement, added 2026-08-30",
-    "gene_datasheet": "⚠️ unregistered gene-pivot layer",
-    "gene_domains": "⚠️ unregistered gene-pivot layer",
-    "gene_geometry": "⚠️ unregistered gene-pivot layer",
-    "gene_index": "⚠️ unregistered gene-pivot layer",
-    "gene_insights": "⚠️ unregistered gene-pivot layer",
-    "gene_related": "⚠️ unregistered gene-pivot layer",
-    "gene_world": "⚠️ unregistered gene-pivot layer",
-    "psychiatric_gwas": "⚠️ unregistered measurement, added 2026-08-30",
-    "trait_atlas": "⚠️ unregistered measurement, added 2026-08-30",
-    "signal_energy": "⚠️ unregistered measurement, added 2026-08-30",
-    "single_cell_coverage": "⚠️ unregistered measurement, added 2026-08-30",
-    "cleared_devices": "⚠️ unregistered measurement, added 2026-08-30",
+    "capability_math": "⚠️ unregistered; reads build_atlas output with no declared edge. The "
+                       "last one left, and the only remaining ⚠️ in this list",
 }
+
+#: The twenty-six ⚠️ entries this list carried on 2026-08-30 are gone because they were PAID,
+#: not because the standard moved: every one of them is now a stage in
+#: `src/sieve/pipeline/stages.py` with declared inputs, outputs and `needs`. The gene chain
+#: was eleven of them, and its run order — which existed only as a sentence at the bottom of
+#: each tool's docstring — is now an edge the runner enforces.
 
 
 def check_staging() -> tuple[str, list[str], int]:
-    """Every artefact-writing tool is a stage, or says why it is not.
+    """Every artefact-writing script is a stage, and its artefact is a declared output.
 
     THE CLAIM THIS PROTECTS is in docs/references/rare-layers.md: "Every layer is a pipeline
-    stage, so staleness is tracked and a stale artefact is not silently served." That is the
-    strongest operational promise the documentation makes, and it was false for 24 of the 64
-    tools that write an artefact — including `build_atlas`, whose output four other tools read
-    with no declared edge, so nothing notices when they go stale behind it.
+    stage, so staleness is tracked and a stale artefact is not silently served." That was
+    false for 24 of the 64 tools that write an artefact when this check was first written,
+    and the check recorded the debt rather than fixing it.
 
-    A missing entry here is not a crisis; an unnoticed one is. The exemption list carries a
-    reason per tool and marks with ⚠️ the ones that are unregistered rather than exempt, so
-    the count of real debt is readable rather than hidden behind a green check.
+    IT NOW IMPORTS THE GRAPH INSTEAD OF GREPPING IT, and that is the substantive change. The
+    first version asked whether the tool's NAME appeared anywhere in the text of stages.py —
+    which a comment satisfies. So a stage could name a tool in prose, declare none of its
+    outputs, and pass. The check now asks the two questions that actually matter:
+
+      1. Does some stage's `code` include this script?
+      2. Is the file it writes in some stage's `outputs`?
+
+    The second is the one that bites. A stage with no declared output "declares no outputs"
+    and therefore always runs — it never serves a stale artefact, but it also never skips,
+    and `sieve run` cannot tell you whether its file is current. Both failures are silent.
+
+    It also scans `analyses/`, which the grep version did not, and which is where the
+    obesity screen lives.
     """
-    stages_src = (ROOT / "src" / "sieve" / "pipeline" / "stages.py").read_text(
-        encoding="utf-8", errors="replace")
-    writers = []
-    for path in sorted((ROOT / "tools").glob("*.py")):
-        text = path.read_text(encoding="utf-8", errors="replace")
-        if re.search(r"DEST\s*=\s*ROOT\s*/\s*[\"']out|write_text\(json", text):
-            writers.append(path.stem)
+    import sys
+    sys.path.insert(0, str(ROOT / "src"))
+    from sieve.pipeline.stages import STAGES
 
-    missing = []
-    for name in writers:
-        registered = f'"{name}"' in stages_src or f"tools/{name}.py" in stages_src
-        if registered:
+    coded, declared = set(), set()
+    for st in STAGES.values():
+        coded.update(c.resolve() for c in st.code)
+        declared.update(o.resolve() for o in st.outputs)
+
+    # What each script writes, read out of its own DEST assignment. A script whose destination
+    # cannot be read here is reported rather than skipped: an unreadable target is exactly the
+    # case where a hand-run artefact hides.
+    writes = re.compile(r"^DEST\s*=\s*(.+)$", re.M)
+
+    missing, checked = [], 0
+    scripts = sorted((ROOT / "tools").glob("*.py")) + sorted((ROOT / "analyses").glob("*.py"))
+    for path in scripts:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        if not re.search(r"DEST\s*=|write_text\(json", text):
             continue
-        reason = NOT_A_STAGE.get(name)
-        if not reason:
-            missing.append(f"{name} writes an artefact, is not a stage, and gives no reason")
-    return "staging", missing, len(writers)
+        checked += 1
+        if path.stem in NOT_A_STAGE:
+            continue
+        if path.resolve() not in coded:
+            missing.append(f"{path.stem} writes an artefact, is not any stage's code, and "
+                           f"gives no reason")
+            continue
+        # The stage exists — but does it declare what the script produces? A stage whose
+        # outputs are empty always runs and can never report freshness.
+        m = writes.search(text)
+        if not m:
+            continue
+        name = m.group(1).strip().rstrip(",").split("/")[-1].strip().strip('"')
+        if not name.endswith(".json"):
+            continue
+        if not any(o.name == name for o in declared):
+            missing.append(f"{path.stem} is a stage but {name} is in no stage's outputs, so "
+                           f"nothing can tell whether it is stale")
+    return "staging", missing, checked
 
 
 def check_citations() -> tuple[str, list[str], int]:

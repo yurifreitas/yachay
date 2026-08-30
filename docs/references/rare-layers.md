@@ -136,17 +136,36 @@ Testing the remaining seven authored layers is still the right call, and it is r
 
 ## Regenerating them
 
-Most layers are pipeline stages, and for those staleness is tracked and a stale artefact is
-not silently served. **Twenty-four of the sixty-four tools that write an artefact are not
-registered stages**, and for those it is not tracked: they are run by hand, and nothing
-detects that they have gone stale behind an input that moved. The worst is `build_atlas.py` —
-`dossier`, `atlas_bias`, `capability_math` and `gene_index` all read its output as an
-undeclared dependency.
+Every layer is a pipeline stage, so staleness is tracked and a stale artefact is not
+silently served. **One exception remains and it is named**: `capability_math` reads
+`build_atlas` output with no declared edge. It is the only ⚠️ entry left in the exemption
+list at the top of `tools/index_check.py`; everything else in that list is exempt on merit —
+a network fetch, an audit, a renderer — with the reason written beside it.
 
-This sentence used to read "every layer is a pipeline stage". It was the strongest operational
-promise in this documentation and it was false for a third of the layers. `tools/index_check.py`
-now holds every artefact-writing tool to being either registered or exempt with a stated
-reason, and marks the unregistered ones as debt rather than letting a green check hide them:
+This sentence used to read "most layers are pipeline stages", because on 2026-08-30 twenty-four
+of the sixty-four artefact-writing tools were run by hand, including the entire gene chain: the
+index the navigator reads, the facet index that is the only way into 18,140 genes that is not a
+search box, and the shards the browser fetches. Their run order lived only in a sentence at the
+bottom of each tool's docstring. All twenty-four were registered, with `analyses/
+obesity_thermogenesis.py` and `build_atlas` itself, and the order is now an edge the runner
+enforces:
+
+```
+gene_index -> gene_world -> gene_geometry, gene_domains, gene_datasheet
+           -> gene_insights, gene_attention, gene_related
+           -> gene_facets, gene_space -> gene_shards
+```
+
+`tools/index_check.py` holds every artefact-writing script to two things now, and it imports
+the stage graph rather than grepping it — the earlier version asked whether a tool's name
+appeared anywhere in `stages.py`, which a comment satisfies:
+
+1. the script is some stage's declared `code`;
+2. the file it writes is some stage's declared `outputs`.
+
+The second matters more than it looks. A stage with no declared outputs always runs, so it
+never serves something stale — but it also never skips, and nothing can tell you whether its
+artefact is current. Both arms were verified to fail before being trusted.
 
 ```bash
 python tools/index_check.py --check   # including the staging family

@@ -1638,12 +1638,35 @@ downstream artefacts stale with nothing to notice.
 
 The sentence is corrected to what is true, with the count in it. `tools/index_check.py` gained
 a `staging` family that holds every artefact-writing tool to being either a registered stage
-or exempt with a stated reason — and the exemption list marks the 24 unregistered ones with
-⚠️ rather than letting a green check hide them, so the debt is readable. The check was
+or exempt with a stated reason — and the exemption list marked the 24 unregistered ones
+with ⚠️ rather than letting a green check hide them, so the debt was readable. The check was
 verified to fail when an entry is removed.
 
-**What this does not do.** It does not register the 24. Turning them into stages means
-declaring inputs, outputs and dependency edges for each, which is a real change to the build
-graph and not a documentation fix. The debt is now counted and named, which is the
-precondition for paying it.
+**Paid the same day.** All 24 were registered, plus `analyses/obesity_thermogenesis.py`
+and `build_atlas` itself: 26 new stages, each with declared inputs, outputs and `needs`.
+`src/sieve/pipeline/paths.py` gained the 26 artefact paths, and `stages.py` a `src()` helper
+that takes stage inputs from the download registry in `sources.py` rather than repeating
+paths — the reason several of these stages would otherwise have declared no inputs at all,
+and so never been stale.
+
+The gene chain was eleven of the 26, and it is the part worth naming: `gene_index` →
+`gene_world` → `gene_geometry`/`gene_domains`/`gene_datasheet` → `gene_insights`/
+`gene_attention`/`gene_related` → `gene_facets`/`gene_space` → `gene_shards`. That order had
+to be right or the artefacts are silently built from stale upstream files, and it existed
+**only as a sentence at the bottom of each tool's docstring**. It is now an edge the runner
+enforces. Three of the eleven — `gene_facets`, `gene_space`, `gene_shards` — had been exempt
+on the stated ground that they are "derived in the same pass"; they are derived, and that is
+exactly why the edge belongs in the graph rather than in a person's memory.
+
+**The check was strengthened in the same move**, because the old one could not have caught
+what replaced it: it asked whether a tool's NAME appeared anywhere in the text of
+`stages.py`, which a comment satisfies. It now imports `STAGES` and asks two questions — is
+this script some stage's `code`, and is the file it writes some stage's `outputs`. The second
+is the one that bites: a stage with no declared outputs always runs and can never report
+freshness, and nothing had ever tested for it. It also scans `analyses/`, which the grep
+version did not, and which is where the obesity screen lives. Both arms were verified to fail
+by deleting a stage and by deleting one stage's `outputs=`.
+
+One ⚠️ entry remains: `capability_math`, which reads `build_atlas` output with no declared
+edge. It is the whole of the outstanding debt in this family.
 

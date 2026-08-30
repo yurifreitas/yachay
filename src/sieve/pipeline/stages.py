@@ -31,6 +31,7 @@ import subprocess
 import sys
 
 from . import paths
+from .sources import BY_KEY
 from .stage import Stage, sources
 
 PY = sys.executable
@@ -46,6 +47,16 @@ def _run(*args: str) -> None:
 
 def _script(rel: str) -> "callable":
     return lambda: _run(str(paths.ROOT / rel))
+
+
+def src(*keys: str) -> tuple:
+    """The download destinations of named raw sources, as stage inputs.
+
+    `sources.py` already knows where every raw file lands; before this, a stage that read the
+    GWAS catalogue had to repeat the path, and a stage that could not be bothered declared no
+    inputs at all and was therefore never stale.
+    """
+    return tuple(BY_KEY[k].dest for k in keys)
 
 
 # --- the graph --------------------------------------------------------------------------
@@ -471,6 +482,274 @@ _add(Stage(
     run=lambda: _run_tool("ecosystem"),
 ))
 
+
+# --- the twenty-six that were run by hand ------------------------------------------------
+#
+#  Everything below this line already existed and already produced a published artefact. What
+#  it did not have was a stage - so `sieve run` could report every stage fresh while the gene
+#  index the navigator reads was older than the DepMap matrix it summarises, and nothing in
+#  the system could say so. A tool outside the graph is a tool whose output nobody can date.
+#
+#  The gene chain is the sharpest case: eleven tools that must run in one order, and that
+#  order was written only in prose at the bottom of each docstring. It is declared here now,
+#  once, in `needs`.
+
+_add(Stage(
+    name="atlas",
+    summary="The disease atlas: gene-disease, phenotype, prevalence and expression, joined.",
+    inputs=src("hpo_genes", "hpo_annotations", "orpha_prevalence", "hpa_single_cell"),
+    outputs=(paths.ATLAS,),
+    code=sources("tools/build_atlas.py"),
+    run=lambda: _run_tool("build_atlas"),
+))
+
+_add(Stage(
+    name="atlas_bias",
+    summary="What the atlas over- and under-represents, measured against its own sources.",
+    inputs=src("hpo_genes", "hpo_annotations", "orpha_prevalence", "hpa_single_cell"),
+    outputs=(paths.BIAS,),
+    needs=("atlas",),
+    code=sources("tools/atlas_bias.py"),
+    run=lambda: _run_tool("atlas_bias"),
+))
+
+_add(Stage(
+    name="gap_patterns",
+    summary="The shapes a missing annotation takes, counted rather than described.",
+    inputs=src("hpo_annotations", "hpo_genes"),
+    outputs=(paths.GAP_PATTERNS,),
+    needs=("atlas",),
+    code=sources("tools/gap_patterns.py", "tools/build_atlas.py"),
+    run=lambda: _run_tool("gap_patterns"),
+))
+
+_add(Stage(
+    name="barriers",
+    summary="What stands between a rare-disease finding and a patient, encoded.",
+    outputs=(paths.BARRIERS,),
+    code=sources("tools/barriers_seed.py"),
+    run=lambda: _run_tool("barriers_seed"),
+))
+
+_add(Stage(
+    name="nomenclature",
+    summary="The naming layer: which identifiers agree, and where they silently do not.",
+    outputs=(paths.NOMENCLATURE,),
+    code=sources("tools/nomenclature_seed.py"),
+    run=lambda: _run_tool("nomenclature_seed"),
+))
+
+_add(Stage(
+    name="dimensions",
+    summary="The first hyperdimensional view model, solved in Python so the browser draws.",
+    outputs=(paths.DIMENSIONS,),
+    needs=("rare", "nomenclature", "atlas"),
+    code=sources("tools/dimensions.py"),
+    run=lambda: _run_tool("dimensions"),
+))
+
+_add(Stage(
+    name="dimensions_two",
+    summary="The second view model: the orderings the first one could not carry.",
+    outputs=(paths.DIMENSIONS_TWO,),
+    needs=("rare", "atlas"),
+    code=sources("tools/dimensions_two.py"),
+    run=lambda: _run_tool("dimensions_two"),
+))
+
+_add(Stage(
+    name="tropical_gap",
+    summary="Which neglected tropical diseases the ontologies carry, and how thinly.",
+    inputs=(paths.MONDO, paths.HPOA, paths.GENES_TO_DISEASE),
+    outputs=(paths.TROPICAL_GAP,),
+    code=sources("tools/tropical_gap.py"),
+    run=lambda: _run_tool("tropical_gap"),
+))
+
+_add(Stage(
+    name="gene_constraint",
+    summary=("gnomAD LOEUF against disease genes, with a length-matched control - two "
+             "thirds of the shift is coding length."),
+    inputs=src("gnomad_constraint", "hpo_genes"),
+    outputs=(paths.GENE_CONSTRAINT,),
+    code=sources("tools/gene_constraint.py"),
+    run=lambda: _run_tool("gene_constraint"),
+))
+
+_add(Stage(
+    name="single_cell_coverage",
+    summary="How much of the disease catalogue single-cell atlases have ever measured.",
+    inputs=src("cellxgene_collections", "hpo_genes", "hpo_annotations"),
+    outputs=(paths.SINGLE_CELL_COVERAGE,),
+    code=sources("tools/single_cell_coverage.py"),
+    run=lambda: _run_tool("single_cell_coverage"),
+))
+
+_add(Stage(
+    name="cleared_devices",
+    summary="The FDA's own list of authorised AI devices, counted by panel.",
+    inputs=src("fda_ai_devices"),
+    outputs=(paths.CLEARED_DEVICES,),
+    code=sources("tools/cleared_devices.py"),
+    run=lambda: _run_tool("cleared_devices"),
+))
+
+_add(Stage(
+    name="psychiatric_gwas",
+    summary="Who was sequenced in psychiatric genetics, by ancestry, per disorder.",
+    inputs=src("gwas_accessions", "gwas_ancestry", "gwas_studies"),
+    outputs=(paths.PSYCHIATRIC_GWAS,),
+    code=sources("tools/psychiatric_gwas.py"),
+    run=lambda: _run_tool("psychiatric_gwas"),
+))
+
+_add(Stage(
+    name="trait_atlas",
+    summary="The same ancestry question across eight disease areas, seriated both ways.",
+    inputs=src("gwas_accessions", "gwas_ancestry", "gwas_studies", "gwas_efo"),
+    outputs=(paths.TRAIT_ATLAS,),
+    needs=("psychiatric_gwas",),
+    code=sources("tools/trait_atlas.py"),
+    run=lambda: _run_tool("trait_atlas"),
+))
+
+_add(Stage(
+    name="signal_energy",
+    summary=("Whether form-giving pathways carry more information about which organ fails "
+             "than energy pathways do - the prediction failed, and the artefact says so."),
+    outputs=(paths.SIGNAL_ENERGY,),
+    needs=("scale_information",),
+    code=sources("tools/signal_energy.py", "tools/scale_information.py"),
+    run=lambda: _run_tool("signal_energy"),
+))
+
+_add(Stage(
+    name="obesity",
+    summary=("Stage 1 on a thermogenesis screen with a DESIGNED control pool - 41 clear the "
+             "null on the point, 16 on the lower end of their own interval."),
+    inputs=src("obesity_thermo_cells", "obesity_thermo_perturbation"),
+    outputs=(paths.OBESITY_THERMOGENESIS,),
+    code=sources("analyses/obesity_thermogenesis.py"),
+    run=_script("analyses/obesity_thermogenesis.py"),
+))
+
+# --- the gene chain, in the order it has to run ------------------------------------------
+
+_add(Stage(
+    name="gene_index",
+    summary="Symbol to record for 18,140 genes: the spine every other gene tool reads.",
+    inputs=(paths.DEPMAP_GENES, paths.CANCER_GENOTYPE, paths.GENE_NETWORK),
+    outputs=(paths.GENE_INDEX,),
+    needs=("depmap", "cancer_genotype", "interactome"),
+    code=sources("tools/gene_index.py"),
+    run=lambda: _run_tool("gene_index"),
+))
+
+_add(Stage(
+    name="gene_world",
+    summary="Where each gene sits in the world: expression breadth, lineage, and scope.",
+    inputs=(paths.GENE_INDEX,),
+    outputs=(paths.GENE_WORLD,),
+    needs=("gene_index",),
+    code=sources("tools/gene_world.py"),
+    run=lambda: _run_tool("gene_world"),
+))
+
+_add(Stage(
+    name="gene_domains",
+    summary="UniProt domain families, normalised - the molecular part you can browse by.",
+    inputs=(paths.GENE_INDEX,),
+    outputs=(paths.GENE_DOMAINS,),
+    needs=("gene_index",),
+    code=sources("tools/gene_domains.py"),
+    run=lambda: _run_tool("gene_domains"),
+))
+
+_add(Stage(
+    name="gene_geometry",
+    summary="The shape of a gene's neighbourhood, calibrated - clustering fell 95% to 36%.",
+    inputs=(paths.GENE_INDEX, paths.GENE_WORLD),
+    outputs=(paths.GENE_GEOMETRY,),
+    needs=("gene_world",),
+    code=sources("tools/gene_geometry.py"),
+    run=lambda: _run_tool("gene_geometry"),
+))
+
+_add(Stage(
+    name="gene_related",
+    summary="What to read next from a gene page, and why that gene and not another.",
+    inputs=(paths.GENE_INDEX, paths.GENE_DOMAINS, paths.GENE_NETWORK),
+    outputs=(paths.GENE_RELATED,),
+    needs=("gene_domains",),
+    code=sources("tools/gene_related.py"),
+    run=lambda: _run_tool("gene_related"),
+))
+
+_add(Stage(
+    name="gene_datasheet",
+    summary="The gene as a datasheet: every measured field with its null and its interval.",
+    inputs=(paths.GENE_INDEX,),
+    outputs=(paths.GENE_DATASHEET,),
+    needs=("gene_index",),
+    code=sources("tools/gene_datasheet.py"),
+    run=lambda: _run_tool("gene_datasheet"),
+))
+
+_add(Stage(
+    name="gene_insights",
+    summary="What two layers say when read together, per gene, or that they disagree.",
+    inputs=(paths.GENE_INDEX, paths.GENE_WORLD, paths.GENE_GEOMETRY, paths.GENE_DOMAINS,
+            paths.GENE_DATASHEET),
+    outputs=(paths.GENE_INSIGHTS,),
+    needs=("gene_geometry", "gene_datasheet", "gene_domains"),
+    code=sources("tools/gene_insights.py"),
+    run=lambda: _run_tool("gene_insights"),
+))
+
+_add(Stage(
+    name="gene_attention",
+    summary="How much has ever been written about each gene, against what it constrains.",
+    inputs=(paths.GENE_WORLD,),
+    outputs=(paths.GENE_ATTENTION,),
+    needs=("gene_world",),
+    code=sources("tools/gene_attention.py"),
+    run=lambda: _run_tool("gene_attention"),
+))
+
+_add(Stage(
+    name="gene_facets",
+    summary=("PROPERTY to symbols: the browse index for people who do not already know the "
+             "gene they need. Six facets, every one of them a measurement on disk."),
+    inputs=(paths.GENE_INDEX, paths.GENE_WORLD, paths.GENE_GEOMETRY, paths.GENE_DOMAINS),
+    outputs=(paths.GENE_FACETS,),
+    needs=("gene_geometry", "gene_domains"),
+    code=sources("tools/gene_facets.py"),
+    run=lambda: _run_tool("gene_facets"),
+))
+
+_add(Stage(
+    name="gene_space",
+    summary="The gene projection the navigator plots, solved once here rather than per view.",
+    inputs=(paths.GENE_INDEX, paths.GENE_WORLD, paths.GENE_DATASHEET, paths.GENE_INSIGHTS,
+            paths.GENE_ATTENTION),
+    outputs=(paths.GENE_SPACE,),
+    needs=("gene_insights", "gene_attention"),
+    code=sources("tools/gene_space.py"),
+    run=lambda: _run_tool("gene_space"),
+))
+
+_add(Stage(
+    name="gene_shards",
+    summary="Split the gene surface into fetchable shards, so a page loads one and not all.",
+    inputs=(paths.GENE_INDEX, paths.GENE_WORLD, paths.GENE_GEOMETRY, paths.GENE_DOMAINS,
+            paths.GENE_RELATED, paths.GENE_DATASHEET, paths.GENE_INSIGHTS,
+            paths.GENE_ATTENTION),
+    outputs=(paths.GENE_SHARD_INDEX,),
+    needs=("gene_related", "gene_insights", "gene_attention", "gene_facets", "gene_space"),
+    code=sources("tools/gene_shards.py"),
+    run=lambda: _run_tool("gene_shards"),
+))
+
 _add(Stage(
     name="pipeline_state",
     summary="Publish which stages are fresh or stale, so freshness is not terminal-only.",
@@ -536,6 +815,7 @@ def _check() -> None:
     _run(str(paths.TOOLS / "figure_data.py"), "--check")
     _run(str(paths.TOOLS / "verify_claims.py"))
     _run(str(paths.TOOLS / "status.py"), "--check")
+    _run(str(paths.TOOLS / "index_check.py"))
     bib = paths.REFS_BIB.read_text(encoding="utf-8")
     unverified = sum(
         1

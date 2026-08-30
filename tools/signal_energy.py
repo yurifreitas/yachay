@@ -60,6 +60,10 @@ SEED = 20260830
 #: table is the whole cost of the file; 200 gives a z stable to about a tenth at these sizes.
 DRAWS = 200
 
+#: Bootstrap resamples of the DISEASES, for an interval on the observed value. A z is
+#: not an uncertainty and standards.md §4 asks for one on every published number.
+BOOT_DRAWS = 150
+
 #: THE FAMILIES, WRITTEN DOWN BEFORE THE COUNTS WERE READ. Reactome's top level is not a
 #: taxonomy of function — it is a filing system — so grouping it is an authored act and is
 #: labelled as one. The grouping is by what the family DOES in an organism, and the two that
@@ -159,11 +163,39 @@ def excess(diseases, in_pathway, systems_of, rng) -> dict:
         draws.append(indicator_mi(diseases, shuffled, systems_of))
     mu = statistics.fmean(draws)
     sd = statistics.pstdev(draws) or 1e-12
+
+    # AN INTERVAL ON THE OBSERVED VALUE, because a z is not one.
+    #
+    #  The z above says how far this pathway's mutual information sits from the mean of a
+    #  permutation null, in units of that null's spread. It says nothing about how far the
+    #  OBSERVED value would move if the catalogue held a different sample of diseases — and
+    #  that is what a reader comparing two families needs, because the family means below are
+    #  differences of these observed values.
+    #
+    #  Resampled over DISEASES with replacement at the same count, so the interval answers
+    #  "how much of this is the particular diseases in the catalogue". Point ± 1.96 SE and not
+    #  a percentile interval: mutual information is biased upward in n, and this repository
+    #  has already published one percentile interval that did not contain its own point.
+    boot = []
+    idx = list(range(len(pool)))
+    for _ in range(BOOT_DRAWS):
+        sample = [pool[rng.randrange(len(idx))] for _ in idx]
+        boot.append(indicator_mi(sample, in_pathway, systems_of))
+    se = statistics.pstdev(boot) if len(boot) > 10 else None
+
     return {
         "observed": round(observed, 6),
+        "observed_se": round(se, 6) if se else None,
+        "observed_ci95": ([round(observed - 1.96 * se, 6), round(observed + 1.96 * se, 6)]
+                          if se else None),
         "null_mean": round(mu, 6),
         "null_sd": round(sd, 6),
         "excess_bits": round(observed - mu, 6),
+        # The excess with the observed value's own uncertainty carried through. A pathway whose
+        # excess interval spans zero is one whose z is carrying the whole claim.
+        "excess_ci95": ([round(observed - 1.96 * se - mu, 6),
+                         round(observed + 1.96 * se - mu, 6)] if se else None),
+        "excess_spans_zero": bool(se) and (observed - 1.96 * se) <= mu <= (observed + 1.96 * se),
         "z": round((observed - mu) / sd, 2),
         "carriers": k,
         "draws": DRAWS,
@@ -271,6 +303,16 @@ def main() -> int:
         r["form_minus_process_normalised"] = round(m / h_morph - f / h_phys, 6)
 
     family_means = {k: round(statistics.fmean(v), 6) for k, v in by_family.items() if v}
+
+    # HOW MUCH OF THIS SURVIVES ITS OWN INTERVAL. Reported per arm, because the verdict is a
+    # difference of two family means and a difference between two quantities that each span
+    # zero is not a difference at all.
+    spans = {
+        "overall": sum(1 for r in rows if r["overall"].get("excess_spans_zero")),
+        "morphogenetic": sum(1 for r in rows if r["morphogenetic"].get("excess_spans_zero")),
+        "physiological": sum(1 for r in rows if r["physiological"].get("excess_spans_zero")),
+        "of_pathways": len(rows),
+    }
     family_means_norm = {k: round(statistics.fmean(v), 6)
                          for k, v in by_family_norm.items() if v}
     field = family_means.get("field")
@@ -330,6 +372,7 @@ def main() -> int:
             "the counts were read, and a reader who disagrees can regroup: every pathway's "
             "own numbers are published beside it."),
         "verdict": verdict,
+        "excess_spanning_zero": spans,
         "family_means_form_minus_process": family_means,
         "family_means_normalised": family_means_norm,
         "arm_entropies_bits": {"morphogenetic": round(h_morph, 4),
@@ -375,6 +418,9 @@ def main() -> int:
     DEST.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"\nwrote {DEST.relative_to(ROOT)}")
     print(f"  family means (form - process): {family_means}")
+    print(f"  pathways whose excess interval SPANS ZERO: overall {spans['overall']}, "
+          f"morphogenetic {spans['morphogenetic']}, physiological {spans['physiological']} "
+          f"of {spans['of_pathways']}")
     print(f"  {verdict}")
     return 0
 
