@@ -48,6 +48,8 @@ const SingleCellCoverage = lazy(() => import("./components/DeepPanels").then((m)
 const SampleAncestry = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleAncestry })));
 const SampleDisorders = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleDisorders })));
 const SampleJoins = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleJoins })));
+const TraitAxes = lazy(() => import("./components/TraitAtlas").then((m) => ({ default: m.TraitAxes })));
+const TraitMatrix = lazy(() => import("./components/TraitAtlas").then((m) => ({ default: m.TraitMatrix })));
 const TwinPropagation = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.TwinPropagation })));
 const GenotypePhenotype = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GenotypePhenotype })));
 const AttentionBurden = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AttentionBurden })));
@@ -162,6 +164,22 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     sub: (ctx) => (<>{ctx.tt(SAMP.disSub)}</>),
     view: () => (
       <><SampleDisorders /></>
+    ),
+  },
+  {
+    id: "axes",
+    title: (ctx) => (<>{ctx.tt(SAMP.pcpHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(SAMP.pcpSub)}</>),
+    view: () => (
+      <><TraitAxes /></>
+    ),
+  },
+  {
+    id: "grid",
+    title: (ctx) => (<>{ctx.tt(SAMP.matHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(SAMP.matSub)}</>),
+    view: () => (
+      <><TraitMatrix /></>
     ),
   },
   {

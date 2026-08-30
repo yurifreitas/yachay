@@ -56,6 +56,46 @@ export const SAMP = {
   disCountries: bi("where the samples were recruited",
                    "onde as amostras foram recrutadas"),
 
+  // ---------------------------------------------------------------- the comparison
+  sAxes: bi("Every disease area, five axes", "Toda área de doença, cinco eixos"),
+  pcpHeading: bi(
+    "psychiatry is the least European of the eight areas, not the most",
+    "psiquiatria é a MENOS europeia das oito áreas, não a mais",
+  ),
+  pcpSub: bi(
+    "The previous panel says psychiatric samples are 65.8 % European, and read alone it "
+    + "invites a conclusion about psychiatry. Against the other seven areas that conclusion "
+    + "inverts: cancer is 80.8 % and the residual disease bucket 83.5 %. The problem is the "
+    + "field's, and psychiatry is the part of it doing best.",
+    "O painel anterior diz que as amostras psiquiátricas são 65,8 % europeias, e lido sozinho "
+    + "convida a uma conclusão sobre psiquiatria. Contra as outras sete áreas essa conclusão "
+    + "se inverte: câncer tem 80,8 % e a categoria residual de doenças, 83,5 %. O problema é "
+    + "do campo, e a psiquiatria é a parte dele que vai melhor.",
+  ),
+  pcpAxes: bi("five axes, no two of them the same kind of quantity",
+              "cinco eixos, nenhum par da mesma espécie de grandeza"),
+  pcpAria: bi(
+    "Parallel coordinates: one line per disease area across five axes",
+    "Coordenadas paralelas: uma linha por área de doença em cinco eixos",
+  ),
+  pcpCategories: bi("where the categories came from", "de onde vieram as categorias"),
+
+  sMatrix: bi("The composition grid", "A grade de composição"),
+  matHeading: bi(
+    "ancestry by disease area, ordered by the numbers rather than by the names",
+    "ancestralidade por área de doença, ordenada pelos números e não pelos nomes",
+  ),
+  matSub: bi(
+    "Both axes are seriated: rows and columns are placed so that similar profiles sit "
+    + "together. Alphabetical order is also an argument — it argues that the names matter and "
+    + "the numbers do not.",
+    "Os dois eixos são seriados: linhas e colunas ficam de modo que perfis parecidos se "
+    + "vizinhem. Ordem alfabética também é um argumento — ela argumenta que os nomes importam "
+    + "e os números não.",
+  ),
+  matSeriated: bi("solved in Python, drawn in the browser",
+                  "resolvido em Python, desenhado no navegador"),
+
   // ---------------------------------------------------------------- the joins
   sJoins: bi("How this was got wrong twice", "Como isto deu errado duas vezes"),
   joinHeading: bi(

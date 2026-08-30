@@ -412,6 +412,13 @@ emit("figures", figures);
     emit("psychiatric_gwas", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
 
+  // Every disease area on the same axes, with the parallel-coordinates model and the
+  // seriated matrix solved in Python (ADR 0008).
+  {
+    const f = join(REPO, "out", "psychiatric", "trait_atlas.json");
+    emit("trait_atlas", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   // The predictive-technology layer's founding measurement: what a regulator has actually
   // permitted, which is the only rung of a readiness scale that can be observed rather than
   // asserted. Lives in out/devices/ because it is not about rare disease.

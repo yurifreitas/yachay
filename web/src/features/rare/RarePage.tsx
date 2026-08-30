@@ -160,6 +160,8 @@ const SECTIONS: NavSectionDef[] = [
   //     argument about the result above it.
   { id: "ancestrygwas", label: SAMP.sAncestry, group: "sampled" },
   { id: "disorders", label: SAMP.sDisorders, group: "sampled" },
+  { id: "axes", label: SAMP.sAxes, group: "sampled" },
+  { id: "grid", label: SAMP.sMatrix, group: "sampled" },
   { id: "joins", label: SAMP.sJoins, group: "sampled" },
 
   // 5b. The method on a domain that did not produce it. Its own group, because the standing

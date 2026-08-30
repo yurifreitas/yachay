@@ -1,0 +1,112 @@
+/* Parallel coordinates and a seriated matrix.
+   Both are drawn from coordinates solved in Python (ADR 0008). Nothing here decides an order,
+   a normalisation or a scale — this stylesheet decides how the marks look, and that is all a
+   stylesheet should be deciding when the layout is an argument. */
+
+.pcpWrap { overflow-x: auto; min-width: 0; }
+.pcp {
+  position: relative;
+  height: 260px;
+  min-width: 520px;
+  /* Room above for the axis labels and below for their ranges. */
+  margin: var(--sp-8) var(--sp-4) var(--sp-12);
+}
+.svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+.axis { stroke: var(--r-border); stroke-width: 1; }
+
+/* Every line at the same weight, because the question is whether they are PARALLEL — giving
+   one of them emphasis would answer that question for the reader. */
+.line {
+  fill: none;
+  stroke: var(--unknown);
+  stroke-width: 1.6;
+  opacity: 0.75;
+  cursor: pointer;
+  transition: opacity 140ms var(--r-ease), stroke 140ms var(--r-ease);
+}
+.line:hover { opacity: 1; stroke-width: 2.4; }
+/* Dimmed rather than hidden: a line that disappears on hover changes the shape of the whole
+   figure, and the shape is the finding. */
+.lineDim {
+  composes: line;
+  opacity: 0.16;
+  stroke: var(--r-text-3);
+}
+
+.axisLabel {
+  position: absolute;
+  top: -30px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 10.5px;
+  line-height: 1.25;
+  color: var(--r-text-2);
+  white-space: nowrap;
+}
+.axisRange {
+  font-size: 9.5px;
+  color: var(--r-text-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.rowOn { background: var(--r-surface-2); }
+
+/* ------------------------------------------------------------------ the matrix */
+
+.matWrap { overflow-x: auto; min-width: 0; }
+.mat {
+  border-collapse: separate;
+  border-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.mat th {
+  font-weight: 500;
+  font-size: 10.5px;
+  color: var(--r-text-3);
+  padding: 0 var(--sp-2);
+  vertical-align: bottom;
+}
+/* Column heads turn rather than truncate. Eight ancestry names are long and the grid is
+   narrow; abbreviating them would cost the reader the one thing the axis is for. */
+.colHead {
+  display: inline-block;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  max-height: 130px;
+  text-align: left;
+}
+.rowHead {
+  text-align: right;
+  white-space: nowrap;
+  color: var(--r-text-2);
+  font-size: 11.5px;
+}
+
+.cell {
+  width: 46px;
+  height: 34px;
+  text-align: center;
+  border-radius: var(--r-radius-sm);
+  /* One hue, varying in strength. A diverging scale would imply a midpoint these shares do
+     not have, and a categorical one would imply the ancestries are unordered when the
+     seriation has just ordered them. */
+  background: color-mix(in oklch, var(--unknown) calc(var(--v, 0) * 82%), var(--r-surface-2));
+}
+.cellV {
+  font-size: 11px;
+  /* Readable on both ends of the ramp: the text takes the ground colour once the cell is
+     dark enough to need it. */
+  color: color-mix(in oklch, var(--r-text) calc((1 - var(--v, 0)) * 100%), var(--r-brand-fg));
+}
+
+@media (max-width: 720px) {
+  .pcp { height: 210px; margin-left: 0; margin-right: 0; }
+  .cell { width: 38px; height: 30px; }
+  .colHead { max-height: 96px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line { transition: none; }
+}
