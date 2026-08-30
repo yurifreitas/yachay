@@ -65,7 +65,7 @@
   border-radius: var(--r-radius-lg);
 }
 .lam { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--sp-6); align-items: start; }
-@media (max-width: 760px) { .lam { grid-template-columns: 1fr; gap: var(--sp-3); } }
+@media (max-width: 760px) { .lam { grid-template-columns: minmax(0, 1fr); gap: var(--sp-3); } }
 .lamV {
   font-size: 32px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1;
   color: var(--cap-warn); font-variant-numeric: tabular-nums; white-space: nowrap;

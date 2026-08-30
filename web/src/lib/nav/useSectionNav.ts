@@ -55,6 +55,43 @@ export function useSectionNav(spec: SectionNavSpec) {
     [sections, setSection],
   );
 
+  /** THE ORDER IS AN ARGUMENT, AND NOTHING LET A READER WALK IT.
+   *
+   *  Every page's `SECTIONS` array is authored in a deliberate sequence — the rare atlas
+   *  comments say so out loud: *look at one disease, then at what stops it, then at what it
+   *  would physically take.* Twenty-nine sections carried that order and the only way to
+   *  follow it was to hunt the next label in a rail, across a group boundary, by name.
+   *
+   *  So the sequence becomes navigable. Derived from the same array, so it cannot disagree
+   *  with the rail, and flat across groups because the argument does not stop at a group.
+   */
+  const index = sections.findIndex((s) => s.id === section);
+  const prev = index > 0 ? sections[index - 1] : null;
+  const next = index >= 0 && index < sections.length - 1 ? sections[index + 1] : null;
+
+  const go = useMemo(
+    () => (delta: -1 | 1) => {
+      const target = delta < 0 ? prev : next;
+      if (target) setSection(target.id);
+    },
+    [prev, next, setSection],
+  );
+
+  /** `[` and `]` rather than the arrows: arrows scroll, and a page that eats them from a
+   *  reader halfway down a table has broken something more important than it fixed. Ignored
+   *  while a field has focus or a modifier is held, so a shortcut never outranks typing. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = e.target as HTMLElement | null;
+      if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
+      if (e.key === "[") { e.preventDefault(); go(-1); }
+      if (e.key === "]") { e.preventDefault(); go(1); }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [go]);
+
   const tree = useMemo<NavTree>(
     () => ({ owner, groups: counted, sections, section, group, onSection: setSection, onGroup }),
     [owner, counted, sections, section, group, setSection, onGroup],
@@ -66,5 +103,6 @@ export function useSectionNav(spec: SectionNavSpec) {
     return () => publish(null, owner);
   }, [publish, tree, owner]);
 
-  return { section, setSection, group, onGroup, groups: counted, inGroup, tree };
+  return { section, setSection, group, onGroup, groups: counted, inGroup, tree,
+           prev, next, go, groupOf };
 }

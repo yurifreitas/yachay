@@ -71,7 +71,7 @@
   background: color-mix(in oklch, var(--cap-serious) 8%, transparent);
   border-radius: var(--r-radius-lg);
 }
-@media (max-width: 700px) { .finding { grid-template-columns: 1fr; gap: var(--sp-3); } }
+@media (max-width: 700px) { .finding { grid-template-columns: minmax(0, 1fr); gap: var(--sp-3); } }
 .findingV {
   font-size: 54px; font-weight: 600; letter-spacing: -0.03em; line-height: 1;
   color: var(--cap-serious); font-variant-numeric: tabular-nums;
@@ -89,7 +89,7 @@
   display: grid; align-items: center; gap: var(--sp-4);
   grid-template-columns: 200px minmax(0, 1fr) 140px;
 }
-@media (max-width: 800px) { .row { grid-template-columns: 1fr; gap: var(--sp-1); } }
+@media (max-width: 800px) { .row { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); } }
 .rowName { display: flex; align-items: baseline; gap: var(--sp-2); font-size: 13px; color: var(--r-text); }
 .rowN { font-size: 11px; color: var(--r-text-3); font-variant-numeric: tabular-nums; }
 .track { position: relative; height: 22px; }

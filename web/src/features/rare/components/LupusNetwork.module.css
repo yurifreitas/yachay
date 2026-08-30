@@ -41,7 +41,7 @@
   gap: var(--sp-8);
   align-items: start;
 }
-@media (max-width: 1300px) { .body { grid-template-columns: 1fr; } }
+@media (max-width: 1300px) { .body { grid-template-columns: minmax(0, 1fr); } }
 
 .graph {
   border: var(--r-hairline);
@@ -133,7 +133,7 @@
 
 .path { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-1); }
 .pathStep {
-  display: grid; grid-template-columns: 14px 1fr auto; gap: var(--sp-2);
+  display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: var(--sp-2);
   align-items: center; position: relative;
   padding: var(--sp-2) var(--sp-3);
   border-radius: var(--r-radius-sm); background: var(--r-surface-2);

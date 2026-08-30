@@ -29,7 +29,7 @@
   display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: var(--sp-8);
 }
 .itemSelf { border-color: color-mix(in oklch, var(--unknown) 55%, transparent); }
-@media (max-width: 1200px) { .item { grid-template-columns: 1fr; gap: var(--sp-4); } }
+@media (max-width: 1200px) { .item { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); } }
 
 .head { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; margin-bottom: var(--sp-3); }
 .name { font-size: 19px; font-weight: 600; letter-spacing: -0.012em; }
@@ -57,7 +57,7 @@
 .detail { font-size: 13.5px; line-height: 1.6; color: var(--r-text-3); }
 
 .bands { display: flex; flex-direction: column; gap: var(--sp-1); margin-top: var(--sp-2); }
-.band { display: grid; grid-template-columns: 130px 1fr 52px; gap: var(--sp-3); align-items: center; font-size: 12.5px; }
+.band { display: grid; grid-template-columns: 130px minmax(0, 1fr) 52px; gap: var(--sp-3); align-items: center; font-size: 12.5px; }
 .bandName { color: var(--r-text-2); font-variant-numeric: tabular-nums; }
 .bandTrack { height: 8px; border-radius: 4px; background: color-mix(in oklch, var(--absent) 18%, transparent); }
 .bandFill { display: block; height: 100%; border-radius: 4px; background: var(--rare-p2); }

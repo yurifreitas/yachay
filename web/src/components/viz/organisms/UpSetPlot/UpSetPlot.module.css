@@ -5,7 +5,7 @@
    drift apart the figure is not merely ugly, it is wrong. */
 .grid {
   display: grid;
-  grid-template-columns: minmax(210px, 260px) 1fr;
+  grid-template-columns: minmax(210px, 260px) minmax(0, 1fr);
   grid-template-rows: auto auto;
   gap: var(--sp-3) var(--sp-4);
   align-items: end;
@@ -14,7 +14,7 @@
 
 .bars {
   grid-column: 2; grid-row: 1;
-  display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: var(--sp-2);
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--sp-2);
   align-items: end;
 }
 .bar, .barOn {
@@ -41,7 +41,7 @@
   display: grid; gap: var(--sp-1); align-content: start;
 }
 .setRow {
-  display: grid; grid-template-columns: 1fr 52px 38px; align-items: center; gap: var(--sp-2);
+  display: grid; grid-template-columns: minmax(0, 1fr) 52px 38px; align-items: center; gap: var(--sp-2);
   height: 26px;
 }
 /* ONE LINE, ALWAYS. The set rows and the dot matrix are two separate grids that align only
@@ -60,7 +60,7 @@
 
 .matrix { grid-column: 2; grid-row: 2; position: relative; }
 .matrixRow {
-  display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: var(--sp-2);
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--sp-2);
   height: 26px; align-items: center;
 }
 .dot, .dotOn {
@@ -75,7 +75,7 @@
 
 .connectors {
   position: absolute; inset: 0;
-  display: grid; grid-template-columns: repeat(var(--cols), 1fr); gap: var(--sp-2);
+  display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); gap: var(--sp-2);
   align-items: start;
   pointer-events: none;
 }

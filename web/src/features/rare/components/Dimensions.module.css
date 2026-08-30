@@ -13,7 +13,7 @@
   background: var(--r-surface); padding: var(--sp-8);
   display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.1fr); gap: var(--sp-8);
 }
-@media (max-width: 1200px) { .dim { grid-template-columns: 1fr; gap: var(--sp-4); } }
+@media (max-width: 1200px) { .dim { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); } }
 
 .person { font-size: 21px; font-weight: 600; letter-spacing: -0.015em; margin: 0 0 var(--sp-3); }
 .label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--r-text-3); }
@@ -34,7 +34,7 @@
 
 .rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .row {
-  display: grid; grid-template-columns: 110px 1fr 70px; gap: var(--sp-3);
+  display: grid; grid-template-columns: 110px minmax(0, 1fr) 70px; gap: var(--sp-3);
   align-items: center; padding: var(--sp-2) 0; border-bottom: var(--r-hairline);
   font-size: 13px;
 }

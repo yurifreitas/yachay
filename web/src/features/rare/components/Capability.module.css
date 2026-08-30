@@ -48,7 +48,7 @@
   grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
   align-items: start;
 }
-@media (max-width: 1000px) { .planWrap { grid-template-columns: 1fr; } }
+@media (max-width: 1000px) { .planWrap { grid-template-columns: minmax(0, 1fr); } }
 
 .planPick {
   display: grid; gap: var(--sp-2); position: sticky; top: var(--sp-4);
@@ -345,7 +345,7 @@
   display: grid; align-items: center; gap: var(--sp-4);
   grid-template-columns: minmax(180px, 240px) minmax(0, 1fr) 90px;
 }
-@media (max-width: 760px) { .cmpRow { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .cmpRow { grid-template-columns: minmax(0, 1fr); } }
 .cmpL { font-size: 13px; color: var(--r-text-2); }
 .cmpTrack { display: block; height: 22px; }
 .cmpBar { display: block; height: 22px; border-radius: 5px; background: var(--r-text-3); }
@@ -379,7 +379,7 @@
   grid-template-columns: minmax(180px, 260px) minmax(0, 1fr) 180px;
   padding: var(--sp-3) var(--sp-6); background: var(--r-surface);
 }
-@media (max-width: 820px) { .qRow { grid-template-columns: 1fr; gap: var(--sp-1); } }
+@media (max-width: 820px) { .qRow { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); } }
 .qName { font-size: 14px; font-weight: 500; color: var(--r-text); }
 .qBottle { font-size: 13px; color: var(--r-text-2); }
 .qYears, .qYearsBad {

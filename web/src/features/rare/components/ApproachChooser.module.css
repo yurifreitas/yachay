@@ -1,6 +1,6 @@
 .root {
   display: grid;
-  grid-template-columns: minmax(300px, 360px) 1fr;
+  grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
   grid-template-areas: "panel results" "panel why";
   gap: var(--sp-8);
   align-items: start;
@@ -78,7 +78,7 @@
 .list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
 .row, .rowOn {
   width: 100%; text-align: left; font: inherit; cursor: pointer;
-  display: grid; grid-template-columns: 28px 1fr 200px;
+  display: grid; grid-template-columns: 28px minmax(0, 1fr) 200px;
   gap: var(--sp-4); align-items: center;
   padding: var(--sp-4); min-height: 64px;
   border: var(--r-hairline); border-radius: var(--r-radius);
@@ -113,7 +113,7 @@
 }
 .ruledList { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .ruledList li {
-  display: grid; grid-template-columns: 210px 1fr; gap: var(--sp-4);
+  display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: var(--sp-4);
   padding: var(--sp-3) 0; border-bottom: var(--r-hairline);
   align-items: baseline;
 }
@@ -127,10 +127,10 @@
 .whySub { margin: 0 0 var(--sp-4); font-size: 14px; color: var(--r-text-2); max-width: 62ch; }
 
 @media (max-width: 960px) {
-  .root { grid-template-columns: 1fr; grid-template-areas: "panel" "results" "why"; }
+  .root { grid-template-columns: minmax(0, 1fr); grid-template-areas: "panel" "results" "why"; }
   .panel { position: static; max-height: none; }
-  .row, .rowOn { grid-template-columns: 24px 1fr; }
+  .row, .rowOn { grid-template-columns: 24px minmax(0, 1fr); }
   .scoreWrap { grid-column: 1 / -1; }
-  .ruledList li { grid-template-columns: 1fr; gap: var(--sp-1); }
+  .ruledList li { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); }
 }
 @media (prefers-reduced-motion: reduce) { .row, .rowOn { transition: none; } }

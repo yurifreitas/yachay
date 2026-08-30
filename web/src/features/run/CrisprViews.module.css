@@ -11,7 +11,7 @@
 @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; background: var(--r-surface-2); } }
 
 /* ------------------------------------------------------------------ the field */
-.fieldWrap { display: grid; grid-template-columns: 56px 1fr; gap: var(--sp-3); }
+.fieldWrap { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: var(--sp-3); }
 .fieldY {
   display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;
   font-size: 10.5px; color: var(--r-text-3); padding: 2px 0;

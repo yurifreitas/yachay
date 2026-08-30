@@ -17,7 +17,7 @@
   align-items: start;
 }
 @media (max-width: 1300px) {
-  .intro, .pair { grid-template-columns: 1fr; }
+  .intro, .pair { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ---- framing ------------------------------------------------------------------ */
@@ -80,7 +80,7 @@
 }
 .gene {
   display: grid;
-  grid-template-columns: 150px 1fr;
+  grid-template-columns: 150px minmax(0, 1fr);
   gap: var(--sp-4);
   align-items: baseline;
   padding: var(--sp-4) 0;
@@ -114,6 +114,6 @@
 .provenance strong { color: var(--r-text-2); }
 
 @media (max-width: 900px) {
-  .gene { grid-template-columns: 1fr; gap: var(--sp-2); }
+  .gene { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
 }
 @media (prefers-reduced-motion: reduce) { .tab, .tabOn { transition: none; } }

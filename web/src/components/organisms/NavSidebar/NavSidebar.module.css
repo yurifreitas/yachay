@@ -22,7 +22,7 @@
    switch squeezed the tagline into three lines at 264px — a control that damages the thing
    it sits next to has been put in the wrong place. */
 .brand {
-  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-2) var(--sp-3);
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--sp-2) var(--sp-3);
   align-items: center; padding: 0 var(--sp-2);
 }
 .brand > div { min-width: 0; }

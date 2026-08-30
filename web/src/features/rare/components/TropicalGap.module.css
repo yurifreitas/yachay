@@ -2,7 +2,7 @@
 
 /* The headline number, in the house style. */
 .finding {
-  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-8); align-items: baseline;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--sp-8); align-items: baseline;
   padding: var(--sp-8);
   background: var(--r-surface-2); border-radius: var(--r-radius);
   border-left: 3px solid var(--unknown);
@@ -27,7 +27,7 @@
   font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
   color: var(--r-text-3);
 }
-.statRow { display: grid; grid-template-columns: 108px 1fr 44px; align-items: center; gap: var(--sp-3); }
+.statRow { display: grid; grid-template-columns: 108px minmax(0, 1fr) 44px; align-items: center; gap: var(--sp-3); }
 .statLabel { font-size: 12px; color: var(--r-text-2); text-align: right; }
 .statTrack { height: 14px; background: var(--r-surface-2); border-radius: 999px; }
 .statBar { display: block; height: 100%; border-radius: 999px; background: var(--unknown); }
@@ -54,7 +54,7 @@
 
 .rows { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
 .row, .rowUnnamed {
-  display: grid; grid-template-columns: minmax(180px, 300px) 1fr 52px 40px;
+  display: grid; grid-template-columns: minmax(180px, 300px) minmax(0, 1fr) 52px 40px;
   align-items: center; gap: var(--sp-4);
   padding: var(--sp-2) 0;
 }

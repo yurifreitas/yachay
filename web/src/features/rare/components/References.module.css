@@ -52,7 +52,7 @@
 }
 .neverGrid { display: grid; gap: var(--sp-3); grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
 .never {
-  display: grid; grid-template-columns: 1fr auto 1fr; gap: var(--sp-3); align-items: center;
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: var(--sp-3); align-items: center;
   padding: var(--sp-4); background: var(--r-surface-2); border-radius: var(--r-radius);
   border-left: 3px solid var(--cap-serious);
 }

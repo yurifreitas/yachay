@@ -87,7 +87,7 @@
 .hitTable { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
 .hitTable > li {
   display: grid; align-items: center; gap: 12px; min-height: 32px;
-  grid-template-columns: minmax(80px, 110px) 48px 48px 56px 76px 1fr;
+  grid-template-columns: minmax(80px, 110px) 48px 48px 56px 76px minmax(0, 1fr);
   font-size: 12px; padding: 4px 0; border-bottom: 1px solid var(--r-border);
 }
 .hitGene { font-family: var(--r-mono, ui-monospace, monospace); font-weight: 600; }
@@ -106,7 +106,7 @@
 }
 
 @media (max-width: 720px) {
-  .bRow, .bRowOn { grid-template-columns: minmax(72px, 96px) 1fr 44px 56px; }
+  .bRow, .bRowOn { grid-template-columns: minmax(72px, 96px) minmax(0, 1fr) 44px 56px; }
   .bLines { display: none; }
   .slope { margin-right: 72px; height: 260px; }
   .hitTable > li { grid-template-columns: minmax(72px, 96px) 44px 44px 52px; }

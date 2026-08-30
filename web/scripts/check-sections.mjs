@@ -13,6 +13,11 @@
  *    2. every registered id appears in the SECTIONS array — a section nobody can reach
  *    3. every registry entry has a non-empty `sub`, because in this project a figure's
  *       sentence is where it states what it does not show
+ *    4. no id appears twice, in either list. `renderSection` resolves with `.find`, so a
+ *       duplicate id does not fail — the FIRST entry wins and the second is unreachable
+ *       while the rail still offers it. That shipped once: a section added on 2026-08-29
+ *       reused `gaps`, and the rail carried two tabs that drew the same old panel. Checks
+ *       1 and 2 both passed, because a duplicate is a member of both sets.
  *
  *  Read as text rather than imported: these are .tsx modules with JSX, and a checker that
  *  needs a bundler to run is a checker that gets skipped.
@@ -69,6 +74,12 @@ for (const { name, page, registry } of MIGRATED) {
   const missing = navIds.filter((id) => !regIds.includes(id));
   const orphan = regIds.filter((id) => !navIds.includes(id));
 
+  // Set membership cannot see a duplicate: the id is present in both lists, twice. Only a
+  // count can, and the second entry is dead code the rail advertises.
+  const dupes = (ids) => [...new Set(ids.filter((id, i) => ids.indexOf(id) !== i))];
+  const dupNav = dupes(navIds);
+  const dupReg = dupes(regIds);
+
   // Every entry must carry a sentence — and the check is on the TEXT, not the syntax.
   // Its first version demanded a quoted string and failed twenty-three entries whose
   // sentences are JSX carrying inline emphasis. That is the checker being wrong about form
@@ -94,14 +105,18 @@ for (const { name, page, registry } of MIGRATED) {
     })
     .map((e) => (e.match(/id:\s*"([a-z_]+)"/) || [, "?"])[1]);
 
-  if (missing.length || orphan.length || noSub.length) {
+  if (missing.length || orphan.length || noSub.length || dupNav.length || dupReg.length) {
     failures++;
     console.error(`sections: ${name}`);
     for (const id of missing) console.error(`  the rail offers "${id}" and nothing draws it`);
     for (const id of orphan) console.error(`  "${id}" is registered and unreachable from the rail`);
     for (const id of noSub) console.error(`  "${id}" has no sentence saying what it shows`);
+    for (const id of dupNav) console.error(`  the rail offers "${id}" twice — two tabs, one view`);
+    for (const id of dupReg) console.error(
+      `  "${id}" is registered twice; \`.find\` takes the first and the second never draws`);
   } else {
-    console.log(`sections: ${name} — ${regIds.length} sections, every one reachable and described.`);
+    console.log(`sections: ${name} — ${regIds.length} sections, every one reachable, `
+      + `uniquely addressed and described.`);
   }
 }
 

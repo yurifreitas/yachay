@@ -37,7 +37,7 @@
    one narrow column and left half the width of a wide screen empty — the hole the layout was
    supposed to close. Side by side, each keeps its own measure and the row is full. */
 .heroSide { display: flex; flex-direction: column; gap: var(--sp-4); }
-@media (max-width: 1100px) { .heroTop { grid-template-columns: 1fr; gap: var(--sp-6); } }
+@media (max-width: 1100px) { .heroTop { grid-template-columns: minmax(0, 1fr); gap: var(--sp-6); } }
 .eyebrow {
   font-size: 12px;
   letter-spacing: 0.12em;
@@ -99,7 +99,7 @@
 .block > div:first-child { grid-column: 1; }
 
 @media (max-width: 1200px) {
-  .block { grid-template-columns: 1fr; }
+  .block { grid-template-columns: minmax(0, 1fr); }
   .blockHead, .block > *:not(.blockHead), .block > div:first-child { grid-column: 1; }
   .blockHead { position: static; }
 }
@@ -124,7 +124,7 @@
 /* ---- definitions & facts: hairline lists, not boxed tables ------------------- */
 /* ---- empty state ------------------------------------------------------------- */
 @media (max-width: 860px) {
-  .def, .fact { grid-template-columns: 1fr; gap: var(--sp-2); }
+  .def, .fact { grid-template-columns: minmax(0, 1fr); gap: var(--sp-2); }
 }
 @media (prefers-reduced-motion: reduce) {
   .tab, .tabOn { transition: none; }

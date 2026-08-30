@@ -184,7 +184,7 @@
   grid-template-columns: minmax(120px, 160px) minmax(150px, 240px) minmax(0, 1fr);
   padding: var(--sp-3) var(--sp-6); background: var(--r-surface);
 }
-@media (max-width: 900px) { .archRow { grid-template-columns: 1fr; gap: var(--sp-1); } }
+@media (max-width: 900px) { .archRow { grid-template-columns: minmax(0, 1fr); gap: var(--sp-1); } }
 .archName { font-size: 14px; font-weight: 600; color: var(--r-text); }
 .archHolds { font-size: 13px; color: var(--r-text-2); }
 .archNote { font-size: 13px; line-height: 1.6; color: var(--r-text-3); }

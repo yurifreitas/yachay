@@ -155,7 +155,7 @@
 .dumbbells { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
 .dumbbells > li {
   display: grid; align-items: center; gap: 12px; min-height: 32px;
-  grid-template-columns: minmax(88px, 120px) 1fr 48px 84px;
+  grid-template-columns: minmax(88px, 120px) minmax(0, 1fr) 48px 84px;
 }
 .gene {
   font-family: var(--r-mono, ui-monospace, SFMono-Regular, monospace); font-size: 13px; font-weight: 600;
@@ -185,7 +185,7 @@
 .shared { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
 .shared > li {
   display: grid; gap: 12px; align-items: baseline;
-  grid-template-columns: minmax(88px, 120px) 1fr;
+  grid-template-columns: minmax(88px, 120px) minmax(0, 1fr);
 }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; }
 /* THE IDENTITY HUE IS A MARK COLOUR, NOT A TEXT COLOUR. It is defined at a constant
@@ -235,11 +235,11 @@
 
 @media (max-width: 720px) {
   .page { gap: 48px; padding: 24px 16px 64px; }
-  .row, .rowOn { grid-template-columns: 12px 1fr 44px 76px; }
+  .row, .rowOn { grid-template-columns: 12px minmax(0, 1fr) 44px 76px; }
   .rowBarWrap, .floorOk, .floorBad { display: none; }
-  .dumbbells > li { grid-template-columns: minmax(72px, 96px) 1fr 44px; }
+  .dumbbells > li { grid-template-columns: minmax(72px, 96px) minmax(0, 1fr) 44px; }
   .q { display: none; }
-  .shared > li { grid-template-columns: 1fr; }
+  .shared > li { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* The subgroup picker. One line, aligned with the level switch above it, so the two scope

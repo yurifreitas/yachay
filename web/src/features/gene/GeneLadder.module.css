@@ -44,7 +44,7 @@
    unmeasured one in the neutral, so a reader scanning the column sees at a glance that most
    of this ladder has never been measured by anybody. */
 .step {
-  display: grid; grid-template-columns: 20px auto 1fr; align-items: center; gap: var(--sp-4);
+  display: grid; grid-template-columns: 20px auto minmax(0, 1fr); align-items: center; gap: var(--sp-4);
   padding: var(--sp-3) var(--sp-6);
 }
 .stepLine { justify-self: center; width: 2px; height: 34px; background: var(--r-border-hi); border-radius: 2px; }

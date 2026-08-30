@@ -52,6 +52,29 @@ function SignedRow(
 
 /* ================================================================== the typed gap */
 
+
+/** THE SECTION HEADER ALREADY SAID IT.
+ *
+ *  Every one of these panels used to reprint its section's heading and sentence inside the
+ *  headline block — the registry draws both directly above, so the reader met the same two
+ *  sentences twice in a row, eight times across the atlas. It read as padding, which is what
+ *  it was.
+ *
+ *  What goes there instead is the QUESTION the number answers. Every artefact carries one,
+ *  written by the tool that produced it, and none of them were rendered anywhere. A headline
+ *  number with its question beside it is a claim; the same number with its own headline
+ *  repeated is an echo.
+ */
+function Answers({ q }: { q?: string }) {
+  if (!q) return null;
+  return (
+    <p>
+      <span className={css.answersK}>the question this answers</span>
+      {q}
+    </p>
+  );
+}
+
 export function GapTaxonomy() {
   const tt = useT();
   const d = gapsRaw as any;
@@ -64,7 +87,7 @@ export function GapTaxonomy() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>{fmtInt(totals.interoperability ?? 0)}</span>
-        <p><strong>{tt(MORE.gapHeading)}</strong> {tt(MORE.gapSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <div className={css.block}>
@@ -148,7 +171,7 @@ export function AttentionBurden() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>+{(arms[0]?.attention_vs_prevalence ?? 0).toFixed(3)}</span>
-        <p><strong>{tt(MORE.attHeading)}</strong> {tt(MORE.attSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <div className={css.block}>
@@ -215,7 +238,7 @@ export function AutismConvergence() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>{fmtInt(d.scale?.genes ?? 0)}</span>
-        <p><strong>{tt(MORE.autHeading)}</strong> {tt(MORE.autSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <p className={css.caveat}>{d.not_an_adapter?.consequence}</p>
@@ -278,7 +301,7 @@ export function VoidCells() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>{fmtInt(d.antiforms?.count ?? 0)}</span>
-        <p><strong>{tt(MORE.voidHeading)}</strong> {tt(MORE.voidSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <div className={css.pair}>

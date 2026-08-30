@@ -1,0 +1,105 @@
+/* The sequence, at the foot of every panel.
+   Two targets and a position, on one line, with the whole card as the hit area — a text link
+   at the bottom of a long page is a target the reader has to aim at after scrolling. */
+.walk {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--sp-4);
+  margin-top: var(--sp-16);
+  padding-top: var(--sp-8);
+  border-top: var(--r-hairline);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-height: 64px;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--r-border);
+  border-radius: var(--r-radius);
+  background: var(--r-surface);
+  color: var(--r-text);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+  /* Colour and border only. A transform here would move the label the reader is reading. */
+  transition: background 140ms var(--r-ease), border-color 140ms var(--r-ease);
+}
+.prev { align-items: flex-start; }
+.next { align-items: flex-end; text-align: right; }
+
+.step:hover { background: var(--r-surface-2); border-color: var(--r-border-hi); }
+.step:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+/* An end of the sequence is stated, not offered as a dead control. */
+.end {
+  border-style: dashed;
+  background: none;
+  cursor: default;
+  align-items: center;
+  justify-content: center;
+}
+.end:hover { background: none; border-color: var(--r-border); }
+
+.dir {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.next .dir { flex-direction: row-reverse; }
+
+.arrow { font-size: 13px; line-height: 1; }
+
+.kbd {
+  padding: 1px 5px;
+  border: 1px solid var(--r-border);
+  border-radius: var(--r-radius-sm);
+  background: var(--r-surface-2);
+  font-family: inherit;
+  font-size: 10px;
+  color: var(--r-text-3);
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--r-text);
+}
+
+/* The one move in this interface that changes the question being asked. */
+.crossing {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--r-text-2);
+}
+.crossing strong { color: var(--r-brand); font-weight: 600; }
+
+.count {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  padding: 0 var(--sp-2);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--r-text-2);
+  white-space: nowrap;
+}
+.of { color: var(--r-text-3); }
+
+@media (max-width: 720px) {
+  .walk { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  /* The position moves out of the way rather than squeezing the two targets. */
+  .count { grid-column: 1 / -1; grid-row: 1; justify-content: center; }
+  .next { text-align: right; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step { transition: none; }
+}

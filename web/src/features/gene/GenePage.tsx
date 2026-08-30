@@ -8,6 +8,7 @@ import { LADDER } from "../../i18n/ladder";
 import { useHashParam } from "../../lib/useHashParam";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
+import { SectionWalk } from "../../components/molecules/SectionWalk";
 import { useT, fill } from "../../i18n";
 import { GENE } from "../../i18n/gene";
 import { fmtInt } from "../../lib/scale";
@@ -242,6 +243,7 @@ export default function GenePage() {
                   reader what a panel was. ADR 0009. */}
               {renderSection(GENE_SECTIONS, section,
                 { rec, data, symbol, setSymbol, setQuery }, {})}
+              <SectionWalk />
             </>
           )}
         </>

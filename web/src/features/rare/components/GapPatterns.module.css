@@ -2,7 +2,7 @@
 
 /* The headline number, in the house style: the figure earns a sentence, not a caption. */
 .finding {
-  display: grid; grid-template-columns: auto 1fr; gap: var(--sp-6); align-items: baseline;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--sp-6); align-items: baseline;
   padding: var(--sp-6);
   background: var(--r-surface-2); border-radius: var(--r-radius);
   border-left: 3px solid var(--unknown);

@@ -125,7 +125,7 @@
   font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
   color: var(--r-text-3);
 }
-.antiRow { display: grid; grid-template-columns: 56px 1fr; gap: var(--sp-4); align-items: baseline; }
+.antiRow { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: var(--sp-4); align-items: baseline; }
 .antiVal {
   font-size: 15px; font-weight: 600; text-align: right; color: var(--r-text);
   font-variant-numeric: tabular-nums;

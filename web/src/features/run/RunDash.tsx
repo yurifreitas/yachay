@@ -22,6 +22,7 @@ import { runs } from "../../lib/data/runs";
 import { renderSection } from "../../lib/sectionRegistry";
 import { RUN_SECTIONS } from "./runSections";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
+import { SectionWalk } from "../../components/molecules/SectionWalk";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { RUN } from "../../i18n/strings";
 // The design tokens live in their own sheet and were previously imported only by the
@@ -165,6 +166,7 @@ export default function RunDash({ runId }: { runId: string }) {
       {renderSection(RUN_SECTIONS, section, { run }, {
         className: css.block, headingClass: css.h3, subClass: css.sub, bodyClass: css.blockBody,
       })}
+      <SectionWalk />
     </section>
   );
 }

@@ -50,6 +50,29 @@ function BarCell({ value, max, children }: { value: number; max: number; childre
 
 type ScaleSort = "pathway" | "cell" | "size";
 
+
+/** THE SECTION HEADER ALREADY SAID IT.
+ *
+ *  Every one of these panels used to reprint its section's heading and sentence inside the
+ *  headline block — the registry draws both directly above, so the reader met the same two
+ *  sentences twice in a row, eight times across the atlas. It read as padding, which is what
+ *  it was.
+ *
+ *  What goes there instead is the QUESTION the number answers. Every artefact carries one,
+ *  written by the tool that produced it, and none of them were rendered anywhere. A headline
+ *  number with its question beside it is a claim; the same number with its own headline
+ *  repeated is an echo.
+ */
+function Answers({ q }: { q?: string }) {
+  if (!q) return null;
+  return (
+    <p>
+      <span className={css.answersK}>the question this answers</span>
+      {q}
+    </p>
+  );
+}
+
 export function ScaleLoss() {
   const tt = useT();
   const d = scaleRaw as any;
@@ -73,7 +96,7 @@ export function ScaleLoss() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>{pct(scales.pathway?.retained_vs_gene ?? 0, 0)}</span>
-        <p><strong>{tt(MEAS.scaleRetained)}.</strong> {tt(MEAS.scaleSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <div className={css.block}>
@@ -236,7 +259,7 @@ export function LanguageCoverage() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>{d.by_language?.pt ? pct(d.by_language.pt.annotation_coverage) : "—"}</span>
-        <p><strong>{tt(MEAS.langHeading)}.</strong> {tt(MEAS.langSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <div className={css.block}>
@@ -360,7 +383,7 @@ export function ConflictContext() {
     <div className={css.wrap}>
       <div className={css.finding}>
         <span className={css.value}>{pct(across)}</span>
-        <p><strong>{tt(MEAS.conflictHeading)}.</strong> {tt(MEAS.conflictSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <div className={css.block}>
@@ -500,7 +523,7 @@ export function KnowledgeShape() {
           {head.z_vs_null?.toFixed(1)}
           <span className={css.unit}>z vs null — the wrong way</span>
         </span>
-        <p><strong>{tt(MEAS.shapeHeading)}.</strong> {tt(MEAS.shapeSub)}</p>
+        <Answers q={d.question} />
       </div>
 
       <p className={css.caveat}>{d.verdict}</p>

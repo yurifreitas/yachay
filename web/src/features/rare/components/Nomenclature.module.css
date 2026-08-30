@@ -34,7 +34,7 @@
 /* ---- roots: a reading key ------------------------------------------------------ */
 .roots { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0 var(--sp-8); }
 .root_ {
-  display: grid; grid-template-columns: 92px 1fr; gap: var(--sp-3);
+  display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: var(--sp-3);
   padding: var(--sp-3) 0; border-bottom: var(--r-hairline); align-items: baseline;
 }
 .part { font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
@@ -50,7 +50,7 @@
   display: grid; grid-template-columns: minmax(0,1.25fr) minmax(0,1fr); gap: var(--sp-8);
 }
 .caseFlag { border-color: color-mix(in oklch, var(--unknown) 55%, transparent); }
-@media (max-width: 1200px) { .case { grid-template-columns: 1fr; gap: var(--sp-4); } }
+@media (max-width: 1200px) { .case { grid-template-columns: minmax(0, 1fr); gap: var(--sp-4); } }
 
 .caseHead { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: baseline; margin-bottom: var(--sp-3); }
 .caseName { font-size: 20px; font-weight: 600; letter-spacing: -0.014em; }

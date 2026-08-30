@@ -20,6 +20,7 @@ import { sortDiseases, type SortKey } from "./model";
 import { renderSection } from "../../lib/sectionRegistry";
 import { RARE_SECTIONS } from "./rareSections";
 import { SectionHeading } from "../../components/molecules/SectionHeading";
+import { SectionWalk } from "../../components/molecules/SectionWalk";
 import { useSectionNav, type NavGroupDef, type NavSectionDef } from "../../lib/nav";
 import { RARE } from "../../i18n/strings";
 import { TROP } from "../../i18n/tropical";
@@ -128,7 +129,7 @@ const SECTIONS: NavSectionDef[] = [
   // Measured under the same decision record and, until now, rendered nowhere — which is
   // audit A29 committed again on the newest work. One registry entry each, which is the
   // whole reason ADR 0009 was worth the churn.
-  { id: "gaps", label: MORE.sGaps, group: "measured" },
+  { id: "gapkinds", label: MORE.sGaps, group: "measured" },
   { id: "attention", label: MORE.sAtt, group: "measured" },
   { id: "autism", label: MORE.sAut, group: "measured" },
   { id: "voidcells", label: MORE.sVoid, group: "measured" },
@@ -155,7 +156,10 @@ export default function RarePage() {
   // layouts start loading. Idempotent, so re-renders cost nothing and two sections racing
   // share one request.
   useEffect(() => {
-    if (["scale", "language", "conflict", "shape"].includes(section)) prefetchMeasured();
+    // DERIVED, NOT LISTED. This was a hand-written array of four ids, and four sections were
+    // added to the group the same day without touching it — the same list-drifts-from-the-
+    // thing failure ADR 0009 exists to stop, one file away from where it was stopped.
+    if (SECTIONS.find((s) => s.id === section)?.group === "measured") prefetchMeasured();
   }, [section]);
 
   const ordered = useMemo(
@@ -231,6 +235,10 @@ export default function RarePage() {
           fallback: <SectionSkeleton />,
         })}
       </Suspense>
+
+      {/* The order these sections are declared in is an argument, and until now the only way
+          to follow it was to hunt the next label in the rail by name. */}
+      <SectionWalk />
     </section>
   );
 }

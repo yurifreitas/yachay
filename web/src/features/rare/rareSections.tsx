@@ -115,7 +115,7 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     ),
   },
   {
-    id: "gaps",
+    id: "gapkinds",
     title: (ctx) => (<>{ctx.tt(MORE.gapHeading)}</>),
     sub: (ctx) => (<>{ctx.tt(MORE.gapSub)}</>),
     view: () => (
