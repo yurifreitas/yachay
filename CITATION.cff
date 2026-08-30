@@ -118,7 +118,11 @@ references:
       asks what the catalogue's structure does to it. The paper's own caution — that LOEUF is
       bounded away from small values for short genes — is stated there and had never been
       counted anywhere; this repository measures that 66 % of the apparent constraint shift in
-      disease genes is reproduced by drawing genes of the same length.
+      disease genes is reproduced by drawing genes of the same length. AND WHAT IT WAS ALREADY
+      CITED FOR, kept from the entry this merged with: gnomAD constraint, cited for a Stage 6
+      claim and a Stage 3 caveat at once. It is the best available structural prior for entities
+      with no literature (rare-disease-scale.md §4), and its panel composition is exactly why
+      rare-disease-equity.md §2 requires a constraint-based
       Verified [NCBI].
   - type: article
     title: "The Missing Diversity in Human Genetic Studies"
@@ -135,7 +139,10 @@ references:
       THE CLAIM tools/psychiatric_gwas.py AND tools/trait_atlas.py TURN INTO A COUNT. The review
       establishes that human genetic studies are overwhelmingly European; this repository
       measures the composition per disease area, at the level of the individual analysis rather
-      than the cohort.
+      than the cohort. AND WHAT IT WAS ALREADY CITED FOR, kept from the entry this merged with:
+      With Popejoy and Fullerton, the documented composition of the reference panels any Stage 6
+      prior here would be built on. The consequence is specific rather than rhetorical: under-
+      represented ancestry yields more apparently rare variants, more variants of uncertain
       Verified [NCBI].
   - type: article
     title: "Clinical use of current polygenic risk scores may exacerbate health disparities"
@@ -165,7 +172,9 @@ references:
     notes: >-
       THE ORIGINAL COUNT this repository's ancestry work descends from. It counted GWAS
       participants; tools/psychiatric_gwas.py counts analyses, and reports the share that states
-      no ancestry at all.
+      no ancestry at all. AND WHAT IT WAS ALREADY CITED FOR, kept from the entry this merged
+      with: The measurement that made panel composition a citable fact rather than an
+      impression.
       Verified [XR].
   - type: article
     title: "Mapping genomic loci implicates genes and synaptic biology in schizophrenia"
@@ -214,7 +223,10 @@ references:
       THE ATLAS FOUR LAYERS HERE DEPEND ON. scale_information, autism_convergence, gap_taxonomy
       and knowledge_void all place a disease on a cell type through it. It measures NORMAL
       tissue, so each of those is healthy biology plus an inference — and single_cell_coverage
-      says how often the inference is checkable.
+      says how often the inference is checkable. AND WHAT IT WAS ALREADY CITED FOR, kept from
+      the entry this merged with: The 154 cell types the cross-scale measurement coarse-grains
+      onto. Was the second of two unresolved references blocking
+      docs/references/deep/multiscale-formalism.md 13;
       Verified [NCBI].
   - type: article
     title: "The reactome pathway knowledgebase 2022"
@@ -399,7 +411,14 @@ references:
     authors:
       - { family-names: Bailey, given-names: "David H." }
       - { family-names: "López de Prado", given-names: Marcos }
-    notes: "Companion to the above; the out-of-sample degradation of a max-selected strategy."
+    notes: >-
+      THE CLAIM: a strategy chosen as the maximum over many trials degrades out of sample, and
+      the degradation is predictable from how many trials were run. This repository's nearest
+      analogue is the raw-to-calibrated rank shift on the DepMap screen. WHERE THE ANALOGY
+      STOPS, and it stops early: PBO measures degradation on HELD-OUT data and the rank shift
+      here does not. It is an in-sample correction, so it can show that a ranking was inflated
+      and cannot show what the corrected ranking would do next. Naming that gap is why this
+      entry exists; "companion to the above" was the whole note until 2026-08-30.
   - type: article
     title: "Limit theorems for the maximum term in stationary sequences (Darling–Erdős)"
     authors:
@@ -470,29 +489,8 @@ references:
       schwannomatosis. Supports docs/references/nf2.md §1 — the section that exists because
       the wrong name returns the wrong literature.
   - type: article
-    title: "The NF2 tumour suppressor merlin and the Hippo pathway (review — reference to be selected)"
-    notes: >-
-      Supports nf2.md §3: merlin acts upstream of LATS1/2, and merlin loss releases YAP/TAZ
-      to act with TEAD. This is the claim that turns into a POSITIVE CONTROL for the NF2
-      analysis — if the calibrated ranking does not recover YAP1/WWTR1/TEAD1-4/LATS1-2, the
-      pipeline is broken and no novel hit from it should be believed.
-  - type: article
-    title: "NF2 loss and YAP/TAZ–TEAD dependency in mesothelioma (primary reports — to be selected)"
-    notes: >-
-      Supports nf2.md §5, and also names the main threat to that analysis: mesothelioma is
-      over-represented among NF2-null lines, so a lineage effect can masquerade as an NF2
-      effect unless lineage is regressed out at Stage 3.
-  - type: article
     title: "Bevacizumab for vestibular schwannoma in NF2 — hearing response"
     notes: "Supports nf2.md §4: the endpoint is hearing preservation in a benign tumour, not cytotoxicity."
-  - type: article
-    title: "TEAD inhibitors — clinical status (to be selected)"
-    notes: "The pharmacological expression of the Hippo logic; the most mechanistically motivated current class."
-
-  # --- rare-disease scale: the quantitative axis (docs/references/rare-disease-scale.md) --
-  # Every entry in the three blocks below was resolved through the Crossref API before it was
-  # written down - title, authors, venue, year and DOI are verified, not recalled. See
-  # docs/audit.md A5, which is the finding this practice answers.
   - type: article
     title: "Estimating cumulative point prevalence of rare diseases: analysis of the Orphanet database"
     authors:
@@ -511,19 +509,6 @@ references:
       4.2% (n=149) at the common end. It is also the external check on our own atlas: Orphanet's
       6,172 diseases against the 14,831 our join reaches, which is a difference in scope rather
       than a contradiction.
-  - type: article
-    title: "The mutational constraint spectrum quantified from variation in 141,456 humans"
-    authors:
-      - { family-names: Karczewski, given-names: "Konrad J." }
-      - { family-names: Francioli, given-names: "Laurent C." }
-    doi: "10.1038/s41586-020-2308-7"
-    journal: "Nature"
-    year: 2020
-    notes: >-
-      gnomAD constraint, cited for a Stage 6 claim and a Stage 3 caveat at once. It is the best
-      available structural prior for entities with no literature (rare-disease-scale.md §4), and
-      its panel composition is exactly why rare-disease-equity.md §2 requires a constraint-based
-      prior to carry its population in the manifest, the way null_blocks is carried.
   - type: article
     title: "The Human Phenotype Ontology in 2021"
     authors:
@@ -671,31 +656,6 @@ references:
       the mechanism by which a social fact becomes the annotation-count attention proxy that
       tools/atlas_bias.py measures at +0.2357.
   - type: article
-    title: "The Missing Diversity in Human Genetic Studies"
-    authors:
-      - { family-names: Sirugo, given-names: Giorgio }
-      - { family-names: Williams, given-names: "Scott M." }
-      - { family-names: Tishkoff, given-names: "Sarah A." }
-    doi: "10.1016/j.cell.2019.02.048"
-    journal: "Cell"
-    year: 2019
-    notes: >-
-      With Popejoy and Fullerton, the documented composition of the reference panels any Stage 6
-      prior here would be built on. The consequence is specific rather than rhetorical:
-      under-represented ancestry yields more apparently rare variants, more variants of uncertain
-      significance, and a lower diagnostic yield.
-  - type: article
-    title: "Genomics is failing on diversity"
-    authors:
-      - { family-names: Popejoy, given-names: "Alice B." }
-      - { family-names: Fullerton, given-names: "Stephanie M." }
-    doi: "10.1038/538161a"
-    journal: "Nature"
-    year: 2016
-    notes: >-
-      The measurement that made panel composition a citable fact rather than an impression.
-      Supports rare-disease-equity.md §2.
-  - type: article
     title: "The RDI-Lancet Commission on Rare Diseases: improving visibility to address health-care disparities for 400 million people"
     authors:
       - { family-names: Boycott, given-names: "Kym M." }
@@ -829,16 +789,6 @@ references:
       million variants in two admixed groups, 78.5% and 85.1% show at least a TWOFOLD difference in
       ancestry-specific frequency. A single pooled frequency is the wrong number for most variants
       in an admixed genome. Supports rare-disease-ancestry.md §3 and ADR 0005.
-  - type: article
-    title: "Clinical use of current polygenic risk scores may exacerbate health disparities"
-    authors:
-      - { family-names: Martin, given-names: "Alicia R." }
-      - { family-names: Kanai, given-names: Masahiro }
-      - { family-names: Kamatani, given-names: Yoichiro }
-    doi: "10.1038/s41588-019-0379-x"
-    journal: "Nature Genetics"
-    year: 2019
-    notes: "The reference statement on score non-transferability, and the reason a Stage 6 prior must carry its panel composition rather than be assumed portable."
   - type: article
     title: "The CARE Principles for Indigenous Data Governance"
     authors:
@@ -1007,19 +957,6 @@ references:
       language profiles tools/language_coverage.py reads. Supports the finding that the
       aggregate "available in ten languages" hides a population running from ~100 percent
       coverage to zero. Resolved through NCBI E-utilities 2026-08-29 (PMID 37953324).
-  - type: article
-    title: "A single-cell type transcriptomics map of human tissues"
-    authors:
-      - { family-names: Karlsson, given-names: Max }
-      - { family-names: Zhang, given-names: Cheng }
-      - { family-names: "Méar", given-names: Loren }
-    journal: "Science Advances"
-    year: 2021
-    doi: "10.1126/sciadv.abh2169"
-    notes: >-
-      The 154 cell types the cross-scale measurement coarse-grains onto. Was the second of
-      two unresolved references blocking docs/references/deep/multiscale-formalism.md 13;
-      resolved through Crossref 2026-08-29.
   - type: article
     title: "Choosing preferable labels for the Japanese translation of the Human Phenotype Ontology"
     authors:

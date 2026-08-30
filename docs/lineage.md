@@ -56,6 +56,7 @@
 | 72 | Pooled single-cell genetic screens | **Dixit et al.** (2016) | quantifies a bias the design produces | 16 of the raw top 20 survive calibration and 4 are displaced; perturbations under 100 cells in the top 20 drop from 3 to 1 |
 | 73 | How cleared medical AI is evaluated | **Wu et al.** (2021) | extends its count and adds the distribution | 1,164 of 1,524 authorisations are radiology (76.4 %), one panel holds half the list, and 90 % of the list was authorised in 2019 or later |
 | 74 | A database of cleared AI devices | **Benjamens et al.** (2020) | updates it and names what it did not report | the Dermatology panel does not appear at all — a fact about review pathways that the tool's own name scan corrects, finding 2 skin-lesion devices reviewed elsewhere |
+| 75 | Out-of-sample decay of a max-selected choice | **Bailey & López de Prado** (PBO) | the shape of the failure, not a method we can run | our rank shift is **in-sample**: it shows a ranking was inflated and cannot show what the corrected one would do next — a gap this repository has not closed |
 
 ## 1. The expected maximum of noise — order statistics
 

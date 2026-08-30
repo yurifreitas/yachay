@@ -20,6 +20,11 @@ WHAT IT CHECKS, and each is a claim some document makes about the filesystem:
     stages      every registered pipeline stage has a tool or analysis that exists
     sources     every ingested source is named in docs/references/README.md
     adrs        every docs/adr/NNNN-*.md appears in the ADR index
+    citations   every reference earns its place: no duplicates, no placeholders, and a
+                `notes:` that says which claim in THIS repository it supports. The
+                sieve-doc skill's rule is that a reference with no stated purpose is
+                decoration and gets deleted; nothing enforced it, and five works were
+                cited twice.
     staging     every tool that writes an artefact is a registered pipeline stage, or is
                 exempt with a stated reason. docs/references/rare-layers.md says "every
                 layer is a pipeline stage, so staleness is tracked" — that was true of
@@ -241,8 +246,66 @@ def check_staging() -> tuple[str, list[str], int]:
     return "staging", missing, len(writers)
 
 
+def check_citations() -> tuple[str, list[str], int]:
+    """Every reference earns its place, and no work is cited twice.
+
+    THE RULE IS THE SKILL'S OWN: "A reference with no stated purpose is decoration and gets
+    deleted." Nothing enforced it. An audit on 2026-08-30 found five works cited TWICE —
+    every one of them a reference added that same day, appended without checking whether the
+    file already held it — and three entries whose title was a placeholder rather than a work
+    ("TEAD inhibitors - clinical status (to be selected)").
+
+    IT PARSES THE YAML RATHER THAN MATCHING TEXT, and that matters: the first version of this
+    audit used a regular expression for the notes block and reported nine articles with no
+    note at all. The real number was zero. The regex could not see notes written in a
+    different scalar style, so the instrument invented a defect — which is the failure this
+    repository exists to study, committed by its own auditor.
+    """
+    path = ROOT / "CITATION.cff"
+    if not path.exists():
+        return "citations", ["CITATION.cff is missing"], 0
+    try:
+        import yaml  # noqa: PLC0415
+    except ImportError:
+        return "citations", [], 0
+
+    doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    refs = doc.get("references") or []
+
+    missing = []
+    seen_title: dict[str, int] = {}
+    seen_doi: dict[str, int] = {}
+    for r in refs:
+        title = str(r.get("title") or "").strip()
+        key = "".join(c.lower() for c in title if c.isalnum())[:60]
+        seen_title[key] = seen_title.get(key, 0) + 1
+        for ident in r.get("identifiers") or []:
+            v = str(ident.get("value") or "")
+            if v.startswith("10."):
+                seen_doi[v] = seen_doi.get(v, 0) + 1
+        if "to be selected" in title.lower() or title.endswith("TBD"):
+            missing.append(f"'{title[:56]}' is a placeholder, not a work")
+        # A note is required of anything that makes a CLAIM. Software and datasets are tools
+        # rather than claims, and are exempt by kind rather than by name.
+        if r.get("type") in {"article", "book", "generic", "standard"}:
+            note = " ".join(str(r.get("notes") or "").split())
+            if not note:
+                missing.append(f"'{title[:56]}' has no notes — decoration by the skill's rule")
+            elif len(note.split()) < 12:
+                missing.append(f"'{title[:56]}' has a {len(note.split())}-word note; it should "
+                               f"name the claim in this repository it supports")
+
+    for k, n in seen_title.items():
+        if n > 1:
+            missing.append(f"a work is cited {n} times (title key {k[:40]})")
+    for k, n in seen_doi.items():
+        if n > 1:
+            missing.append(f"DOI {k} appears {n} times")
+    return "citations", missing, len(refs)
+
+
 CHECKS = [check_artefacts, check_tools, check_stages, check_sources, check_adrs,
-          check_thresholds, check_staging]
+          check_thresholds, check_staging, check_citations]
 
 
 def main() -> int:
