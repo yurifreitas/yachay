@@ -148,3 +148,43 @@ Four questions. If any answer is no, do not force it:
 Yes to all four means the ranking is partly a ranking of observation count, and Stage 1
 is the cheapest correction available. Yes to 1–3 but no to 4 means you have a variance
 problem: report intervals, and skip to Stage 3.
+
+
+---
+
+## HIV drug resistance — built 2026-08-29
+
+The second domain outside cancer to pass the four-question gate, and the first to **break an
+assumption the core makes**.
+
+| question | answer |
+|---|---|
+| many candidate entities? | yes — 1,009 amino-acid substitutions scored across three panels |
+| score from noisy observations? | yes — the fold-resistance of each isolate carrying it |
+| does the count vary? | yes, 3 to 1,469 carriers |
+| a selection operator? | **yes** — max over the drug panel, which is what Stage 1 is for |
+
+**Data.** Stanford HIV Drug Resistance Database genotype-phenotype datasets, public and
+downloaded to `data/hiv/`: 2,171 protease-inhibitor isolates, 1,867 NRTI, 2,272 NNRTI.
+
+**Control pool.** Label permutation — option 3 of 3, the weakest, and named as such in the
+module. There are no designed controls here and no inert-position list on disk. Permutation
+preserves each mutation's carrier count exactly, so the null is n-indexed by construction;
+the cost is that a real effect contaminates it and every z is conservative.
+
+**The positive control, written from the literature before the run** (ADR 0003): PI 6/7 · NRTI 6/7 · NNRTI 5/5.
+All three panels pass. The ranking recovers M184V, K103N, Y181C, L100I and the thymidine-
+analogue cluster blind, from a domain that did not produce this method.
+
+**What it found that the core assumes away.** Exchangeability. DepMap treats cell lines as
+independent draws; HIV isolates are tips of a phylogeny and resistance mutations arrive in
+linked pathways. The prediction was written in the docstring before the run and the result is
+blunter than expected: **the NNRTI top twenty contains 41L, 67N, 70R, 215F and 219N — which
+are NRTI resistance mutations** — because the isolates come from patients on combination
+therapy. The permutation null cannot see this: it preserves each carrier count while
+destroying exactly the co-occurrence that makes the observations dependent.
+
+**The concrete next step.** Re-run with `null_blocks` keyed on the resistance haplotype rather
+than on the isolate, and report how many of the passengers survive. That is the argument
+`docs/adr/0004-block-nulls.md` already makes for a different dataset, and this is the second
+domain to need it — which is what an adapter is supposed to return.

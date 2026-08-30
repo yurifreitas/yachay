@@ -102,6 +102,10 @@ KNOWLEDGE_VOID = RARE / "knowledge_void.json"
 GAP_TAXONOMY = RARE / "gap_taxonomy.json"
 # One gene from the residue to the organ system, with the cost of each step where one is known.
 GENE_LADDER = RARE / "gene_ladder.json"
+# The second Stage 1 domain outside cancer: HIV drug resistance, where the observations are
+# tips of a phylogeny rather than independent draws.
+HIV_RESISTANCE = OUT / "hiv_resistance.json"
+HIV_PI = DATA / "hiv" / "PI_DataSet.txt"
 VIEW_MODELS = RARE / "view_models.json"
 GENE2PUBMED = DATA / "ontology" / "gene2pubmed.gz"
 CLINVAR_SUBMISSIONS = DATA / "ontology" / "submission_summary.txt.gz"

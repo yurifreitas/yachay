@@ -371,6 +371,16 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="hiv",
+    summary=("Stage 1 on HIV drug resistance: a max over the drug panel, an n-indexed "
+             "permutation null, and a positive control named before the run."),
+    inputs=(paths.HIV_PI,),
+    outputs=(paths.HIV_RESISTANCE,),
+    code=sources("analyses/hiv_resistance.py"),
+    run=_script("analyses/hiv_resistance.py"),
+))
+
+_add(Stage(
     name="gene_ladder",
     summary=("Join every scale of one gene into a single object, and state what each step "
              "between two scales costs - or that nobody measured it."),

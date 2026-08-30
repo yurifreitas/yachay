@@ -96,6 +96,21 @@ the nineteenth on the day it was added.
 | `all_phenopackets.zip` | Monarch phenopacket-store (GA4GH phenopackets) | 19 MB | 10,377 INDIVIDUAL PATIENTS, in the GA4GH standard, each with their own HPO terms, causative variant with an ACMG class, age, sex and the PMID they came from. Every other source here is aggregate: it reports what a disease does. This reports what happened to a person, and the difference is a denominator. Crucially, a phenopacket records phenotypes that were EXPLICITLY ABSENT as well as present - 65% of the assertions in a sample were `excluded` - so a frequency can be COMPUTED as observed/(observed+excluded) for diseases where docs/references/rare-disease-scale.md §4b measured that the curated catalogue has no frequency at all. | BSD 3-Clause |
 | `variant_summary.txt.gz` | ClinVar variant summary | 442 MB | The variant layer this project does not have at all. Every dossier here reports a disease's GENES and stops; a clinician's next question is which variants, of what consequence, with what interpretation - and the allelic spectrum is also the honest test of whether a 'causal gene' attribution is one variant in one family or a characterised locus. | US Government public domain (NCBI) |
 
+### HIV drug resistance — the second Stage 1 domain
+
+Stanford HIV Drug Resistance Database genotype-phenotype datasets, public, downloaded to
+`data/hiv/` by `curl` (not yet in `tools/ingest.py`).
+
+| file | what it is | status |
+|---|---|---|
+| `PI_DataSet.txt` | 2,171 isolates, 9 protease inhibitors, amino acid at each of 99 positions | present |
+| `NRTI_DataSet.txt` | 1,867 isolates, 7 nucleoside RT inhibitors | present |
+| `NNRTI_DataSet.txt` | 2,272 isolates, 6 non-nucleoside RT inhibitors | present |
+| `INSTI_DataSet.txt` | integrase inhibitors | ⚠️ **empty on download** — the URL resolves and returns 0 rows |
+
+Read by `analyses/hiv_resistance.py`. See [`../expansion-map.md`](../expansion-map.md) for the
+fit test, the control pool and what this domain broke.
+
 ### Planned data, not yet fetched
 
 | dataset | for | note |

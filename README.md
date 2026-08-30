@@ -183,7 +183,7 @@ thresholds registered, five of them honestly marked as chosen after seeing the d
 | `docs/roadmap.md` | the ordered backlog — every item with its cost and with what would make it not worth doing |
 | `docs/lineage.md` | whose work this descends from, and what our numbers do to each claim — including the one anomaly still open |
 | `docs/disease-expansion.md` | the disease portfolio: obesity (origin), schizophrenia, NF2, DMD |
-| `docs/expansion-map.md` | where else this applies, outside biology |
+| `docs/expansion-map.md` | where else this applies, outside biology — including **HIV drug resistance**, the second Stage 1 domain, which recovered the textbook resistance mutations blind and then broke the core's exchangeability assumption |
 | `docs/references/rare-layers.md` | the map of `out/rare/`: which of the thirty-four analytical layers are measured, derived, or written from working knowledge |
 | `docs/references/patient-data.md` | 10,377 individual patients: the catalogue's `1/1` frequencies read 0.93 where the patients say 0.44 — and the access plan for the data that is not open |
 | `docs/references/rare-disease-scale.md` | the quantitative axis every rare disease shares — four kinds of scarcity, and which stage each activates |
