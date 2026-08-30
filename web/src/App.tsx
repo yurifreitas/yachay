@@ -26,27 +26,23 @@ const GenePage = lazy(() => import("./features/gene/GenePage"));
  *  and one is the method itself. The families say which is which before anything is clicked,
  *  and they are the level the rail groups on. */
 const FAMILIES: NavFamily[] = [
-  /* THE GENE COMES FIRST, and the order is the argument. Every other family is organised by
-     METHOD — a screen, a domain, the ten stages — and people do not arrive holding a method.
-     They arrive holding a symbol.
-
-     AND "DOMAINS" IS GONE. One word held rare disease and cancer: two literatures, two
-     questions, and a reader carrying one of them had to open the other to discover it was
-     the wrong door. A family is now the reader's starting point rather than a shelf the
-     method put things on, and each states what it answers — every level below this one
-     already did, and the top level is the one that decides which of six screens you land
-     on. */
+  /* FOUR QUESTIONS AND A METHOD, not a shelf of subjects.
+   *
+   *  These were domains — "rare disease", "cancer" — and a domain is not a question. Both are
+   *  enormous bodies of work spanning different fields, so naming a family after one told a
+   *  reader nothing about what was inside it.
+   *
+   *  The third family is the correction that matters. Cancer dependencies, the CRISPR runs
+   *  and the obesity screen were three separate domains; they are one problem, and it is the
+   *  problem this whole repository is about — a ranking produced by a selection operator from
+   *  observations that are not equally many. Filing them apart hid the only claim they share.
+   *
+   *  The gene stays first. People do not arrive holding a method; they arrive holding a
+   *  symbol. */
   { id: "entity", label: S.famEntity, question: S.qFamEntity },
-  { id: "rare", label: S.famRare, question: S.qFamRare },
-  { id: "cancer", label: S.famCancer, question: S.qFamCancer },
-  /* THE THIRD PILLAR. The atlas asks what is known about a disease; this asks what anyone
-     is actually allowed to use on a patient. Its own family rather than a section inside a
-     domain, because the question is not about any one disease. */
+  { id: "evidence", label: S.famEvidence, question: S.qFamEvidence },
+  { id: "selection", label: S.famSelection, question: S.qFamSelection },
   { id: "tech", label: DEV.famTech, question: DEV.qFamTech },
-  /* THE METHOD ON WORK THIS REPOSITORY DID NOT CURATE, and the only adapter here with a
-     control that was designed rather than assumed. */
-  { id: "discovery", label: DISC.famDiscovery, question: DISC.qFamDiscovery },
-  { id: "screens", label: S.famScreens, question: S.qFamScreens },
   { id: "method", label: S.famMethod, question: S.qFamMethod },
 ];
 
@@ -63,16 +59,16 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
       id: r.id,
       label: r.title.split("—")[0].trim(),
       blurb: r.subtitle,
-      family: "screens",
+      family: "selection",
       render: () => <RunView runId={r.id} />,
     })),
   { id: "gene", label: S.viewGene, family: "entity",
     blurb: S.viewGeneBlurb, render: () => <GenePage /> },
-  { id: "cancer", label: S.viewCancer, family: "cancer",
+  { id: "cancer", label: S.viewCancer, family: "selection",
     blurb: S.viewCancerBlurb, render: () => <CancerPage /> },
-  { id: "rare", label: S.viewRare, family: "rare",
+  { id: "rare", label: S.viewRare, family: "evidence",
     blurb: S.viewRareBlurb, render: () => <RarePage /> },
-  { id: "obesity", label: DISC.view, family: "discovery",
+  { id: "obesity", label: DISC.view, family: "selection",
     blurb: DISC.viewBlurb, render: () => <DiscoveryPage /> },
   { id: "devices", label: DEV.view, family: "tech",
     blurb: DEV.viewBlurb, render: () => <DevicesPage /> },
@@ -130,7 +126,7 @@ function Shell() {
   const hidden = runsIndex.find((r) => r.id === view && !VIEWS.some((v) => v.id === r.id));
   const current = VIEWS.find((v) => v.id === view)
     ?? { id: view, label: hidden?.title.split("—")[0].trim() ?? view,
-         blurb: hidden?.subtitle ?? "", family: "screens",
+         blurb: hidden?.subtitle ?? "", family: "selection",
          render: () => <RunView runId={view} /> };
 
   useEffect(() => {

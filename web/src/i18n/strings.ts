@@ -46,25 +46,37 @@ export const S = {
      "Domains" held rare disease and cancer under one word — two different questions, two
      different literatures, and a reader holding one of them had to open the other to find
      out. The families name the reader's starting point, not the method's taxonomy. */
-  famEntity: bi("By gene", "Por gene"),
+  /* THE FAMILIES NAME A QUESTION, NOT A CORPUS — and that took three attempts.
+   *
+   *  They were "Domains" holding rare disease and cancer together. Splitting those into two
+   *  families was better and still wrong, because "rare disease" and "cancer" are not
+   *  questions: they are enormous bodies of literature spanning different fields, and naming
+   *  a family after one says nothing about what a reader will find inside.
+   *
+   *  What the site actually contains is four kinds of question. The one that matters most is
+   *  the third: the cancer dependency screens, the DepMap runs and the obesity challenge are
+   *  the SAME PROBLEM — a ranking built from unequally sampled observations by a selection
+   *  operator — and filing them as three domains hid the only thing this repository claims
+   *  they have in common. */
+  famEntity: bi("Start from a gene", "Começar por um gene"),
   qFamEntity: bi(
     "You arrived holding a symbol. Everything this repository knows about one gene, in one place.",
     "Você chegou com um símbolo. Tudo o que este repositório sabe sobre um gene, num lugar só.",
   ),
-  famRare: bi("Rare disease", "Doença rara"),
-  qFamRare: bi(
-    "The catalogue, what it does not contain, and eight results measured against a null.",
-    "O catálogo, o que ele não contém, e oito resultados medidos contra um nulo.",
+  famEvidence: bi("Where the evidence stops", "Onde a evidência para"),
+  qFamEvidence: bi(
+    "The rare-disease catalogue as a map of its own gaps: what is known, at which scale, and "
+    + "for whom.",
+    "O catálogo de doenças raras como mapa das próprias lacunas: o que se sabe, em que escala, "
+    + "e para quem.",
   ),
-  famCancer: bi("Cancer", "Câncer"),
-  qFamCancer: bi(
-    "What each cancer needs that the others do not — by lineage, and by mutation.",
-    "O que cada câncer precisa e os outros não — por linhagem, e por mutação.",
-  ),
-  famScreens: bi("Screens", "Triagens"),
-  qFamScreens: bi(
-    "One pipeline run end to end: its stages, its calibration, and the shortlist it produced.",
-    "Uma execução do pipeline de ponta a ponta: estágios, calibração, e a lista que produziu.",
+  famSelection: bi("Selection under unequal evidence", "Seleção sob evidência desigual"),
+  qFamSelection: bi(
+    "Cancer dependencies, CRISPR runs and the obesity screen are one problem: a ranking built "
+    + "by a selection operator from observations that are not equally many.",
+    "Dependências em câncer, execuções CRISPR e a triagem de obesidade são um problema só: um "
+    + "ranking feito por um operador de seleção a partir de observações que não são igualmente "
+    + "numerosas.",
   ),
   famMethod: bi("Method and proof", "Método e prova"),
   qFamMethod: bi(
