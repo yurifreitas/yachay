@@ -403,6 +403,15 @@ emit("figures", figures);
   // hiv_resistance: the method outside rare disease entirely — an adapter that passed the
   // four-question gate, whose positive controls were named before the run, and which breaks
   // an assumption the core smuggles in. That last part is why it is worth a screen.
+  // Who was actually in the sample, on the psychiatric consortia's own findings. Lives in
+  // out/psychiatric/ because the disorders are not rare, but it is emitted with the rare
+  // bundle: it joins on MONDO and its whole point is to sit beside gene_constraint, whose
+  // ancestry caveat it turns into a count.
+  {
+    const f = join(REPO, "out", "psychiatric", "psychiatric_gwas.json");
+    emit("psychiatric_gwas", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
+  }
+
   // The predictive-technology layer's founding measurement: what a regulator has actually
   // permitted, which is the only rung of a readiness scale that can be observed rather than
   // asserted. Lives in out/devices/ because it is not about rare disease.

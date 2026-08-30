@@ -13,6 +13,7 @@ import { TROP } from "../../i18n/tropical";
 import { MEAS } from "../../i18n/measured";
 import { MORE } from "../../i18n/more";
 import { DEEP } from "../../i18n/deep";
+import { SAMP } from "../../i18n/sampled";
 
 import { StatusDot } from "../../components/atoms/StatusDot";
 import { Chip } from "../../components/atoms/Chip";
@@ -44,6 +45,9 @@ const GapTaxonomy = lazy(() => import("./components/MorePanels").then((m) => ({ 
 const HivResistance = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.HivResistance })));
 const GeneConstraint = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GeneConstraint })));
 const SingleCellCoverage = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.SingleCellCoverage })));
+const SampleAncestry = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleAncestry })));
+const SampleDisorders = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleDisorders })));
+const SampleJoins = lazy(() => import("./components/SampledPanels").then((m) => ({ default: m.SampleJoins })));
 const TwinPropagation = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.TwinPropagation })));
 const GenotypePhenotype = lazy(() => import("./components/DeepPanels").then((m) => ({ default: m.GenotypePhenotype })));
 const AttentionBurden = lazy(() => import("./components/MorePanels").then((m) => ({ default: m.AttentionBurden })));
@@ -142,6 +146,30 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
     sub: (ctx) => (<>{ctx.tt(MORE.autSub)}</>),
     view: () => (
       <><AutismConvergence /></>
+    ),
+  },
+  {
+    id: "ancestrygwas",
+    title: (ctx) => (<>{ctx.tt(SAMP.ancHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(SAMP.ancSub)}</>),
+    view: () => (
+      <><SampleAncestry /></>
+    ),
+  },
+  {
+    id: "disorders",
+    title: (ctx) => (<>{ctx.tt(SAMP.disHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(SAMP.disSub)}</>),
+    view: () => (
+      <><SampleDisorders /></>
+    ),
+  },
+  {
+    id: "joins",
+    title: (ctx) => (<>{ctx.tt(SAMP.joinHeading)}</>),
+    sub: (ctx) => (<>{ctx.tt(SAMP.joinSub)}</>),
+    view: () => (
+      <><SampleJoins /></>
     ),
   },
   {

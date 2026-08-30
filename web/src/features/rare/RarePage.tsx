@@ -27,6 +27,7 @@ import { TROP } from "../../i18n/tropical";
 import { MEAS } from "../../i18n/measured";
 import { MORE } from "../../i18n/more";
 import { DEEP } from "../../i18n/deep";
+import { SAMP } from "../../i18n/sampled";
 import { useT } from "../../i18n";
 
 
@@ -93,6 +94,7 @@ const GROUPS: NavGroupDef[] = [
   { id: "register", label: MEAS.gRegister, question: MEAS.qRegister },
   { id: "knownshape", label: MEAS.gShape, question: MEAS.qShape },
   { id: "converge", label: MEAS.gConverge, question: MEAS.qConverge },
+  { id: "sampled", label: SAMP.group, question: SAMP.question },
   { id: "beyond", label: DEEP.gBeyond, question: DEEP.qBeyond },
   { id: "argument", label: RARE.gArgument, question: RARE.qArgument },
 ];
@@ -151,6 +153,14 @@ const SECTIONS: NavSectionDef[] = [
   { id: "cells", label: DEEP.sCells, group: "knownshape" },
   { id: "constraint", label: DEEP.sConstraint, group: "converge" },
   { id: "autism", label: MORE.sAut, group: "converge" },
+
+  // 5a. Who was in the sample. Beside the constraint result rather than in a pillar of its
+  //     own: gene_constraint states in prose that gnomAD's panel is majority European, and
+  //     this turns that sentence into a count. Separated, it is a silo; here, it is an
+  //     argument about the result above it.
+  { id: "ancestrygwas", label: SAMP.sAncestry, group: "sampled" },
+  { id: "disorders", label: SAMP.sDisorders, group: "sampled" },
+  { id: "joins", label: SAMP.sJoins, group: "sampled" },
 
   // 5b. The method on a domain that did not produce it. Its own group, because the standing
   //     is different again: this is not a fact about rare disease, it is evidence that the
