@@ -2077,3 +2077,48 @@ makes these pictures so easy to over-read, and all four numbers are on the page 
 Listwise rather than imputed: 9,238 genes lack at least one of the eleven features and are
 dropped, with both counts published. A gene missing LOEUF is one gnomAD could not constrain;
 imputing the mean would place it in the middle of the map and invent a neighbourhood for it.
+
+### A47 — is there anything to cluster? · **closed**
+
+*2026-08-31.* A46 established that the tidy clusters are in the projection rather than in the
+features. That is a finding about the *picture*, and it leaves the prior question open — the one
+every clustering figure ever published answers **by assumption**:
+
+> Does this feature space contain clusters at all?
+
+It cannot be asked the usual way. An algorithm asked for clusters returns clusters; k-means
+returns exactly *k* of them from uniform noise, and the silhouette that follows is computed on
+the partition it has just invented. Nothing in the standard pipeline is able to answer "there is
+nothing here". `tools/clusterability.py` asks it against a null that can.
+
+**The null: each feature column shuffled independently across genes.** Every marginal survives
+exactly — the same LOEUF values, the same paper counts, the same skew — and only which values
+travel together is destroyed. A difference from this null cannot be an artefact of scale, skew
+or outliers. Same construction `knowledge_shape.py` uses on its axes.
+
+| statistic | real | shuffled | separates |
+|---|---|---|---|
+| Hopkins | **0.885** | 0.817 [0.815, 0.819] | yes |
+| best k-means silhouette | **0.231** (k = 3) | 0.117 | yes |
+| HDBSCAN noise share | **74.8 %** | 82.5 % | yes |
+
+**The answer is yes, and not much.** All three separate from the null, so the joint structure is
+real. It is also weak: three quarters of genes sit in no cluster at all, and the best silhouette
+is half of the 0.5 conventionally read as "reasonable structure". A feature space with real,
+weak, mostly unclustered structure is precisely the situation in which a UMAP's tidy
+three-cluster picture is most misleading — which is what A46 measured from the other side.
+
+**⚠️ The textbook threshold would have called noise clustered.** Hopkins above ~0.75 is the
+published rule for "the data are clustered". The shuffle — data with **no joint structure at
+all, by construction** — scores **0.817**. In eleven dimensions with skewed marginals the
+statistic is dominated by the shape of the bounding box the uniform points are drawn in, not by
+clustering, so the cutoff is unusable here and any value quoted against it says nothing. The
+real data do stand above the shuffle, and the only reason that sentence can be written is that
+the null was computed.
+
+This is the argument this repository has been making all along, arriving from a direction nobody
+expects: **a threshold from a textbook is not a calibration.**
+
+One implementation note worth keeping, because getting it wrong is common: the sampled real
+points must be excluded from their own nearest-neighbour search. Otherwise every *u*-distance is
+zero, and the statistic reports beautifully clustered uniform noise.

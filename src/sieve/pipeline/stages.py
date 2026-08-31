@@ -773,6 +773,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="clusterability",
+    summary=("Is there anything to cluster? Hopkins, HDBSCAN noise and the k-means silhouette "
+             "against a null that shuffles each feature independently."),
+    inputs=(paths.GENE_WORLD, paths.GENE_ATTENTION, paths.GENE_GEOMETRY),
+    outputs=(paths.CLUSTERABILITY,),
+    needs=("gene_embedding",),
+    code=sources("tools/clusterability.py", "tools/gene_embedding.py"),
+    run=lambda: _run_tool("clusterability"),
+))
+
+_add(Stage(
     name="gene_embedding",
     summary=("A UMAP of eleven per-gene measurements, published with the three numbers that "
              "say what it is worth: trustworthiness, seed agreement, and clustering the "

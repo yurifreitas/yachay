@@ -408,7 +408,9 @@ emit("figures", figures);
                       // loop that built the graph.
                       "community_identity",
                       // Where the algorithms disagree, gene by gene.
-                      "partition_flow"]) {
+                      "partition_flow",
+                      // Is there anything to cluster in the first place.
+                      "clusterability"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

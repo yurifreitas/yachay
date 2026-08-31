@@ -87,6 +87,12 @@ NOT_TESTED = {
                                  "excluded for runtime, not because it is unverified. This "
                                  "guard caught it the day it was written, which is the "
                                  "behaviour that justifies the guard.",
+    "tools/clusterability.py": "twelve null draws, each a full Hopkins, an HDBSCAN and an "
+                               "eight-point k-means sweep over 8,890 genes. Minutes. Its "
+                               "seeded RNG is used only for the null draws and the samples, "
+                               "and the artefact publishes an interval over those draws - so "
+                               "a run that stopped being reproducible would widen a published "
+                               "interval rather than hide.",
     "tools/gene_embedding.py": "four UMAP fits over 8,890 genes plus HDBSCAN on both the "
                                "embedding and the raw features - minutes, not seconds. Its "
                                "determinism is not assumed either: the artefact reports "

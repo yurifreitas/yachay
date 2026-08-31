@@ -5,6 +5,8 @@ import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
 import { ScatterPair } from "../../../components/viz/organisms/ScatterPair";
 import { useRemoteData } from "../../../lib/useRemoteData";
 import { fmtInt } from "../../../lib/scale";
+import clusterRaw from "../../../data/generated/clusterability.json";
+import { SweepPlot } from "../../../components/viz/organisms/SweepPlot";
 import css from "./MeasuredPanels.module.css";
 
 /** A UMAP, and the three questions its ubiquity has made unaskable.
@@ -136,6 +138,80 @@ export function GeneEmbedding() {
           }
         />
       </div>
+
+      {/* THE PRIOR QUESTION. Everything above is about what the projection does to the data.
+          This is about the data: is there anything in it to project? A clustering figure
+          normally answers that by assumption - an algorithm asked for clusters returns
+          clusters - so the answer only exists because the null was computed. */}
+      {(clusterRaw as any).real && (
+        <div className={css.block}>
+          <span className={css.blockK}>{tt(DEEP.emPrior)}</span>
+          <div className={css.pair}>
+            <div className={css.stat}>
+              <span className={css.statVal}>{(clusterRaw as any).real.hopkins}</span>
+              <span className={css.statK}>
+                Hopkins on the real features — against{" "}
+                {(clusterRaw as any).shuffled.hopkins.mean} on a shuffle with no joint
+                structure at all, and a textbook threshold of 0.75
+              </span>
+            </div>
+            <div className={css.stat}>
+              <span className={css.statVal}>
+                {(clusterRaw as any).real.best_silhouette}
+              </span>
+              <span className={css.statK}>
+                best k-means silhouette, against{" "}
+                {(clusterRaw as any).shuffled.best_silhouette.mean} shuffled — double, and far
+                below the 0.5 read as &ldquo;reasonable structure&rdquo;
+              </span>
+            </div>
+            <div className={css.stat}>
+              <span className={css.statVal}>
+                {Math.round((clusterRaw as any).real.hdbscan_noise_share * 100)}%
+              </span>
+              <span className={css.statK}>
+                of genes in no cluster, against{" "}
+                {Math.round((clusterRaw as any).shuffled.hdbscan_noise_share.mean * 100)}%
+                shuffled
+              </span>
+            </div>
+          </div>
+
+          <SweepPlot
+            x={Object.keys((clusterRaw as any).real.silhouette_by_k).map(Number)}
+            panels={[{
+              label: "silhouette",
+              values: Object.values((clusterRaw as any).real.silhouette_by_k) as number[],
+              format: (v) => v.toFixed(3),
+            }]}
+            marks={[{
+              panel: "silhouette",
+              y: (clusterRaw as any).shuffled.best_silhouette.mean,
+              label: "best a structureless shuffle reaches",
+            }]}
+            xLabel="k, the number of clusters k-means was asked for"
+            panelHeight={150}
+            ariaLabel="k-means silhouette against k, with the shuffled null marked"
+            source={(clusterRaw as any).null}
+            readAloud={
+              <>
+                k-means returns exactly k clusters from anything, including noise, so the
+                silhouette it reports is computed on a partition it has just invented. The
+                dashed line is the best score a version of this data with every feature
+                shuffled independently still reaches — same values, same skew, no joint
+                structure. The real curve sits above it at every k, which is the evidence that
+                something is there; it also never approaches the 0.5 the field reads as
+                reasonable structure, which is the evidence that there is not much of it.
+              </>
+            }
+          />
+
+          <p className={css.caveat}>
+            {(clusterRaw as any).the_conventional_threshold_fails_here?.says}
+          </p>
+          <p className={css.note}>{(clusterRaw as any).how_much_structure_though}</p>
+        </div>
+      )}
 
       <div className={css.block}>
         <span className={css.blockK}>{tt(DEEP.emClusters)}</span>

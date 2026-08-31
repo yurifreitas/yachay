@@ -78,6 +78,10 @@ export const DEEP = {
     "reproducible and correct are not the same thing, and this figure is one of them",
     "reprodutível e correto não são a mesma coisa, e esta figura é só uma das duas",
   ),
+  emPrior: bi(
+    "and the question every clustering figure answers by assumption: is there anything there?",
+    "e a pergunta que toda figura de agrupamento responde por suposição: existe algo ali?",
+  ),
   emClusters: bi(
     "where the tidiness came from",
     "de onde veio a arrumação",
