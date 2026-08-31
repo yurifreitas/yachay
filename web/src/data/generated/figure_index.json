@@ -2,11 +2,14 @@
  "generated": "web/scripts/build-figure-index.mjs",
  "says": "Every figure built from a viz organism, found by scanning the source. Figures drawn with CSS bars are counted but not indexed — an index claiming completeness while missing them would be worse than none.",
  "counts": {
-  "indexed": 22,
-  "forms": 11,
+  "indexed": 23,
+  "forms": 12,
   "without_a_label": 2,
   "css_marks_not_indexed": 34,
-  "unplaced": 7
+  "unplaced": 0,
+  "on_a_page_rather_than_in_a_section": 2,
+  "organisms_on_disk": 12,
+  "organisms_this_index_does_not_know": []
  },
  "by_form": {
   "RaincloudPlot": 4,
@@ -19,7 +22,8 @@
   "WhiskerScatter": 2,
   "ScatterPair": 1,
   "ParallelCoordinates": 1,
-  "NeedlePlot": 1
+  "NeedlePlot": 1,
+  "DenseMatrix": 1
  },
  "figures": [
   {
@@ -30,17 +34,30 @@
    "component": "CommunityStability",
    "file": "features/rare/components/CommunityStability.tsx",
    "area": "rare",
-   "section": "cluster"
+   "section": "cluster",
+   "route": null
+  },
+  {
+   "form": "DenseMatrix",
+   "answers": "a matrix where every cell is a measurement, not a count",
+   "label": "CRISPR gene effect across every cell line and gene in the DepMap screen",
+   "source": "… cell lines · … genes · … genes per column",
+   "component": "CrisprMatrixPage",
+   "file": "features/crispr/CrisprMatrixPage.tsx",
+   "area": null,
+   "section": null,
+   "route": "crispr"
   },
   {
    "form": "HexbinPlot",
    "answers": "density where individual points would overplot",
    "label": "Median dependency against selectivity, drawn as hexagonal density with sparse cells shown as individual genes",
    "source": null,
-   "component": "Shortlist",
+   "component": "Selectivity",
    "file": "features/run/Substance.tsx",
-   "area": null,
-   "section": null
+   "area": "run",
+   "section": "selectivity",
+   "route": null
   },
   {
    "form": "IntervalPlot",
@@ -50,7 +67,8 @@
    "component": "AddictionPage",
    "file": "features/addiction/AddictionPage.tsx",
    "area": null,
-   "section": null
+   "section": null,
+   "route": "addiction"
   },
   {
    "form": "IntervalPlot",
@@ -60,7 +78,8 @@
    "component": "CommunityStability",
    "file": "features/rare/components/CommunityStability.tsx",
    "area": "rare",
-   "section": "cluster"
+   "section": "cluster",
+   "route": null
   },
   {
    "form": "IntervalPlot",
@@ -70,7 +89,8 @@
    "component": "GeneEmbedding",
    "file": "features/rare/components/GeneEmbedding.tsx",
    "area": "rare",
-   "section": "embed"
+   "section": "embed",
+   "route": null
   },
   {
    "form": "IntervalPlot",
@@ -80,7 +100,8 @@
    "component": "HivResistance",
    "file": "features/rare/components/DeepPanels.tsx",
    "area": "rare",
-   "section": "hiv"
+   "section": "hiv",
+   "route": null
   },
   {
    "form": "IntervalPlot",
@@ -90,7 +111,8 @@
    "component": "SignalEnergy",
    "file": "features/rare/components/SignalEnergy.tsx",
    "area": "rare",
-   "section": "signalenergy"
+   "section": "signalenergy",
+   "route": null
   },
   {
    "form": "IntervalPlot",
@@ -100,17 +122,19 @@
    "component": "ZAudit",
    "file": "features/rare/components/ZAudit.tsx",
    "area": "rare",
-   "section": "zaudit"
+   "section": "zaudit",
+   "route": null
   },
   {
    "form": "MatrixPlot",
    "answers": "a graph too dense to draw as nodes and links",
    "label": "Gene interaction matrix, reordered by consensus community",
    "source": null,
-   "component": "CommunityStability",
+   "component": "NetworkMatrix",
    "file": "features/rare/components/CommunityStability.tsx",
    "area": "rare",
-   "section": "cluster"
+   "section": "cluster",
+   "route": null
   },
   {
    "form": "NeedlePlot",
@@ -119,8 +143,9 @@
    "source": null,
    "component": "Needle",
    "file": "features/gene/GeometryPanels.tsx",
-   "area": null,
-   "section": null
+   "area": "gene",
+   "section": "needle",
+   "route": null
   },
   {
    "form": "ParallelCoordinates",
@@ -129,18 +154,20 @@
    "source": null,
    "component": "Attention",
    "file": "features/gene/Attention.tsx",
-   "area": null,
-   "section": null
+   "area": "gene",
+   "section": "attention",
+   "route": null
   },
   {
    "form": "RaincloudPlot",
    "answers": "a distribution, not its summary",
    "label": "Length-matched null distributions with each observed mean LOEUF marked",
    "source": null,
-   "component": "HivResistance",
+   "component": "GeneConstraint",
    "file": "features/rare/components/DeepPanels.tsx",
    "area": "rare",
-   "section": "hiv"
+   "section": "constraint",
+   "route": null
   },
   {
    "form": "RaincloudPlot",
@@ -150,7 +177,19 @@
    "component": "NonReciprocal",
    "file": "features/rare/components/NonReciprocal.tsx",
    "area": "rare",
-   "section": "nonrec"
+   "section": "nonrec",
+   "route": null
+  },
+  {
+   "form": "RaincloudPlot",
+   "answers": "a distribution, not its summary",
+   "label": "Distribution of calibrated z for candidates, common-essential genes and non-essential controls, drawn as densities with every observation shown",
+   "source": null,
+   "component": "Populations",
+   "file": "features/run/Substance.tsx",
+   "area": "run",
+   "section": "populations",
+   "route": null
   },
   {
    "form": "RaincloudPlot",
@@ -160,17 +199,8 @@
    "component": "RelationalPrimacy",
    "file": "features/rare/components/RelationalPrimacy.tsx",
    "area": "rare",
-   "section": "relprim"
-  },
-  {
-   "form": "RaincloudPlot",
-   "answers": "a distribution, not its summary",
-   "label": "Distribution of calibrated z for candidates, common-essential genes and non-essential controls, drawn as densities with every observation shown",
-   "source": null,
-   "component": "Shortlist",
-   "file": "features/run/Substance.tsx",
-   "area": null,
-   "section": null
+   "section": "relprim",
+   "route": null
   },
   {
    "form": "ScatterPair",
@@ -180,7 +210,8 @@
    "component": "GeneEmbedding",
    "file": "features/rare/components/GeneEmbedding.tsx",
    "area": "rare",
-   "section": "embed"
+   "section": "embed",
+   "route": null
   },
   {
    "form": "SweepPlot",
@@ -190,7 +221,8 @@
    "component": "CommunityStability",
    "file": "features/rare/components/CommunityStability.tsx",
    "area": "rare",
-   "section": "cluster"
+   "section": "cluster",
+   "route": null
   },
   {
    "form": "SweepPlot",
@@ -200,7 +232,19 @@
    "component": "GeneEmbedding",
    "file": "features/rare/components/GeneEmbedding.tsx",
    "area": "rare",
-   "section": "embed"
+   "section": "embed",
+   "route": null
+  },
+  {
+   "form": "UpSetPlot",
+   "answers": "overlapping sets, beyond what a Venn can hold",
+   "label": "Sizes of every combination of flags carried by the genes in the shipped sample",
+   "source": null,
+   "component": "FlagOverlap",
+   "file": "features/run/Substance.tsx",
+   "area": "run",
+   "section": "overlap",
+   "route": null
   },
   {
    "form": "UpSetPlot",
@@ -210,37 +254,30 @@
    "component": "GapPatterns",
    "file": "features/rare/components/GapPatterns.tsx",
    "area": "rare",
-   "section": "gaps"
-  },
-  {
-   "form": "UpSetPlot",
-   "answers": "overlapping sets, beyond what a Venn can hold",
-   "label": "Sizes of every combination of flags carried by the genes in the shipped sample",
-   "source": null,
-   "component": "Shortlist",
-   "file": "features/run/Substance.tsx",
-   "area": null,
-   "section": null
+   "section": "gaps",
+   "route": null
   },
   {
    "form": "WhiskerScatter",
    "answers": "two variables where one carries an interval",
    "label": "Perturbation score against cell count, with the control null",
    "source": null,
-   "component": "discoverySections",
+   "component": "Floor",
    "file": "features/discovery/discoverySections.tsx",
-   "area": null,
-   "section": null
+   "area": "discovery",
+   "section": "nullfloor",
+   "route": null
   },
   {
    "form": "WhiskerScatter",
    "answers": "two variables where one carries an interval",
    "label": "Degree against propagation z with 95% intervals, …",
    "source": null,
-   "component": "HivResistance",
+   "component": "TwinPropagation",
    "file": "features/rare/components/DeepPanels.tsx",
    "area": "rare",
-   "section": "hiv"
+   "section": "twin",
+   "route": null
   }
  ]
 }

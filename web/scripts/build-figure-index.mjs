@@ -17,7 +17,7 @@
  *  missing two thirds of the pictures would be worse than no index.
  */
 import { readFileSync, writeFileSync, globSync, mkdirSync } from "node:fs";
-import { join, dirname, relative, basename } from "node:path";
+import { join, dirname, relative, basename, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -39,9 +39,25 @@ const FORMS = {
   NeedlePlot: "where along a molecule the damage falls",
   ParallelCoordinates: "many dimensions at once, per entity",
   UpSetPlot: "overlapping sets, beyond what a Venn can hold",
+  DenseMatrix: "a matrix where every cell is a measurement, not a count",
 };
 
 const files = globSync("features/**/*.tsx", { cwd: SRC }).map((f) => join(SRC, f));
+
+// ⚠️ A FORM MISSING FROM `FORMS` IS A FORM MISSING FROM THE INDEX, SILENTLY. DenseMatrix was
+// built, used to draw 21 million CRISPR values, and appeared nowhere here — because the list
+// above is hand-written and nobody added it. So the organisms on disk are read and any that
+// this file does not know about are reported. An index whose omissions are invisible is the
+// thing this index exists to replace.
+const organisms = globSync("components/viz/organisms/*/index.ts", { cwd: SRC })
+  // Windows returns backslashes here, so the separator is normalised before splitting
+  // rather than matched — a character class with an escaped backslash inside a
+  // generated file is exactly where this went wrong the first time.
+  // Windows returns backslashes, so the separator is normalised with split/join
+  // rather than a regex — an escaped backslash inside a generated file is exactly
+  // where this went wrong twice.
+  .map((f) => f.split(sep).at(-2) ?? f.split("/").at(-2));
+const unknownForms = organisms.filter((o) => !(o in FORMS));
 
 // ---- component -> section, read from the section registries -----------------------------
 // A registry entry looks like `{ id: "x", title: …, view: () => (<><Comp /></>) }`. The scan
@@ -55,9 +71,25 @@ for (const file of files.filter((f) => /Sections\.tsx$/.test(f))) {
   for (const part of parts.slice(1)) {
     const id = part.slice(0, part.indexOf('"'));
     const upto = part.split(/\n\s*\{\s*id:/)[0];
-    for (const m of upto.matchAll(/<([A-Z][A-Za-z0-9]*)\s*\/>/g)) {
+    // ⚠️ THIS REQUIRED A SELF-CLOSING TAG WITH NO PROPS, and most section views pass one:
+    // `<Shortlist run={ctx.run} />`. Six figures were reported as unplaced for that reason
+    // alone — the scan could see `<Dossier />` and not `<Shortlist run={…} />`, which is a
+    // property of the regex rather than of the site.
+    for (const m of upto.matchAll(/<([A-Z][A-Za-z0-9]*)[\s/>]/g)) {
       if (!sectionOf.has(m[1])) sectionOf.set(m[1], { section: id, area });
     }
+  }
+}
+
+// ---- component -> route, for the pages that are not section registries ------------------
+// A standalone page — the addiction atlas, the CRISPR matrix, the discovery screen — is a
+// whole route rather than a section inside one, so the registry scan above cannot see it. The
+// view table in App.tsx names them: `{ id: "addiction", … render: () => <AddictionPage /> }`.
+const routeOf = new Map();
+{
+  const app = readFileSync(join(SRC, "App.tsx"), "utf8");
+  for (const m of app.matchAll(/id:\s*"([a-z_]+)"[^}]*?render:\s*\(\)\s*=>\s*<([A-Z][A-Za-z0-9]*)/g)) {
+    routeOf.set(m[2], m[1]);
   }
 }
 
@@ -99,16 +131,38 @@ for (const file of files) {
       const label = clean((after.match(/ariaLabel=\{?["'`]([^"'`]{10,200})["'`]\}?/) ?? [])[1]);
       const source = clean((after.match(/source=\{?["'`]([^"'`]{4,120})["'`]/) ?? [])[1]);
       if (!label) unindexed++;
-      const home = sectionOf.get(owner) ?? null;
+      // THE COMPONENT THAT ACTUALLY CONTAINS THIS FIGURE, which is not always the file's
+      // export. A registry file often defines its panels as module-local functions above the
+      // array — `function Floor() { … <WhiskerScatter … /> … }` — and the registry then names
+      // them. Taking the enclosing function is what connects the two.
+      const enclosing =
+        [...text.slice(0, use.index).matchAll(/function\s+([A-Z][A-Za-z0-9]*)\s*\(/g)]
+          .map((m) => m[1]).at(-1) ?? owner;
+      let home = sectionOf.get(enclosing) ?? sectionOf.get(owner) ?? null;
+      // A figure written INLINE in a registry file belongs to the section it sits under, not
+      // to the file's first export. Found by position: the last `id: "..."` before the tag.
+      if (!home && /Sections[.]tsx$/.test(rel)) {
+        const before = text.slice(0, use.index);
+        const ids = [...before.matchAll(/id:\s*"([a-z_]+)"/g)];
+        if (ids.length) {
+          home = {
+            section: ids[ids.length - 1][1],
+            area: basename(file).replace(/Sections[.]tsx$/, ""),
+          };
+        }
+      }
+      const route = routeOf.get(owner) ?? null;
       figures.push({
         form,
         answers: FORMS[form],
         label,
         source,
-        component: owner,
+        component: enclosing,
         file: rel,
         area: home?.area ?? null,
         section: home?.section ?? null,
+        // A page-level figure has no section; it has a route, and that is enough to link to.
+        route,
       });
     }
   }
@@ -136,7 +190,10 @@ const payload = {
     forms: Object.keys(byForm).length,
     without_a_label: unindexed,
     css_marks_not_indexed: cssFigures,
-    unplaced: figures.filter((f) => !f.section).length,
+    unplaced: figures.filter((f) => !f.section && !f.route).length,
+    on_a_page_rather_than_in_a_section: figures.filter((f) => !f.section && f.route).length,
+    organisms_on_disk: organisms.length,
+    organisms_this_index_does_not_know: unknownForms,
   },
   by_form: byForm,
   figures: figures.sort((a, b) => (a.form + a.component).localeCompare(b.form + b.component)),
@@ -146,6 +203,17 @@ mkdirSync(OUT, { recursive: true });
 writeFileSync(join(OUT, "figure_index.json"), JSON.stringify(payload, null, 1));
 console.log(
   `figures: ${figures.length} indexed across ${Object.keys(byForm).length} forms; `
-  + `${payload.counts.unplaced} not placed in a section; `
+  + `${payload.counts.on_a_page_rather_than_in_a_section} on a page rather than in a section; `
+  + `${payload.counts.unplaced} unplaced; `
   + `${cssFigures} CSS marks not indexed.`,
 );
+if (unknownForms.length) {
+  console.log(
+    `  !! ${unknownForms.length} viz organism(s) on disk that this index does not know: `
+    + unknownForms.join(", "),
+  );
+  console.log(
+    "     Add them to FORMS with the question the form answers, or they draw nothing a "
+    + "reader can find.",
+  );
+}

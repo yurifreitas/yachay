@@ -15,6 +15,7 @@ export const FIG = {
   ),
   indexed: bi("indexed", "indexadas"),
   forms: bi("forms", "formas"),
+  onOwnPage: bi("on a route of their own", "em rota própria"),
   cssNotIndexed: bi(
     "marks drawn in CSS and not indexed",
     "marcas desenhadas em CSS e não indexadas",

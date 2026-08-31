@@ -53,6 +53,7 @@ export function FiguresPage() {
         <p className={css.sub}>{tt(FIG.sub)}</p>
         <p className={css.counts}>
           {d.counts?.indexed} {tt(FIG.indexed)} · {d.counts?.forms} {tt(FIG.forms)} ·{" "}
+          {d.counts?.on_a_page_rather_than_in_a_section} {tt(FIG.onOwnPage)} ·{" "}
           {d.counts?.css_marks_not_indexed} {tt(FIG.cssNotIndexed)}
         </p>
       </header>
@@ -93,15 +94,16 @@ export function FiguresPage() {
           <li key={`${f.component}-${f.form}-${i}`} className={css.item}>
             <div className={css.itemHead}>
               <span className={css.formTag}>{f.form}</span>
+              {/* A figure lives either in a section of a multi-section area, or on a route
+                  of its own. Both are linkable and they are linked differently; a figure that
+                  is neither says so rather than being pointed somewhere plausible. */}
               {f.section ? (
-                <a className={css.go} href={`#${f.area === "rare" ? "" : f.area}`.length > 1
-                  ? `#${f.area}?s=${f.section}`
-                  : `#rare?s=${f.section}`}>
+                <a className={css.go} href={`#${f.area ?? "rare"}?s=${f.section}`}>
                   {tt(FIG.open)}
                 </a>
+              ) : f.route ? (
+                <a className={css.go} href={`#${f.route}`}>{tt(FIG.open)}</a>
               ) : (
-                /* An unplaced figure is a figure whose section this scan could not resolve.
-                   Saying so beats linking somewhere plausible and wrong. */
                 <span className={css.unplaced}>{tt(FIG.unplaced)}</span>
               )}
             </div>

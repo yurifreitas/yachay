@@ -2472,3 +2472,34 @@ majority of a GWAS and trusting them credits two genes for one variant.
 publishing a `null_mean` with no interval — correctly, by its old rule. But the artefact
 publishes an **empirical tail** instead, which A41 argued is the better of the two statistics.
 `p_empirical` now counts as an uncertainty statement, with that reasoning recorded at the line.
+
+### A56 — the figure index could not see a fifth of the figures · **closed**
+
+*2026-08-31.* A52 built an index of every figure so that a reader who remembers a picture can
+find it. Adding two new routes exposed that it was missing figures in three different ways, and
+each one was a property of the scanner rather than of the site.
+
+**A whole form was invisible.** `DenseMatrix` was written, used to draw 21 million CRISPR
+values, and appeared nowhere in the index — because the list of forms is hand-written and
+nobody added it. The scanner now reads the organisms on disk and **reports any it does not
+know**, so a form cannot go missing silently again. An index whose omissions are invisible is
+the thing this index exists to replace.
+
+**Figures on their own route had no home.** The scan mapped components to sections by reading
+the section registries, which cannot see a page that IS a route — the addiction atlas, the
+CRISPR matrix. The view table in `App.tsx` names them, so it is read too, and those figures now
+link to `#addiction` and `#crispr` rather than reporting themselves unplaced.
+
+**And the registry scan required a self-closing tag with no props.** Most section views pass
+one: `<Shortlist run={ctx.run} />`. Six figures were reported unplaced for that reason alone —
+the scan could see `<Dossier />` and not `<Shortlist run={…} />`. A seventh was a figure written
+inline in a registry file, inside a module-local function defined above the array; the enclosing
+function is now what the figure is attributed to.
+
+**Unplaced: 6 → 0.** 23 figures across 12 forms, 2 of them on routes of their own, and the 34
+CSS-drawn marks still counted rather than listed.
+
+The pattern is worth naming because it is the third time in two days: a checker that reports a
+clean number while missing a category is more dangerous than no checker, because the number
+gets quoted. The z audit's key-name list, the i18n counter that counted JavaScript as prose,
+and now this — all found by adding something the scanner had never met.
