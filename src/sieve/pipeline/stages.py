@@ -762,6 +762,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="network_layout",
+    summary=("Three orderings of the gene graph, solved in Python so the browser draws "
+             "38,746 edges and never seriates them."),
+    inputs=(paths.GENE_NETWORK, paths.COMMUNITY_STABILITY),
+    outputs=(paths.NETWORK_LAYOUT,),
+    needs=("community_stability",),
+    code=sources("tools/network_layout.py"),
+    run=lambda: _run_tool("network_layout"),
+))
+
+_add(Stage(
     name="pipeline_state",
     summary="Publish which stages are fresh or stale, so freshness is not terminal-only.",
     outputs=(paths.PIPELINE_STATE,),

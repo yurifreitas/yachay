@@ -48,6 +48,12 @@ DETERMINISTIC = [
     # those series — so a non-deterministic figure would let the paper and the dashboard
     # disagree with the analysis they claim to render.
     ("tools/figure_data.py", "out/figures/depmap.json"),
+    # Also found by the guard, on the day it was written. It seriates 3,335 genes three ways
+    # and a spectral ordering is a sign-ambiguous eigenvector: ARPACK can return -v as
+    # happily as v, which reverses the ordering and every row of the matrix drawn from it.
+    # If that ever becomes non-deterministic the figure flips between reloads and the caption
+    # keeps claiming the same structure, so this is the exact tool the check exists for.
+    ("tools/network_layout.py", "web/public/data/network_layout.json"),
 ]
 
 # Excluded, by name and with the reason. A determinism suite that quietly omits the awkward

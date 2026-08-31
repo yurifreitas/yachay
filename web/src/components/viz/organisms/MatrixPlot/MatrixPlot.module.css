@@ -1,0 +1,30 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* The canvas paints its own ground, so the two colours it mixes between are declared here as
+   custom properties and read back in JS. That keeps the ramp theme-aware without the drawing
+   code knowing anything about themes. */
+.canvas {
+  --matrix-bg: #ffffff;
+  --matrix-ink: #16324f;
+  --matrix-rule: #c2410c;
+  display: block; border-radius: var(--r-2, 6px);
+  border: 1px solid var(--r-border);
+  image-rendering: pixelated;
+  max-width: 100%;
+}
+:global([data-theme="dark"]) .canvas,
+:global(:root:not([data-theme="light"])) .canvas {
+  --matrix-bg: #10141b;
+  --matrix-ink: #8ab4f8;
+}
+
+.stage { position: relative; display: flex; gap: var(--sp-2); max-width: 100%; }
+
+/* The consensus confidence beside the rows it belongs to. */
+.margin { display: flex; flex-direction: column; width: 10px; }
+.marginCell { flex: 1; background: var(--known); display: block; }
+
+.hint {
+  margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--r-text-2);
+  max-width: 78ch;
+}

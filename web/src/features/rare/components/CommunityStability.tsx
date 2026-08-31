@@ -1,6 +1,9 @@
 import { useT } from "../../../i18n";
 import { DEEP } from "../../../i18n/deep";
+import { useMemo } from "react";
 import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
+import { MatrixPlot } from "../../../components/viz/organisms/MatrixPlot";
+import { useRemoteData } from "../../../lib/useRemoteData";
 import { SweepPlot } from "../../../components/viz/organisms/SweepPlot";
 import raw from "../../../data/generated/community_stability.json";
 import { fmtInt } from "../../../lib/scale";
@@ -18,6 +21,82 @@ import css from "./MeasuredPanels.module.css";
  *  rewired graph has no communities to find, and its runs still agree at 0.086 — so 0.9 is
  *  read against 0.086, not against 0.
  */
+/** Decode a base64 typed array. The payload ships 38,746 edges and three orderings as bytes
+ *  rather than as JSON numbers: 310 kB the browser hands straight to a canvas loop, against
+ *  roughly 500 kB of text it would have to parse first. */
+function i32(b64: string): Int32Array {
+  const bin = atob(b64);
+  const buf = new ArrayBuffer(bin.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+  return new Int32Array(buf);
+}
+
+function f32(b64: string): Float32Array {
+  const bin = atob(b64);
+  const buf = new ArrayBuffer(bin.length);
+  const view = new Uint8Array(buf);
+  for (let i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+  return new Float32Array(buf);
+}
+
+/** The matrix, fetched rather than bundled. Half a megabyte of edge list belongs behind a
+ *  request on the one screen that draws it, not in the bundle every other screen loads. */
+/** A share as a percentage, or an em dash when the artefact has not been regenerated. Written
+ *  out because a caption that prints "undefined%" is worse than one that prints nothing. */
+const pct = (v?: number) => (v == null ? "—" : `${Math.round(v * 100)}%`);
+
+function NetworkMatrix() {
+  const net = useRemoteData<any>("data/network_layout.json");
+  const model = useMemo(() => {
+    if (net.state !== "ready") return null;
+    const d = net.data;
+    return {
+      d,
+      edges: { i: i32(d.edges.i), j: i32(d.edges.j) },
+      confidence: f32(d.confidence),
+      orderings: Object.fromEntries(
+        Object.entries<any>(d.orderings).map(([k, v]) => [k, { index: i32(v.index), says: v.says }]),
+      ),
+    };
+  }, [net]);
+
+  if (net.state === "loading") return <p className={css.note}>drawing 38,746 edges…</p>;
+  if (!model) return null;
+  const { d, edges, confidence, orderings } = model;
+
+  return (
+    <MatrixPlot
+      n={d.counts.genes_with_an_edge}
+      edges={edges}
+      orderings={orderings}
+      blocks={d.blocks}
+      confidence={confidence}
+      labelFor={(g: number) => d.genes[g]}
+      ariaLabel="Gene interaction matrix, reordered by consensus community"
+      source={`${d.counts.edges.toLocaleString("en-US")} edges · ${d.counts.isolated_dropped.toLocaleString("en-US")} isolated genes dropped`}
+      readAloud={
+        <>
+          Every gene pair that shares at least one disease, drawn once. The axes are the same
+          3,335 genes in the same order, so a mark at row <em>a</em> column <em>b</em> means
+          those two are connected; the shade of a pixel is how many pairs fall in it. Blocks
+          on the diagonal are communities and the strip on the right is each block&rsquo;s
+          consensus confidence. Now switch the ordering, and read the number rather than the
+          picture: <strong>consensus</strong> puts{" "}
+          {pct(d.locality?.consensus?.share_within_1pct_of_diagonal)} of edges within 1&thinsp;%
+          of the diagonal, but it was told where the communities are.{" "}
+          <strong>spectral</strong> was not, and still reaches{" "}
+          {pct(d.locality?.spectral?.share_within_1pct_of_diagonal)} &mdash; that is the
+          evidence the blocks are in the graph. <strong>degree</strong> is the control at{" "}
+          {pct(d.locality?.degree?.share_within_1pct_of_diagonal)}, against{" "}
+          {pct(d.locality?.random?.share_within_1pct_of_diagonal)} for a random shuffle: some
+          structure appears under any ordering, and the question is always how much more.
+        </>
+      }
+    />
+  );
+}
+
 export function CommunityStability() {
   const tt = useT();
   const d = raw as any;
@@ -59,6 +138,15 @@ export function CommunityStability() {
           <span className={css.answersK}>{tt(DEEP.csHeading)}</span>
           {d.what_was_published?.the_problem}
         </p>
+      </div>
+
+      {/* THE GRAPH ITSELF, FIRST. Every number below describes a partition of 38,746 edges
+          that this site had never drawn one of. The measurements are worth more once the
+          reader has seen the thing being measured — and the ordering switch turns the whole
+          argument about whether the blocks are real into something they can check by eye. */}
+      <div className={css.block}>
+        <span className={css.blockK}>{tt(DEEP.csMatrix)}</span>
+        <NetworkMatrix />
       </div>
 
       <div className={css.block}>

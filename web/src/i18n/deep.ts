@@ -61,6 +61,10 @@ export const DEEP = {
     "mean agreement between two runs of the same clustering, over twelve seeds",
     "concordância média entre duas execuções do mesmo agrupamento, em doze sementes",
   ),
+  csMatrix: bi(
+    "38,746 edges, drawn once each — and the ordering you can switch to check them",
+    "38.746 arestas, cada uma desenhada uma vez — e a ordenação que dá para trocar e conferir",
+  ),
   csAgreement: bi(
     "is the grouping in the graph, or in the objective function?",
     "o agrupamento está no grafo ou na função objetivo?",

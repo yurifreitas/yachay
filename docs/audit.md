@@ -1901,3 +1901,55 @@ cd web && npm run check && npm run build
 
 `tasks.py status` says what is stale and why; `tasks.py build` runs it in dependency order.
 The deploy is a GitHub Action on push to `main`.
+
+### A43 — 38,746 edges the site had never drawn one of · **closed**
+
+*2026-08-31.* `gene_network.json` has held 5,524 genes and 38,746 edges since the interactome
+layer was built. The site reported it as three numbers — nodes, edges, modularity — which is
+the least a graph can be reduced to, and A42 then measured that its partition agrees between
+algorithm families at 0.29. Both are numbers about a picture nobody could see.
+
+**The form is a reordered adjacency matrix** (Bertin 1967), not a node-link drawing. At this
+density a force layout is a hairball: the picture is dominated by the repulsion constant, two
+runs differ, and no distance in it can be read. A matrix draws every edge exactly once at a
+fixed position with no parameter to tune, and puts the edges *between* communities in the open
+instead of burying them in the middle. 3,335 × 3,335 is 11.1 million cells, so it is a canvas —
+one typed-array pass per redraw, which is what makes switching the ordering instant.
+
+**Three orderings ship, because the ordering is the argument** (ADR 0008). Measured as the
+share of edges landing within 1 % of the diagonal:
+
+| ordering | share | what it knew |
+|---|---|---|
+| consensus | **68 %** | was told where the communities are |
+| spectral | **53 %** | was not |
+| degree | **36 %** | the control |
+| random | **2 %** | 20 shuffles |
+
+The spectral ordering never sees the partition and still concentrates a majority of edges on
+the diagonal. That is the evidence the blocks are in the graph rather than in the ordering that
+assumes them — and `degree` is why the comparison needs a control at all: *some* structure
+appears under any non-random ordering, and the question is always how much more.
+
+**⚠️ Three defects, each caught by measuring rather than by looking.**
+
+1. **The first spectral ordering was noise.** It ran the Fiedler vector over the whole
+   edge-bearing subgraph, which has **191 connected components**. On a disconnected graph the
+   Laplacian's zero eigenvalue has multiplicity equal to the component count, so the "second
+   smallest" eigenvector is an arbitrary member of that null space. It looked plausible.
+   Measured: **6.2 %** on the diagonal against 2.0 % for random and 35.6 % for degree — worse
+   than sorting by degree. The caption drafted for it ("the blocks come back even without being
+   told where they are") was false. Seriating each component separately fixes it, and the
+   number is now published beside the figure so the caption cannot drift from it again.
+2. **The eigenvector sign is arbitrary.** ARPACK returns −v as happily as v, which reverses the
+   ordering and flips the matrix end for end while the caption describes the same structure.
+   Canonicalised by the entry of largest magnitude.
+3. **And that was not enough.** 1,584 of 3,335 positions still moved between runs, because
+   ARPACK is iterative and starts from a vector SciPy draws from its own global random state.
+   With eigenvalues as closely spaced as a Laplacian's smallest two it lands somewhere
+   different each call. Fixed with an explicit `v0`.
+
+All three were found by `tests/test_determinism.py`, which failed the moment the tool was added
+to it — the same guard that caught `community_stability.py` the day before. A figure that
+reorders itself between reloads while its caption stays the same is the worst kind of defect
+this repository can ship, and nothing but a determinism test finds it.
