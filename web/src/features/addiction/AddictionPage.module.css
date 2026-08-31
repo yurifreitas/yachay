@@ -50,3 +50,65 @@
 .cellK { font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--r-text-3); }
 .both { color: var(--r-text); font-weight: 500; }
 .none { color: var(--r-text-3); font-style: italic; }
+
+/* ---- stacked composition ------------------------------------------------------------
+   A part-of-whole with a fixed set of parts. The segment order is fixed in the component so
+   rows stay comparable; a stacked bar whose segments reorder between rows cannot be read
+   across, which is the only thing a stack is for. */
+.comp { display: flex; flex-direction: column; gap: var(--sp-3); }
+.compRow {
+  display: grid; grid-template-columns: 96px minmax(0, 1fr) minmax(140px, auto);
+  align-items: center; gap: var(--sp-4);
+}
+.compLabel { font-size: 13px; color: var(--r-text-2); text-align: right; }
+.compTrack {
+  display: flex; height: 16px; border-radius: 3px; overflow: hidden;
+  background: var(--r-surface-2);
+}
+.compSeg { display: block; height: 100%; }
+.compNote { font-size: 11.5px; color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+
+.compSeg[data-kind="disorder"]      { background: var(--known); }
+.compSeg[data-kind="quantity"]      { background: var(--partial); }
+.compSeg[data-kind="consequence"]   { background: var(--critical); }
+.compSeg[data-kind="cessation"]     { background: var(--unknown); }
+.compSeg[data-kind="response"]      { background: var(--r-text-3); }
+.compSeg[data-kind="unclassified"]  { background: var(--r-border-hi); }
+
+/* Ancestry uses position rather than a named palette: there are more ancestral categories
+   than any categorical scale holds honestly, and the order is the artefact's own. */
+.compSeg[data-anc="0"] { background: color-mix(in oklch, var(--partial) 92%, transparent); }
+.compSeg[data-anc="1"] { background: color-mix(in oklch, var(--known) 82%, transparent); }
+.compSeg[data-anc="2"] { background: color-mix(in oklch, var(--unknown) 78%, transparent); }
+.compSeg[data-anc="3"] { background: color-mix(in oklch, var(--critical) 62%, transparent); }
+.compSeg[data-anc="4"] { background: color-mix(in oklch, var(--r-text-2) 52%, transparent); }
+.compSeg[data-anc="5"] { background: var(--r-border-hi); }
+
+.legend { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
+.legendItem {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: 11.5px; color: var(--r-text-2);
+}
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.swatch[data-kind="disorder"]     { background: var(--known); }
+.swatch[data-kind="quantity"]     { background: var(--partial); }
+.swatch[data-kind="consequence"]  { background: var(--critical); }
+.swatch[data-kind="cessation"]    { background: var(--unknown); }
+.swatch[data-kind="response"]     { background: var(--r-text-3); }
+.swatch[data-kind="unclassified"] { background: var(--r-border-hi); }
+
+/* ---- the enrichments themselves ----------------------------------------------------- */
+.enrich {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: var(--sp-6);
+}
+.enrichSet { display: flex; flex-direction: column; gap: var(--sp-2); min-width: 0; }
+.enrichHead { font-size: 12.5px; color: var(--r-text-2); }
+.table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.table th {
+  text-align: left; font-weight: 600; font-size: 10px; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--r-text-3); padding: 2px 6px 4px 0;
+}
+.table td { padding: 3px 6px 3px 0; color: var(--r-text); font-variant-numeric: tabular-nums; }
+.tdName { color: var(--r-text-2); }
+.tdMuted { color: var(--r-text-3); }

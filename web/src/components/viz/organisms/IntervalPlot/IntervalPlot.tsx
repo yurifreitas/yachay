@@ -44,7 +44,10 @@ export function IntervalPlot({
   const [hover, setHover] = useState<number | null>(null);
 
   const h = height ?? Math.max(180, rows.length * rowH + 72);
-  const LABEL_W = 132;
+  // Wide enough for the longer of the two label lines. 132 was set when a row was one
+  // short word; the notes callers pass now are "296 studies · 44,543,900 sample", and a
+  // margin that does not hold them clips rather than wraps.
+  const LABEL_W = 196;
 
   // The domain must contain every BOUND and every reference, not every point. A domain built
   // from the points alone clips the bands that run past them, and a clipped interval is a
@@ -102,11 +105,32 @@ export function IntervalPlot({
                     <rect x={box.x0} y={yi - rowH / 2} width={box.width} height={rowH}
                           className={css.hit} />
 
-                    <text x={box.x0 - 12} y={yi} textAnchor="end" dominantBaseline="middle"
-                          className={css.label}>
-                      {r.label}
-                      {r.note && <tspan className={css.note}> {r.note}</tspan>}
-                    </text>
+                    {/* ⚠️ THE NOTE USED TO BE A tspan ON THE SAME LINE, and a long one pushed
+                        the label off the left edge of the plot — the addiction figure lost the
+                        substance name entirely and showed "…tudies · 44,543,900 sample". Text
+                        anchored at the end grows leftwards, so an inline note does not wrap,
+                        it clips, and it clips the half that names the row.
+
+                        Two lines, and the note gets the smaller size it should have had. When
+                        there is no note the label stays vertically centred, so single-line
+                        callers are unchanged. */}
+                    {r.note ? (
+                      <>
+                        <text x={box.x0 - 12} y={yi - 6} textAnchor="end"
+                              dominantBaseline="middle" className={css.label}>
+                          {r.label}
+                        </text>
+                        <text x={box.x0 - 12} y={yi + 7} textAnchor="end"
+                              dominantBaseline="middle" className={css.note}>
+                          {r.note}
+                        </text>
+                      </>
+                    ) : (
+                      <text x={box.x0 - 12} y={yi} textAnchor="end" dominantBaseline="middle"
+                            className={css.label}>
+                        {r.label}
+                      </text>
+                    )}
 
                     {has ? (
                       <>

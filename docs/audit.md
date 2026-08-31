@@ -2503,3 +2503,41 @@ The pattern is worth naming because it is the third time in two days: a checker 
 clean number while missing a category is more dangerous than no checker, because the number
 gets quoted. The z audit's key-name list, the i18n counter that counted JavaScript as prose,
 and now this — all found by adding something the scanner had never met.
+
+### A57 — measured, and rendered nowhere · **closed**
+
+*2026-08-31.* The addiction artefacts computed considerably more than the page showed. Three
+blocks of it were invisible, which is the failure `docs/audit.md` calls A29 committed again on
+work two days old.
+
+**The full phenotype composition.** The page showed one number per substance — the disorder
+share — while the artefact had measured four kinds plus the unclassified remainder. Now a
+stacked proportion per substance, with `unclassified` published as its own segment rather than
+folded into the others to make the bar look complete. That fold would have been the one edit
+that makes the figure dishonest.
+
+**Ancestry per substance**, computed and shown nowhere.
+
+**The enrichments themselves** — 32 gene sets with their surviving cell types, the fold over
+each matched null and the corrected *q*. The overlap counts said the two halves of the field
+differ; these say what each half actually found.
+
+**⚠️ And a caption asserted something false.** It read: *"alcohol carries the highest East
+Asian share in this table, and the best-established protective variants in alcohol genetics —
+ALDH2, ADH1B — are essentially East-Asian-specific."* The first clause is wrong. Alcohol is at
+**8.8 %** East Asian, among the lowest here; stimulants are at 37.5 % and opioids at 19.4 %. It
+was checked against the artefact before shipping only because it was written as a claim rather
+than read from the data.
+
+The corrected sentence is stronger than the one I made up:
+
+> **8.8 % East Asian, among the lowest of any substance here — while the best-established
+> protective variants in alcohol genetics are essentially East-Asian-specific. The field's
+> clearest protective biology comes from the population its samples least represent.**
+
+**⚠️ A layout defect shipped in the same figure.** `IntervalPlot` rendered a row's `note` as a
+`tspan` on the same line as its label. Text anchored at the end grows leftwards, so a long note
+does not wrap — it clips, and it clips the half that names the row. The addiction figure lost
+its substance names entirely and showed *"…tudies · 44,543,900 sample"*. Notes now take a second
+line at their own size, and the label column widened from 132 px to 196 px. Every caller of the
+component gets the fix.
