@@ -37,6 +37,7 @@ const Ancestry = lazy(() => import("./components/Ancestry").then((m) => ({ defau
 const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ default: m.SelfAudit })));
 const ZAudit = lazy(() => import("./components/ZAudit").then((m) => ({ default: m.ZAudit })));
 const CommunityStability = lazy(() => import("./components/CommunityStability").then((m) => ({ default: m.CommunityStability })));
+const GeneEmbedding = lazy(() => import("./components/GeneEmbedding").then((m) => ({ default: m.GeneEmbedding })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
@@ -323,6 +324,22 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
               nine runs of ten, and that number is now published per gene.</>,
     view: () => (
       <><CommunityStability /></>
+    ),
+  },
+  {
+    id: "embed",
+    title: <>A UMAP is the most reproduced figure in biology and the least audited. Here is one, with its numbers</>,
+    sub: <>Eleven measurements per gene, projected to two dimensions and clustered — the
+              standard figure, built the standard way. Then the three questions its ubiquity
+              has made unaskable. It keeps its local neighbourhoods well (0.945), and a third
+              of every gene&rsquo;s neighbours still change when nothing changes but the random
+              seed. Its clusters reproduce across seeds almost perfectly — and have essentially
+              nothing to do with the clusters in the data they came from: HDBSCAN calls three
+              quarters of these genes unclusterable noise in eleven dimensions and almost none
+              of them on the picture. Reproducible is not correct, and this figure is both at
+              once.</>,
+    view: () => (
+      <><GeneEmbedding /></>
     ),
   },
   {

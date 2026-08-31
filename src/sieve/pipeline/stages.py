@@ -773,6 +773,18 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="gene_embedding",
+    summary=("A UMAP of eleven per-gene measurements, published with the three numbers that "
+             "say what it is worth: trustworthiness, seed agreement, and clustering the "
+             "picture against clustering the data."),
+    inputs=(paths.GENE_WORLD, paths.GENE_ATTENTION, paths.GENE_GEOMETRY),
+    outputs=(paths.GENE_EMBEDDING,),
+    needs=("gene_attention", "gene_geometry"),
+    code=sources("tools/gene_embedding.py"),
+    run=lambda: _run_tool("gene_embedding"),
+))
+
+_add(Stage(
     name="partition_flow",
     summary=("Which genes move between the three algorithms' communities, matched by an "
              "exact assignment solution and ordered to cut ribbon crossings."),

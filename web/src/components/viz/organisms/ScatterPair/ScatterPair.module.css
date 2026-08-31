@@ -1,0 +1,4 @@
+.wrap { display: flex; flex-direction: column; gap: var(--sp-4); }
+.canvas {
+  display: block; border: 1px solid var(--r-border); border-radius: var(--r-2, 6px);
+}

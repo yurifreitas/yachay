@@ -16,6 +16,10 @@ requires-python = ">=3.10"
 dependencies = [
     "numpy>=1.24", "pandas>=2.0", "scipy>=1.11", "statsmodels>=0.14",
     "networkx>=3.0", "scikit-learn>=1.4", "python-igraph>=0.11", "leidenalg>=0.10",
+    # tools/gene_embedding.py. Not to draw a UMAP — to AUDIT one: trustworthiness, neighbour
+    # agreement across seeds, and clustering the embedding against clustering the data it came
+    # from. The figure is everywhere in biology and the three numbers under it are nowhere.
+    "umap-learn>=0.5", "hdbscan>=0.8",
 ]
 
 [project.optional-dependencies]

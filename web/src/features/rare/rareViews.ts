@@ -134,6 +134,7 @@ const ARGUMENT: RareView = {
     { id: "selfaudit", label: RARE.sSelfAudit, group: "argument" },
     { id: "zaudit", label: DEEP.sZAudit, group: "argument" },
     { id: "cluster", label: DEEP.sCluster, group: "argument" },
+    { id: "embed", label: DEEP.sEmbed, group: "argument" },
     { id: "refmap", label: RARE.sRefmap, group: "argument" },
     { id: "sources", label: RARE.sSources, group: "argument" },
     { id: "hiv", label: DEEP.sHiv, group: "beyond" },

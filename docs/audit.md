@@ -2041,3 +2041,39 @@ not rendering.
 **The form is parallel sets**, chosen because the question is flow between categorisations and
 no bar chart of agreement scores can show it. Matched ribbons are drawn faintly and the moved
 ones carry the only colour in the figure: agreement is context, disagreement is the subject.
+
+### A46 — a UMAP, published as an object under test · **closed**
+
+*2026-08-31.* A two-dimensional embedding with coloured clusters is the most reproduced figure
+in modern biology and the least audited. `umap-learn` and `hdbscan` had been installed here and
+never used. `tools/gene_embedding.py` builds the standard figure the standard way — eleven
+per-gene measurements this repository already publishes, standardised, projected, clustered —
+and then puts to it the three questions its ubiquity has made unaskable.
+
+**Does it preserve the neighbourhoods it shows?** Trustworthiness **0.945** at k = 15. Yes: genes
+near each other on the page really were near each other in eleven dimensions. The map is
+locally faithful, and saying so first matters, because everything below is otherwise read as an
+attack on the method rather than as its calibration.
+
+**Is it the same map twice?** **0.627** neighbour overlap between seeds — so **37 % of every
+gene's fifteen nearest neighbours change when nothing changes but the random seed**. Measured on
+neighbourhoods rather than coordinates, because two UMAPs can differ by rotation and reflection
+while showing the same structure, and comparing positions would report disagreement that is not
+there. The panel shows both maps side by side on a shared scale, Procrustes-aligned, so the
+number is not something the reader has to take on trust.
+
+**Does clustering the picture agree with clustering the data?** ARI **0.003** — and the sizes
+are what make that readable, which is why they are published beside it. It is not that the two
+clusterings disagree about boundaries. **On the standardised features HDBSCAN calls 6,646 of
+8,890 genes unclusterable noise** and finds two small clusters. On the UMAP of those same
+features it finds three clusters covering all but one gene. The structure is not in the data;
+it appeared in the projection. That the embedding's clusters then reproduce across seeds at ARI
+**0.994** is the sharpest part: a practitioner would run it twice, see a stable tidy answer, and
+never learn it has nothing to do with the feature space.
+
+**Locally faithful and globally suggestive at the same time** is exactly the combination that
+makes these pictures so easy to over-read, and all four numbers are on the page with the figure.
+
+Listwise rather than imputed: 9,238 genes lack at least one of the eleven features and are
+dropped, with both counts published. A gene missing LOEUF is one gnomAD could not constrain;
+imputing the mean would place it in the middle of the map and invent a neighbourhood for it.

@@ -87,6 +87,12 @@ NOT_TESTED = {
                                  "excluded for runtime, not because it is unverified. This "
                                  "guard caught it the day it was written, which is the "
                                  "behaviour that justifies the guard.",
+    "tools/gene_embedding.py": "four UMAP fits over 8,890 genes plus HDBSCAN on both the "
+                               "embedding and the raw features - minutes, not seconds. Its "
+                               "determinism is not assumed either: the artefact reports "
+                               "neighbour agreement BETWEEN seeds as a published measurement, "
+                               "so a run that stopped being reproducible would change the "
+                               "number the panel is about rather than hiding.",
     "tools/community_stability.py": "runs three clustering algorithms twelve times each, a "
                                     "seven-point resolution sweep and twelve degree-preserving "
                                     "rewirings over a 5,524-node graph — 161 seconds, far too "

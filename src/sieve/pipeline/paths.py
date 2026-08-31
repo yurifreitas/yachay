@@ -145,6 +145,8 @@ COMMUNITY_STABILITY = RARE / "community_stability.json"
 COMMUNITY_IDENTITY = RARE / "community_identity.json"
 # Where the three algorithms disagree, with the communities matched first.
 PARTITION_FLOW = RARE / "partition_flow.json"
+# The UMAP published as an object under test rather than as a result.
+GENE_EMBEDDING = RARE / "gene_embedding.json"
 # Fetched by the browser: half a megabyte of edge list belongs behind a request, not in
 # the bundle every other screen loads.
 NETWORK_LAYOUT = ROOT / "web" / "public" / "data" / "network_layout.json"

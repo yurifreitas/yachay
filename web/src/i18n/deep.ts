@@ -20,6 +20,7 @@ export const DEEP = {
   sHiv: bi("HIV drug resistance", "Resistência do HIV"),
   sZAudit: bi("What is a z worth here?", "Quanto vale um z aqui?"),
   sCluster: bi("Are the groups real?", "Os grupos são reais?"),
+  sEmbed: bi("What is a UMAP worth?", "Quanto vale um UMAP?"),
   hivHeading: bi(
     "the positive controls were named before the run, and they came back",
     "os controles positivos foram nomeados antes da execução, e voltaram",
@@ -64,6 +65,22 @@ export const DEEP = {
   csMatrix: bi(
     "38,746 edges, drawn once each — and the ordering you can switch to check them",
     "38.746 arestas, cada uma desenhada uma vez — e a ordenação que dá para trocar e conferir",
+  ),
+  emHeading: bi(
+    "of each gene's fifteen nearest neighbours on the page, that share were neighbours in the data",
+    "dos quinze vizinhos mais próximos de cada gene na figura, essa fração era vizinha nos dados",
+  ),
+  emPair: bi(
+    "the same data, the same algorithm, two random seeds",
+    "os mesmos dados, o mesmo algoritmo, duas sementes aleatórias",
+  ),
+  emNumbers: bi(
+    "reproducible and correct are not the same thing, and this figure is one of them",
+    "reprodutível e correto não são a mesma coisa, e esta figura é só uma das duas",
+  ),
+  emClusters: bi(
+    "where the tidiness came from",
+    "de onde veio a arrumação",
   ),
   csFlow: bi(
     "half the genes land somewhere else — this is where they go",
