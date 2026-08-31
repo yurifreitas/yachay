@@ -2122,3 +2122,51 @@ expects: **a threshold from a textbook is not a calibration.**
 One implementation note worth keeping, because getting it wrong is common: the sampled real
 points must be excluded from their own nearest-neighbour search. Otherwise every *u*-distance is
 zero, and the statistic reports beautifully clustered uniform noise.
+
+### A48 — a new method, and it did not work · **closed**
+
+*2026-08-31.* A41 and A43 established the defect: a z divides by a spread estimated from 200
+draws, and where the null is nearly degenerate that denominator is almost zero. The propagation
+artefact's ten largest z values are all low-degree genes and not one survives its own interval.
+Reporting the interval is honest and insufficient — the *ranking* is still made on a statistic
+that is least trustworthy exactly where it is largest. So: what should be published instead?
+
+**The method tried.** Empirical-Bayes moderation. Fit the null spread as a smooth function of
+the covariate that predicts it (degree, by LOWESS on log–log), then shrink each gene's own
+estimate towards that trend by a weight set by how many draws it rests on — a weighted
+*geometric* mean, because a standard deviation is a scale parameter. This is Smyth (2004), the
+moderation limma made standard for microarray variances, pointed at a **permutation null's**
+variance instead of a measurement's. The two are the same shape of problem and nothing in the
+derivation cares which the spread came from.
+
+**It does not work here, and the reason is the finding.** Moderation recovers what a *noisy*
+estimate lost around a *good* trend. Here **the trend is the defect**: every low-degree gene has
+a near-zero null spread, so each one's estimate already agrees with its neighbours and there is
+nothing idiosyncratic to shrink. It moved the top of the list by about 15 % — DNASE2B from 1,825
+to 1,519 — and changed the ordering **not at all**.
+
+**So the answer is not a better denominator. It is not to divide.** The empirical tail — the
+share of null draws reaching a gene at least as hard as the real seed set — is floored at
+1/(N+1) by construction, so no extrapolation past the permutation's actual resolution is
+*expressible*. Ties at the floor break on the propagation score itself, which is the quantity a
+reader is deciding about. All three statistics now ship, and the differences between them are
+the measurement:
+
+| disorder | by z | by interval's lower bound | by empirical tail |
+|---|---|---|---|
+| Cystic fibrosis | ANO2, CLCA2, ANO1 | ALB, TMPRSS15, XPNPEP2 | SLC1A5, HAMP, **CLCA1** |
+| Lupus | DNASE2B, DNASE2, CXorf21 | IFNG, CD28, PTPRC | DNASE2, RTN4R, **IFNG** |
+
+**⚠️ The first implementation had the correction inverted**, and the output said so before any
+reasoning did: moderation made the largest z *larger*, 2,128 becoming 7,824 as the prior
+strengthened. The moderation is applied to the standard error of the z, and for a fixed
+numerator `se ∝ 1/sd`, so the rescaling is `se*/se` and not `se/se*`. Writing it the other way
+inverted every correction in the file. It was caught because a shrinkage that makes extremes
+more extreme is impossible, not because the algebra was re-read.
+
+**⚠️ And the first demonstration was crippled by its own input.** Run over the published
+artefact rather than inside the tool, it could only moderate the 100 of 275 reach genes that
+carry an interval — and the loudest ones come from single-seed disorders that have none, so
+FAHD2B at z = 2,128 passed through untouched. A method demonstrated on output it cannot fully
+see is a demonstration of nothing. It now lives inside `twin_propagation.py`, where the null's
+standard deviation is in hand.

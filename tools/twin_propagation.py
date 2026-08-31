@@ -62,6 +62,7 @@ from __future__ import annotations
 import argparse
 import csv
 import gzip
+import importlib.util
 import json
 import pathlib
 import sys
@@ -252,8 +253,74 @@ def main() -> int:
                 drawn.append(int(pool[rng.integers(0, len(pool))]))
             null[k] = propagate(W, drawn, n)
         mu, sd = null.mean(axis=0), null.std(axis=0)
+        raw_sd = sd.copy()
         sd[sd == 0] = np.inf                      # unreachable in every null draw -> z = 0
         z = (p - mu) / sd
+
+        # ---- the moderated denominator ---------------------------------------------------
+        #
+        #  WHY THE PLAIN z IS THE WRONG STATISTIC HERE, established in audit A41 and A43: the
+        #  denominator is a spread estimated from N_NULL draws, and at a gene of degree five
+        #  almost no draw arrives, so it is near zero and any reach at all divides into an
+        #  enormous number. The ten largest z values in this artefact are all low-degree genes
+        #  and not one of them survives its own interval.
+        #
+        #  THE FIX IS NOT TO REPORT THE INSTABILITY, IT IS TO STOP CREATING IT. The spread at
+        #  a degree-five gene is not unknowable — it is badly estimated at that ONE gene and
+        #  well estimated across the hundreds of genes of similar degree. So each gene's own
+        #  estimate is shrunk towards the fitted spread-versus-degree trend, weighted by how
+        #  many draws it rests on. This is Smyth's (2004) empirical-Bayes moderation, the one
+        #  limma made standard for microarray variances, pointed at a PERMUTATION null's
+        #  variance instead of a measurement's — the same shape of problem, and nothing in the
+        #  derivation cares which of the two the spread came from.
+        #
+        #  Both statistics are published. The moderated one is not asserted to be correct; it
+        #  is asserted to be stable, and the difference between the two rankings is a
+        #  measurement this file reports rather than a claim it makes.
+        mod_sd, mod_z, trend = raw_sd, z, None
+        try:
+            spec_m = importlib.util.spec_from_file_location(
+                "moderated_calibration", ROOT / "tools" / "moderated_calibration.py")
+            mc = importlib.util.module_from_spec(spec_m)
+            spec_m.loader.exec_module(mc)
+            reached_any = raw_sd > 0
+            if reached_any.sum() > 50:
+                logd = np.log10(np.maximum(degree[reached_any].astype(float), 1.0))
+                logs = np.log10(np.maximum(raw_sd[reached_any], 1e-30))
+                trend = np.full_like(raw_sd, np.nan)
+                trend[reached_any] = 10 ** mc.lowess_trend(logd, logs)
+                mod_sd = raw_sd.copy()
+                mod_sd[reached_any] = mc.moderate(
+                    raw_sd[reached_any], trend[reached_any], N_NULL, mc.PRIOR_DRAWS)
+                safe = np.where(mod_sd > 0, mod_sd, np.inf)
+                mod_z = (p - mu) / safe
+                mod_z[seed_idx] = np.nan
+        except Exception as exc:                  # pragma: no cover - reported, never silent
+            print(f"    moderation unavailable: {exc}")
+
+        # ---- the statistic that does not divide at all -----------------------------------
+        #
+        #  MODERATION DID NOT FIX THIS, and the reason is worth more than the attempt. Smyth's
+        #  moderation works when each entity's variance estimate is NOISY AROUND A GOOD TREND:
+        #  borrowing strength from neighbours then recovers what one noisy estimate lost. Here
+        #  the trend IS the defect. Every low-degree gene has a near-zero null spread, so a
+        #  low-degree gene's own estimate already agrees with its neighbours and there is no
+        #  idiosyncratic deviation to shrink. It moved the whole top of the list by about 15%
+        #  and changed the ranking not at all.
+        #
+        #  So the answer is not a better denominator. It is not to divide.
+        #
+        #  The EMPIRICAL TAIL is the share of null draws that reach this gene at least as hard
+        #  as the real seed set did. It is bounded below by 1/(N+1) by construction, which is
+        #  exactly the resolution the permutation actually has - no extrapolation is possible,
+        #  because none is expressible. Ties at the floor are then broken by the propagation
+        #  score on its own scale, which is the quantity a reader is actually deciding about.
+        #
+        #  Three rankings are published: by z, by moderated z, and by this. The differences
+        #  between them are a measurement of how much the choice of statistic decides.
+        ge = (null >= p[None, :]).sum(axis=0)
+        p_emp = (ge + 1.0) / (N_NULL + 1.0)
+        p_emp[seed_idx] = np.nan
         z[seed_idx] = np.nan                      # a seed reaching itself is not a finding
 
         # The jackknife standard error of the z, gene by gene. sqrt((k-1)/k * sum of squared
@@ -305,6 +372,17 @@ def main() -> int:
                  # The honest version of "this gene is reached": the LOWER end of the
                  # interval still clears the null, so the reach does not depend on one
                  # curated causal gene.
+                 # The same numerator over a denominator that borrowed strength from the
+                 # genes of similar degree. Published beside the raw z, never instead of it.
+                 "moderated_z": (round(float(mod_z[i]), 3)
+                                 if mod_z is not None and np.isfinite(mod_z[i]) else None),
+                 "null_sd": round(float(raw_sd[i]), 8),
+                 # The tail the permutation can actually resolve. 1/(N+1) is its floor and
+                 # the value is never smaller, because nothing smaller was measured.
+                 "p_empirical": (round(float(p_emp[i]), 5)
+                                 if np.isfinite(p_emp[i]) else None),
+                 "moderated_sd": (round(float(mod_sd[i]), 8)
+                                  if mod_sd is not None else None),
                  "survives_interval": (bool(z_se is not None
                                             and float(z[i] - 1.96 * z_se[i]) > 1.96))}
                 for i in top if np.isfinite(z[i])
@@ -319,6 +397,17 @@ def main() -> int:
                 for i in top_lb if np.isfinite(z[i])
             ],
             "rankAgreement": agreement,
+            # THE SAME GENES ORDERED BY THE STATISTIC THAT CANNOT EXTRAPOLATE. Ties at the
+            # resolution floor - and there are many, because the floor is 1/201 - are broken
+            # by the propagation score itself, on its own scale.
+            "reachedByEmpiricalTail": [
+                {"gene": nodes[i], "z": round(float(z[i]), 3),
+                 "p_empirical": round(float(p_emp[i]), 5),
+                 "score": float(p[i]), "degree": int(degree[i])}
+                for i in sorted(
+                    (j for j in range(n) if j not in set(seed_idx) and np.isfinite(p_emp[j])),
+                    key=lambda j: (p_emp[j], -p[j]))[: args.top]
+            ],
         })
         print("  %-42s %2d seeds -> top reach %s"
               % (name[:42], len(present),
@@ -351,6 +440,32 @@ def main() -> int:
 
     payload = {
         "generated": "tools/twin_propagation.py",
+        "three_statistics": {
+            "why": ("This artefact publishes the same reach under three statistics because "
+                    "the choice between them changes the answer, and hiding that behind one "
+                    "ranking would be the largest unstated assumption on the page."),
+            "z": ("observation minus the null's mean over the null's spread. Unstable exactly "
+                  "where it is largest: the ten biggest values here are all low-degree genes "
+                  "whose null spread is near zero, and not one survives its own interval."),
+            "moderated_z": (
+                "the same numerator over a spread shrunk towards the fitted spread-versus-"
+                "degree trend, weighted by draw count - Smyth's (2004) empirical-Bayes "
+                "moderation, pointed at a permutation null's variance instead of a "
+                "measurement's. ⚠️ IT DOES NOT WORK HERE, and that is reported rather than "
+                "dropped: moderation recovers what a NOISY estimate lost around a good trend, "
+                "and here the trend is the defect. Every low-degree gene has a near-zero "
+                "spread, so each already agrees with its neighbours and there is nothing "
+                "idiosyncratic to shrink. It moved the top of the list by about 15% and "
+                "changed the ordering not at all."),
+            "p_empirical": (
+                "the share of null draws reaching the gene at least as hard as the real seed "
+                "set, floored at 1/(N+1) by construction. It cannot extrapolate past the "
+                "resolution the permutation has, because no smaller value is expressible. "
+                "Ties at the floor - and there are many - break on the propagation score "
+                "itself. This is the statistic to read."),
+            "says": ("The answer to a near-degenerate denominator is not a better denominator. "
+                     "It is not to divide."),
+        },
         "uncertainty": {
             "method": ("leave-one-out over the seed genes; the jackknife standard error "
                        "sqrt((k-1)/k * sum of squared deviations) on each reached gene's z, "

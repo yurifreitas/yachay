@@ -387,6 +387,17 @@ export function TwinPropagation() {
                   </ol>
                 </div>
                 <div>
+                  <span className={css.blockK}>{tt(DEEP.twinByTail)}</span>
+                  <ol className={css.rankList}>
+                    {(cur.reachedByEmpiricalTail ?? []).slice(0, 8).map((g: any) => (
+                      <li key={g.gene}>
+                        {g.gene}{" "}
+                        <span className={css.rowNote}>p {g.p_empirical}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+                <div>
                   <span className={css.blockK}>{tt(DEEP.twinByLb)}</span>
                   <ol className={css.rankList}>
                     {cur.reachedByLowerBound.slice(0, 8).map((g: any) => (
@@ -398,6 +409,9 @@ export function TwinPropagation() {
                   </ol>
                 </div>
               </div>
+            )}
+            {d.three_statistics && (
+              <p className={css.caveat}>{d.three_statistics.moderated_z}</p>
             )}
             {cur.rankAgreement !== null && cur.rankAgreement !== undefined && (
               <p className={css.caveat}>

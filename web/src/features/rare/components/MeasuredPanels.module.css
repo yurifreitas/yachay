@@ -295,7 +295,7 @@
    min-content width, so a long gene symbol would push the grid wider than its container and
    scroll the page sideways. */
 .twoUp {
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-6);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-6);
 }
 .rankList {
   margin: var(--sp-3) 0 0; padding-left: 2.2ch;

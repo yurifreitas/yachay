@@ -136,6 +136,8 @@ export const DEEP = {
     "e quais destes sobreviveriam a sequenciar outro conjunto de isolados",
   ),
   twinByZ: bi("ordered by z", "ordenado por z"),
+  twinByTail: bi("ordered by the tail the permutation can resolve",
+                 "ordenado pela cauda que a permutação consegue resolver"),
   twinByLb: bi("ordered by the bottom of the interval",
                "ordenado pelo piso do intervalo"),
   twinAgreement: bi("of these genes appear in both orderings, of",

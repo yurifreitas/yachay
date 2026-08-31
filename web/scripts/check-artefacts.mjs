@@ -31,6 +31,13 @@ const SRC = join(WEB, "src");
 /** Artefacts under out/ that are deliberately not published, and why.
  *  A reason is required. "Not ready" is a reason; an empty string is not. */
 const NOT_PUBLISHED = {
+  // The demonstration record of a method that FAILED, and the failure is published — inside
+  // twin_propagation, under `three_statistics.moderated_z`, on the screen where the ranking it
+  // could not fix is drawn. Rendering the standalone artefact too would put the same negative
+  // result on two screens and invite a reader to think they are two findings.
+  moderated_calibration:
+    "a method demonstration whose finding is published in twin_propagation's "
+    + "`three_statistics` block, beside the ranking it failed to fix",
   "depmap.manifest": "a run manifest, read by the pipeline rather than by a reader",
   "nf2.manifest": "a run manifest, read by the pipeline rather than by a reader",
   "interactome_string_700": "an ingested input, not a measurement; the graph it feeds is published",

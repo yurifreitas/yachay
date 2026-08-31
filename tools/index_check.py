@@ -181,6 +181,10 @@ NOT_A_STAGE = {
               "never depends on a remote being up",
     "index_check": "this file. It audits the repository rather than producing a layer of it",
     "verify_claims": "an audit of published numbers, not a producer of them",
+    "moderated_calibration": "a METHOD module plus a demonstration CLI. Its functions are "
+                             "imported by tools/twin_propagation.py, which is the stage that "
+                             "produces the artefact; a stage for the demonstration would "
+                             "publish the same finding twice",
     "z_audit": "an audit of published z values against the nulls they were computed from; it "
                "reads every bundled artefact, so making it a stage would put every artefact "
                "upstream of it and it would never be fresh",
