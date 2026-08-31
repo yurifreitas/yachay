@@ -2,17 +2,17 @@
  "generated": "web/scripts/build-figure-index.mjs",
  "says": "Every figure built from a viz organism, found by scanning the source. Figures drawn with CSS bars are counted but not indexed — an index claiming completeness while missing them would be worse than none.",
  "counts": {
-  "indexed": 21,
+  "indexed": 22,
   "forms": 11,
   "without_a_label": 2,
   "css_marks_not_indexed": 34,
-  "unplaced": 6
+  "unplaced": 7
  },
  "by_form": {
   "RaincloudPlot": 4,
   "HexbinPlot": 1,
   "UpSetPlot": 2,
-  "IntervalPlot": 5,
+  "IntervalPlot": 6,
   "MatrixPlot": 1,
   "AlluvialPlot": 1,
   "SweepPlot": 2,
@@ -39,6 +39,16 @@
    "source": null,
    "component": "Shortlist",
    "file": "features/run/Substance.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "IntervalPlot",
+   "answers": "an estimate against a threshold, with its interval",
+   "label": "Share of each substance",
+   "source": "… accessions · bootstrap over studies",
+   "component": "AddictionPage",
+   "file": "features/addiction/AddictionPage.tsx",
    "area": null,
    "section": null
   },

@@ -446,6 +446,11 @@ emit("figures", figures);
   // Stage 1 on the obesity challenge's own aggregate — the first adapter here with a
   // DESIGNED control pool, resampled rather than assumed.
   {
+    const f2 = join(REPO, "out", "psychiatric", "addiction_atlas.json");
+    emit("addiction_atlas", existsSync(f2) ? JSON.parse(readFileSync(f2, "utf8")) : { generated: "" });
+  }
+
+  {
     const f = join(REPO, "out", "obesity", "obesity_thermogenesis.json");
     emit("obesity_thermogenesis", existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

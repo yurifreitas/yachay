@@ -4,6 +4,7 @@ import { NavProvider } from "./lib/nav";
 import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
 import { DEV } from "./i18n/devices";
+import { ADD } from "./i18n/addiction";
 import { CRISPR } from "./i18n/crispr";
 import { FIG } from "./i18n/figures";
 import { DISC } from "./i18n/discovery";
@@ -16,6 +17,7 @@ import { CommandPalette } from "./components/organisms/CommandPalette";
  *  element eagerly is what put all three pages in the entry chunk. A visitor who opens
  *  the explorer should not download the rare-disease dashboard to do it. */
 const RunView = lazy(() => import("./features/run/RunView"));
+const AddictionPage = lazy(() => import("./features/addiction/AddictionPage").then((m) => ({ default: m.AddictionPage })));
 const CrisprMatrixPage = lazy(() => import("./features/crispr/CrisprMatrixPage").then((m) => ({ default: m.CrisprMatrixPage })));
 const FiguresPage = lazy(() => import("./features/figures/FiguresPage").then((m) => ({ default: m.FiguresPage })));
 const Docs = lazy(() => import("./features/docs/Docs"));
@@ -87,6 +89,10 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
      the lineage blocks, and how little of the screen is either. */
   { id: "crispr", label: CRISPR.wholeTitle, family: "selection",
     blurb: CRISPR.wholeLoading, render: () => <CrisprMatrixPage /> },
+  /* SUBSTANCE USE. A domain the site had not touched, entered through the question the
+     field's own headings hide: what the genetics of "alcohol" was actually measured on. */
+  { id: "addiction", label: ADD.title, family: "evidence",
+    blurb: ADD.blurb, render: () => <AddictionPage /> },
   { id: "obesity", label: DISC.view, family: "selection",
     blurb: DISC.viewBlurb, render: () => <DiscoveryPage /> },
   { id: "devices", label: DEV.view, family: "tech",

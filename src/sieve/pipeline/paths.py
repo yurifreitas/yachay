@@ -193,6 +193,8 @@ CLEARED_DEVICES = DEVICES / "cleared_devices.json"
 PSYCHIATRIC = OUT / "psychiatric"
 PSYCHIATRIC_GWAS = PSYCHIATRIC / "psychiatric_gwas.json"
 TRAIT_ATLAS = PSYCHIATRIC / "trait_atlas.json"
+# Substance use: what the genetics of it was actually measured on.
+ADDICTION_ATLAS = PSYCHIATRIC / "addiction_atlas.json"
 
 BIAS = RARE / "bias.json"
 BARRIERS = RARE / "barriers.json"

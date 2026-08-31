@@ -2375,3 +2375,52 @@ moves.
 
 The essential-share strip lands exactly under the bright band, which is the figure validating
 its own reading.
+
+### A54 — three questions under one heading · **closed**
+
+*2026-08-31.* A domain this site had not touched: substance use. Entered not through the
+ancestry question — `psychiatric_gwas.py` and `trait_atlas.py` already ask that, and repeating
+it would add a row rather than a finding — but through the question the field's own headings
+hide.
+
+"Alcohol" heads hundreds of GWAS accessions. Those are not hundreds of studies of alcoholism.
+They are studies of drinks per week, AUDIT scores, dependence, problematic use — and, in a
+category this file had no name for until its own unclassified pile forced one, alcoholic
+hepatitis and cirrhosis. **Three different questions: who cannot stop, who uses a lot, and
+whose organs fail.** Their genetic architectures are known to differ.
+
+**26.0 % [18.7, 33.3]** of the reported sample across every substance-use GWAS in the catalogue
+sits behind a disorder phenotype. Per substance:
+
+| | studies | sample | disorder share |
+|---|---|---|---|
+| alcohol | 296 | 44.5 M | 24.5 % |
+| nicotine | 185 | 32.7 M | **13.2 %** |
+| opioid | 36 | 6.9 M | 37.6 % |
+| cannabis | 22 | 1.7 M | 32.4 % |
+| stimulant | 8 | **29,153** | 90.2 % |
+
+Two things stand out. Nicotine genetics is overwhelmingly about smoking status and cigarettes
+per day rather than dependence. And stimulants have **three orders of magnitude less sample**
+than alcohol — 29,153 against 44.5 million.
+
+The fit test was answered before any code ran, and its fourth answer is **no**: the aggregate
+is a share, not a selection operator. Per the adapter skill that makes this a variance problem
+rather than a selection-bias one, so intervals are reported and no Stage 1 claim is made.
+
+**⚠️ The first run swept in studies that are not about addiction at all.** The unclassified pile
+is what exposed it: *"ACPA-negative rheumatoid arthritis (smoking interaction)"*, *"Adult onset
+asthma (smoking interaction)"*, *"Alcohol dehydrogenase 1B levels"*. Smoking there is a
+covariate and ADH is a protein assay. **200 accessions** were being counted as substance-use
+genetics, inflating both the study count and the sample. Every exclusion rule is in the tool and
+every excluded accession is counted, because a filter whose removals are invisible cannot be
+checked.
+
+**⚠️ And the sample column is not a count of people**, which the payload says where the number
+appears rather than in a footnote. The same cohort — UK Biobank above all — is reported by
+dozens of accessions, so summing across studies counts those individuals dozens of times.
+`psychiatric_gwas.py` records the same trap: done over every psychiatric paper it returns four
+billion individuals. It is a study-weighted total used as a weight, and the shares are ratios
+in which the double counting largely divides out.
+
+100 accessions still match no rule and are published as unclassified rather than dropped.

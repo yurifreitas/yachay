@@ -604,6 +604,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="addiction_atlas",
+    summary=("How much of substance-use genetics measures a disorder rather than a quantity "
+             "or an organ failure — three questions the field reports under one heading."),
+    inputs=src("gwas_accessions", "gwas_ancestry"),
+    outputs=(paths.ADDICTION_ATLAS,),
+    needs=("psychiatric_gwas",),
+    code=sources("tools/addiction_atlas.py", "tools/psychiatric_gwas.py"),
+    run=lambda: _run_tool("addiction_atlas"),
+))
+
+_add(Stage(
     name="trait_atlas",
     summary="The same ancestry question across eight disease areas, seriated both ways.",
     inputs=src("gwas_accessions", "gwas_ancestry", "gwas_studies", "gwas_efo"),
