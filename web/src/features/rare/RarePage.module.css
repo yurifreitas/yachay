@@ -164,28 +164,48 @@
    forcing the charts and tables to be narrow too, which is what a centred column does. */
 .block {
   display: grid;
-  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
-  gap: var(--sp-8) var(--sp-16);
+  /* 300px, not 340: the head is a title and two sentences, and the 64px gutter beside it was
+     already carrying the separation. Forty extra pixels of head column is forty fewer for a
+     figure that was being squeezed to 744px on a 1,536px screen. */
+  grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+  gap: var(--sp-8) var(--sp-12);
   width: 100%;
   align-items: start;
 }
-.blockHead {
+/* ⚠️ THIS RULE NEVER MATCHED ANYTHING, and the cost was the widest empty space on the site.
+   The section registry renders the head as a bare <div> with no class, so `.blockHead` — the
+   selector carrying `position: sticky` — applied to nothing. Measured on the HIV section: a
+   340px column holding a 272px head, inside a grid row 3,286px tall. Four hundred and four
+   pixels of nothing for three thousand pixels of scrolling, and no title anywhere on screen
+   telling the reader which section they were in.
+
+   The selector now targets what is actually rendered. Keeping `.blockHead` beside it because
+   other pages do set the class, and a rule that works for one and not the other is how this
+   started. */
+.blockHead,
+.block > div:first-child {
   grid-column: 1;
   position: sticky;
   top: var(--sp-16);
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
+  /* The sticky box must not be taller than the viewport, or it cannot travel. A head with a
+     long sub-paragraph would otherwise pin at the top and never move. */
+  max-height: calc(100dvh - var(--sp-24));
+  overflow: auto;
+  overscroll-behavior: contain;
 }
 /* Everything that is not the head flows into the wide column. */
 .block > *:not(.blockHead) { grid-column: 2; }
-/* A block whose head is a bare <div> (no controls) still lands in the rail. */
-.block > div:first-child { grid-column: 1; }
 
 @media (max-width: 1200px) {
   .block { grid-template-columns: minmax(0, 1fr); }
   .blockHead, .block > *:not(.blockHead), .block > div:first-child { grid-column: 1; }
-  .blockHead { position: static; }
+  /* One column: a sticky head would cover the content it describes. */
+  .blockHead, .block > div:first-child {
+    position: static; max-height: none; overflow: visible;
+  }
 }
 .h3 {
   font-size: 26px;

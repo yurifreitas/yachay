@@ -2263,3 +2263,43 @@ nothing is ever removed from it. It is now four groups — the argument, audits,
 beyond — and the split matters most for the third: an idea of one's own, published beside
 audits of one's own work, has to be marked as such or a reader cannot tell which claims are
 being tested and which are being made.
+
+### A51 — four hundred pixels of nothing, because a selector matched nothing · **closed**
+
+*2026-08-31.* The section layout reserves a left column for the title and its explanation, so
+the prose stays at a readable measure while figures use the rest of the width. The rule giving
+that column its purpose — `position: sticky` on `.blockHead` — **matched no element on the
+page**: the section registry renders the head as a bare `<div>` with no class, and only the
+grid-placement rule (`.block > div:first-child`) ever applied.
+
+Measured in the browser on the HIV section:
+
+| | |
+|---|---|
+| head column | 340px wide, holding a 272px head |
+| grid row | **3,286px** tall |
+| head `position` | `static` — not sticky |
+
+So **404px of column, including the gutter, sat empty for 3,014px of scrolling**, and no title
+was on screen to say which section the reader was in. That is the whole of "the UI is lost":
+you could not see where you were, and a third of the width was blank while the table beside it
+was squeezed to 744px on a 1,536px screen.
+
+The selector now targets what is actually rendered, with a viewport cap so a long head can
+still travel rather than pinning forever. The head column drops 340 → 300 and the gutter 64 →
+48, which the content column gets back. Verified live: `position: sticky`, pinned at y = 64
+with the page scrolled to 1,800, and the content column nearly doubled.
+
+**And the second half of "lost" is language.** The site has a language switch, and a switch is
+a promise: a reader who picks Portuguese gets Portuguese chrome, Portuguese navigation and
+Portuguese headings, then hits a four-line figure caption in English. `web/scripts/check-i18n.mjs`
+counts it — **215 single-language prose runs across 50 feature files**. Artefact prose is
+excluded, because that is English by repository convention (sieve-doc §7) and translating it
+would mean translating the analysis layer. It reports rather than fails: a gate that fails on
+every pre-existing violation is a gate somebody disables.
+
+**⚠️ The first version of that counter said 358, and was wrong.** JavaScript uses `<` and `>`
+as operators, so a run between them catches `d.driver === pick) ?? drivers[0]` as readily as a
+sentence. A counter that counts the wrong things is worse than none, because it produces a
+number somebody quotes. It now rejects runs containing operators and requires 92% of characters
+to be letters, spaces and ordinary punctuation.
