@@ -2,6 +2,7 @@ import { useT } from "../../i18n";
 import { ADD } from "../../i18n/addiction";
 import { IntervalPlot } from "../../components/viz/organisms/IntervalPlot";
 import raw from "../../data/generated/addiction_atlas.json";
+import cellsRaw from "../../data/generated/addiction_cells.json";
 import { fmtInt } from "../../lib/scale";
 import css from "./AddictionPage.module.css";
 
@@ -85,6 +86,54 @@ export function AddictionPage() {
         {/* The double-count warning belongs beside the number, not in a footnote. */}
         <p className={css.caveat}>{t.why_that_name}</p>
       </section>
+
+      {(cellsRaw as any).disorder_versus_quantity?.length > 0 && (
+        <section className={css.block}>
+          <span className={css.k}>{tt(ADD.cellsK)}</span>
+          <p className={css.body}>{(cellsRaw as any).says}</p>
+
+          {/* Two lists per substance, side by side, with what they share between them. A
+              Jaccard of zero is the kind of number a reader should be able to check by
+              looking, and the only way to make that possible is to print both sets. */}
+          <div className={css.cells}>
+            {(cellsRaw as any).disorder_versus_quantity.map((s: any) => (
+              <div key={s.substance} className={css.cellRow}>
+                <div className={css.cellHead}>
+                  <strong>{s.substance}</strong>
+                  <span className={css.jac}>
+                    {tt(ADD.shared)} {s.shared.length}/
+                    {new Set([...s.disorder_cells, ...s.quantity_cells]).size}
+                  </span>
+                </div>
+                <div className={css.cellCols}>
+                  <div>
+                    <span className={css.cellK}>{tt(ADD.disorderCells)}</span>
+                    <ul>
+                      {s.disorder_cells.length
+                        ? s.disorder_cells.slice(0, 6).map((c: string) => (
+                            <li key={c} className={s.shared.includes(c) ? css.both : undefined}>{c}</li>
+                          ))
+                        : <li className={css.none}>{tt(ADD.noneSurvive)}</li>}
+                    </ul>
+                  </div>
+                  <div>
+                    <span className={css.cellK}>{tt(ADD.quantityCells)}</span>
+                    <ul>
+                      {s.quantity_cells.length
+                        ? s.quantity_cells.slice(0, 6).map((c: string) => (
+                            <li key={c} className={s.shared.includes(c) ? css.both : undefined}>{c}</li>
+                          ))
+                        : <li className={css.none}>{tt(ADD.noneSurvive)}</li>}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className={css.caveat}>{(cellsRaw as any).control}</p>
+          <p className={css.caveat}>{(cellsRaw as any).no_z}</p>
+        </section>
+      )}
 
       <section className={css.block}>
         <span className={css.k}>{tt(ADD.filterK)}</span>

@@ -448,6 +448,8 @@ emit("figures", figures);
   {
     const f2 = join(REPO, "out", "psychiatric", "addiction_atlas.json");
     emit("addiction_atlas", existsSync(f2) ? JSON.parse(readFileSync(f2, "utf8")) : { generated: "" });
+    const f3 = join(REPO, "out", "psychiatric", "addiction_cells.json");
+    emit("addiction_cells", existsSync(f3) ? JSON.parse(readFileSync(f3, "utf8")) : { generated: "" });
   }
 
   {

@@ -332,6 +332,23 @@ SOURCES: tuple[Source, ...] = (
         redistributable=True,
     ),
     Source(
+        key="gwas_associations",
+        name="GWAS Catalog — associations with mapped genes",
+        url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/"
+            "gwas-catalog-associations_ontology-annotated-full.zip",
+        filename="gwas-catalog-associations.zip",
+        subdir="gwas",
+        approx_mb=45.0,
+        gives="Every catalogued association with the gene the variant was MAPPED TO. The "
+              "studies file says which traits were studied and by whom; this says which "
+              "genes came out, which is the only way to ask what a body of genetics points "
+              "at rather than who paid for it. Ingested for the substance-use work: the "
+              "question 'which cell types does the genetics of addiction implicate' cannot "
+              "be asked without a gene column.",
+        licence="EMBL-EBI terms of use; freely available",
+        redistributable=True,
+    ),
+    Source(
         key="gwas_accessions",
         name="GWAS Catalog — studies with accession and mapped trait",
         url="https://ftp.ebi.ac.uk/pub/databases/gwas/releases/latest/"

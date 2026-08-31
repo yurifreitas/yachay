@@ -92,6 +92,11 @@ NOT_TESTED = {
                              "seeded shuffle used for one reported control, and the artefact "
                              "publishes the roughness figures those produce — a loss of "
                              "reproducibility would move a published number.",
+    "tools/addiction_cells.py": "streams 1.19 million catalogued associations and draws 400 "
+                               "breadth-matched null sets per gene set. Minutes. Its seeds are "
+                               "fixed and the artefact publishes empirical tails and BH q "
+                               "values, so a loss of reproducibility would move published "
+                               "numbers rather than hide.",
     "tools/clusterability.py": "twelve null draws, each a full Hopkins, an HDBSCAN and an "
                                "eight-point k-means sweep over 8,890 genes. Minutes. Its "
                                "seeded RNG is used only for the null draws and the samples, "

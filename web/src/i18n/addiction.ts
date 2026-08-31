@@ -23,6 +23,14 @@ export const ADD = {
     "e a escala em que cada substância foi estudada",
   ),
   studies: bi("studies", "estudos"),
+  cellsK: bi(
+    "and whether the two land in the same cells",
+    "e se as duas aterrissam nas mesmas células",
+  ),
+  disorderCells: bi("disorder phenotypes", "fenótipos de transtorno"),
+  quantityCells: bi("quantity phenotypes", "fenótipos de quantidade"),
+  shared: bi("shared:", "em comum:"),
+  noneSurvive: bi("nothing survives correction", "nada sobrevive à correção"),
   filterK: bi(
     "what was thrown out, and what could not be classified",
     "o que foi descartado, e o que não deu para classificar",

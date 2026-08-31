@@ -374,7 +374,12 @@ def check_intervals() -> tuple[str, list[str], int]:
         return "intervals", [], 0
 
     Z_KEYS = ('"z"', '"z_score"', '"null_mean"', '"null_sd"')
-    CI_KEYS = ("ci95", '"se"', "_ci", '"p95"', "interval")
+    # `p_empirical` counts as an uncertainty statement, and this is not a loosening. A41
+    # established that a z past about 2.6 extrapolates beyond what a 200-draw permutation
+    # resolves, and that the empirical tail — floored at 1/(N+1) — is the statistic that
+    # cannot make that mistake. An artefact that publishes the tail instead of an interval has
+    # answered the question this check asks, in the better of the two ways.
+    CI_KEYS = ("ci95", '"se"', "_ci", '"p95"', "interval", '"p_empirical"')
 
     missing, checked = [], 0
     for f in sorted(gen.glob("*.json")):

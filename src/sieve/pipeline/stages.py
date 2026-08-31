@@ -615,6 +615,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="addiction_cells",
+    summary=("Do disorder phenotypes and quantity phenotypes land in the same cells? Across "
+             "five substances the surviving cell types overlap at a median Jaccard of zero."),
+    inputs=src("gwas_associations", "hpa_single_cell"),
+    outputs=(paths.ADDICTION_CELLS,),
+    needs=("addiction_atlas", "scale_information"),
+    code=sources("tools/addiction_cells.py", "tools/addiction_atlas.py"),
+    run=lambda: _run_tool("addiction_cells"),
+))
+
+_add(Stage(
     name="trait_atlas",
     summary="The same ancestry question across eight disease areas, seriated both ways.",
     inputs=src("gwas_accessions", "gwas_ancestry", "gwas_studies", "gwas_efo"),

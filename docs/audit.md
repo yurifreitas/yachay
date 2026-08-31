@@ -2424,3 +2424,51 @@ billion individuals. It is a study-weighted total used as a weight, and the shar
 in which the double counting largely divides out.
 
 100 accessions still match no rule and are published as unclassified rather than dropped.
+
+### A55 — the two halves of addiction genetics share no cells · **closed**
+
+*2026-08-31.* A54 established that only about a quarter of substance-use GWAS sample sits
+behind a disorder phenotype. That was a finding about the field. This is the biological question
+it opens, and it is why the GWAS associations file — 1.19 million rows carrying the gene each
+variant was **mapped to** — was ingested as a new source.
+
+> The genetics of "who cannot stop" and of "who uses a lot" are reported under one heading. Do
+> they land in the same cells?
+
+Substance genes are mapped to cell types through the Human Protein Atlas single-cell data: 154
+cell types, nine of them brain. Enrichment is tested against a null drawn in quantile bins of
+**expression breadth** — genes in GWAS are longer, better studied and broadly expressed, and an
+unmatched null would report that addiction implicates whichever cell types express the most
+genes, which is a fact about the Atlas. Empirical tails floored at 1/401, BH across 3,269 tests,
+**216 surviving**. No z: A41 established that a z past ~2.6 extrapolates beyond what a
+400-draw permutation resolves.
+
+**Median Jaccard between the disorder and quantity cell sets: 0.00.**
+
+| substance | shared | disorder points at | quantity points at |
+|---|---|---|---|
+| nicotine | **0 of 8** | adrenal medulla, corticotrophs, pituicytes, pituitary stem cells | brain excitatory and inhibitory neurons, choroid plexus, lactotrophs |
+| opioid | **0** | brain excitatory and inhibitory neurons, oligodendrocyte progenitor cells | nothing survives correction |
+| general | **0** | brain excitatory and inhibitory neurons | nothing survives |
+| alcohol | 3 of 5 | + oligodendrocytes | + myonuclei |
+
+For nicotine, the genetics of dependence points at the **adrenal–pituitary stress axis** and the
+genetics of how much a person smokes points at **cortical neurons**, and the two sets do not
+intersect at all. Alcohol is the exception that makes the pattern legible: it is the substance
+whose disorder and quantity phenotypes overlap most, and even there a third of each set is its
+own.
+
+This does not say the quantity phenotypes are worthless — they are the larger and better-powered
+half of the field. It says that reporting them under a heading that reads as addiction is a
+claim the cells do not support.
+
+**On method:** `addiction_cells.py` imports `addiction_atlas.py`'s substance words, exclusions
+and phenotype classifier rather than copying them, so the two cannot drift into disagreeing
+about what an alcohol study is. Intergenic associations name two flanking genes; both are
+counted once, and the count of them is published, because dropping them discards the intergenic
+majority of a GWAS and trusting them credits two genes for one variant.
+
+**The interval check was extended rather than exempted.** It fired on this artefact for
+publishing a `null_mean` with no interval — correctly, by its old rule. But the artefact
+publishes an **empirical tail** instead, which A41 argued is the better of the two statistics.
+`p_empirical` now counts as an uncertainty statement, with that reasoning recorded at the line.

@@ -195,6 +195,8 @@ PSYCHIATRIC_GWAS = PSYCHIATRIC / "psychiatric_gwas.json"
 TRAIT_ATLAS = PSYCHIATRIC / "trait_atlas.json"
 # Substance use: what the genetics of it was actually measured on.
 ADDICTION_ATLAS = PSYCHIATRIC / "addiction_atlas.json"
+# Which cells the genetics of addiction lands in, and whether that depends on what was measured.
+ADDICTION_CELLS = PSYCHIATRIC / "addiction_cells.json"
 
 BIAS = RARE / "bias.json"
 BARRIERS = RARE / "barriers.json"
