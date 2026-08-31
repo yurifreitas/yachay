@@ -773,6 +773,26 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="relational_primacy",
+    summary=("Are entities better predicted by their relations than by their attributes? The "
+             "author's most central construct, in the only form that can be falsified."),
+    inputs=src("hpo_genes"),
+    outputs=(paths.RELATIONAL_PRIMACY,),
+    needs=("gene_embedding",),
+    code=sources("tools/relational_primacy.py", "tools/gene_embedding.py"),
+    run=lambda: _run_tool("relational_primacy"),
+))
+
+_add(Stage(
+    name="methods",
+    summary=("The five constructs, each with its falsifier and whether that falsifier has "
+             "been computed. Two measured, two specified, one untestable in public data."),
+    outputs=(paths.METHODS,),
+    code=sources("tools/methods_seed.py"),
+    run=lambda: _run_tool("methods_seed"),
+))
+
+_add(Stage(
     name="nonreciprocal",
     summary=("Does asymmetry carry information its symmetric projection loses? The author's "
              "own hypothesis, run against the falsifier he wrote before any number existed."),

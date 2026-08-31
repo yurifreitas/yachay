@@ -122,22 +122,39 @@ const ESTABLISHED: RareView = {
 
 /* ------------------------------------------------------------------ 4. the argument */
 
+/** FOUR GROUPS, NOT ONE. This view held nine sections under a single heading called "the
+ *  argument", which is what a group becomes when nothing is ever removed from it. They answer
+ *  three different questions and the nav now says which:
+ *
+ *    the argument     what this project claims, and where its references come from
+ *    audits           whether the site's own statistics survive being checked
+ *    own methods      constructs of the author's that predate the site, each with the
+ *                     falsifier he wrote for it
+ *    beyond           the method applied outside rare disease
+ *
+ *  The split matters most for the third. An idea of one's own, published beside audits of
+ *  one's own work, has to be marked as such or a reader cannot tell which claims are being
+ *  tested and which are being made. */
 const ARGUMENT: RareView = {
   id: "argument",
   initial: "thesis",
   groups: [
     { id: "argument", label: RARE.gArgument, question: RARE.qArgument },
+    { id: "audits", label: DEEP.gAudits, question: DEEP.qAudits },
+    { id: "own", label: DEEP.gOwn, question: DEEP.qOwn },
     { id: "beyond", label: DEEP.gBeyond, question: DEEP.qBeyond },
   ],
   sections: [
     { id: "thesis", label: RARE.sThesis, group: "argument" },
-    { id: "selfaudit", label: RARE.sSelfAudit, group: "argument" },
-    { id: "zaudit", label: DEEP.sZAudit, group: "argument" },
-    { id: "cluster", label: DEEP.sCluster, group: "argument" },
-    { id: "embed", label: DEEP.sEmbed, group: "argument" },
-    { id: "nonrec", label: DEEP.sNonRec, group: "argument" },
     { id: "refmap", label: RARE.sRefmap, group: "argument" },
     { id: "sources", label: RARE.sSources, group: "argument" },
+    { id: "selfaudit", label: RARE.sSelfAudit, group: "audits" },
+    { id: "zaudit", label: DEEP.sZAudit, group: "audits" },
+    { id: "cluster", label: DEEP.sCluster, group: "audits" },
+    { id: "embed", label: DEEP.sEmbed, group: "audits" },
+    { id: "methods", label: DEEP.sMethods, group: "own" },
+    { id: "nonrec", label: DEEP.sNonRec, group: "own" },
+    { id: "relprim", label: DEEP.sRelPrim, group: "own" },
     { id: "hiv", label: DEEP.sHiv, group: "beyond" },
   ],
 };

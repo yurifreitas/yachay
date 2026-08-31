@@ -22,6 +22,20 @@ export const DEEP = {
   sCluster: bi("Are the groups real?", "Os grupos são reais?"),
   sEmbed: bi("What is a UMAP worth?", "Quanto vale um UMAP?"),
   sNonRec: bi("Does direction matter?", "A direção importa?"),
+  sRelPrim: bi("Relations or attributes?", "Relações ou atributos?"),
+  sMethods: bi("The five constructs", "Os cinco construtos"),
+  gAudits: bi("Audits", "Auditorias"),
+  qAudits: bi(
+    "Every number here is a distance from a null. These check whether the numbers survive it.",
+    "Todo número aqui é uma distância de um nulo. Estas checam se os números sobrevivem a ele.",
+  ),
+  gOwn: bi("Own methods", "Métodos próprios"),
+  qOwn: bi(
+    "Constructs that predate this site, each published with the falsifier its author wrote "
+    + "for it — including the ones no public dataset can kill.",
+    "Construtos anteriores a este site, cada um publicado com o falsificador que o autor "
+    + "escreveu para ele — inclusive os que nenhum dado público consegue matar.",
+  ),
   hivHeading: bi(
     "the positive controls were named before the run, and they came back",
     "os controles positivos foram nomeados antes da execução, e voltaram",
@@ -67,6 +81,22 @@ export const DEEP = {
     "38,746 edges, drawn once each — and the ordering you can switch to check them",
     "38.746 arestas, cada uma desenhada uma vez — e a ordenação que dá para trocar e conferir",
   ),
+  mtHeading: bi(
+    "of the author's five constructs carry a computed falsifier, not an argument",
+    "dos cinco construtos do autor têm falsificador computado, não argumento",
+  ),
+  mtProvenance: bi("where this list comes from", "de onde vem esta lista"),
+  rpHeading: bi(
+    "AUPRC gained by asking what a gene is connected to instead of what it is like",
+    "AUPRC ganho ao perguntar a que um gene está conectado em vez de com o que ele se parece",
+  ),
+  rpFair: bi(
+    "the hard part was making the comparison fair, and the first run was a leak",
+    "o difícil foi tornar a comparação justa, e a primeira rodada foi um vazamento",
+  ),
+  rpResult: bi("what it came to", "no que deu"),
+  rpPrecedent: bi("where it came from, and what would have killed it",
+                  "de onde veio, e o que a teria matado"),
   nrHeading: bi(
     "the gain from keeping the direction of a relation, against dropping it",
     "o ganho de manter a direção de uma relação, contra descartá-la",

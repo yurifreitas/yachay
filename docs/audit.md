@@ -2218,3 +2218,48 @@ symmetric projection the two are identical, **so the control arm was correct and
 under test ran backwards**. A falsification of a hypothesis about direction, produced by
 running the direction backwards, would have been worthless — and it would have been published
 as a clean negative result, which is the kind that gets believed.
+
+### A50 — the author's five constructs, and the two that survived · **closed**
+
+*2026-08-31.* A49 tested one hypothesis of the author's. This closes the set: all five
+constructs recovered from his notes are now published in the four-block form he asked for —
+statement, precedent, measurement, falsifier — with a **status field** saying whether the
+falsifier has actually been computed.
+
+| | status |
+|---|---|
+| Campo Simbiótico Não-Originário (relational primacy) | **measured** |
+| Relação assimétrica como geradora de organização | **measured** |
+| Densidade Simbólica | specified, not run — needs GEO/PRIDE |
+| Colapso Simbiótico | ⚠️ **no public falsifier** for half of it |
+| Campo Morfogenético com memória ativa | specified, not run — needs nothing external |
+
+That third column is the point. A framework presenting its untested parts in the same voice as
+its tested ones is advertising, and the verdict on the untestable half is **his own**: without
+an operational definition of intention, the quantity "pode ser ajustado retrospectivamente para
+explicar qualquer coisa". A theory that survives because it cannot be tested has not survived
+anything.
+
+**Relational primacy, measured.** Both arms receive the same seed genes and differ only in what
+they do with them: attribute resemblance to the seed centroid in the eleven-feature space, or
+random-walk reach on the co-membership graph. **ΔAUPRC = +0.287 [+0.239, +0.339]** over 155
+diseases, relations winning in 83.9 %, and **+0.297 over a degree-preserving rewiring** — so
+the advantage is the relations and not the degree sequence. His falsifier does not trigger.
+
+**⚠️ And the first run of it was a leak that returned +0.925.** The graph's edges *are* disease
+co-membership, so when disease D was under test, every seed of D was joined to every hidden
+gene of D by an edge that exists because of D. The relational arm was reading the answer key,
+and it won **100 % of 155 diseases** — a number that should be read as a tell rather than a
+triumph. Leave-one-disease-out cuts it to a third of that, and it is still decisive.
+
+**The same leak was in A49 and is now fixed there too.** Removing it made that result
+*stronger*, not weaker: `S_NR` went from +0.033 to **+0.0605 [+0.0475, +0.0757]** and from 22.8 %
+to **69.1 %** of diseases, because with every score near its ceiling the difference between the
+two arms had been compressed. The randomised-direction control fell to −0.003.
+
+**The navigation was restructured in the same move**, because it had stopped being navigation.
+The "argument" view held nine sections under one heading, which is what a group becomes when
+nothing is ever removed from it. It is now four groups — the argument, audits, own methods,
+beyond — and the split matters most for the third: an idea of one's own, published beside
+audits of one's own work, has to be marked as such or a reader cannot tell which claims are
+being tested and which are being made.

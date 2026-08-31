@@ -93,6 +93,11 @@ NOT_TESTED = {
                                "and the artefact publishes an interval over those draws - so "
                                "a run that stopped being reproducible would widen a published "
                                "interval rather than hide.",
+    "tools/relational_primacy.py": "155 diseases, each rebuilding a leave-one-disease-out "
+                                   "graph and running two propagations plus a degree-matched "
+                                   "control over 3,578 genes. Seeds fixed; the artefact "
+                                   "publishes a bootstrap interval, so a loss of "
+                                   "reproducibility would move a published number.",
     "tools/nonreciprocal.py": "246 diseases, each with two 60-step propagations plus a "
                               "permutation control, over a 5,524-node affinity matrix. Its "
                               "seeds are fixed and the artefact publishes a bootstrap "

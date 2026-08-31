@@ -107,7 +107,8 @@ def gene_disease() -> dict[str, set[str]]:
     return dict(out)
 
 
-def build(genes: list[str], diseases_of: dict[str, set[str]]) -> csr_matrix:
+def build(genes: list[str], diseases_of: dict[str, set[str]],
+          skip: str | None = None) -> csr_matrix:
     """The asymmetric affinity w(i -> j) = |D_i ∩ D_j| / |D_i|.
 
     Built through the disease index rather than over gene pairs: 5,524 genes is 15 million
@@ -118,7 +119,14 @@ def build(genes: list[str], diseases_of: dict[str, set[str]]) -> csr_matrix:
     by_disease: dict[str, list[int]] = collections.defaultdict(list)
     for g in genes:
         for d in diseases_of[g]:
-            by_disease[d].append(idx[g])
+            # ⚠️ LEAVE-ONE-DISEASE-OUT. The affinity IS disease co-membership, so when disease
+            #  D is the one being predicted, its own genes are joined to each other by an edge
+            #  that exists because of D. Leaving it in lets both arms read the answer key -
+            #  and while it inflates both equally, the comparison between them is then made in
+            #  a regime where every score is near its ceiling and differences compress.
+            #  tools/relational_primacy.py hit the same leak and returned ΔAUPRC = +0.925.
+            if d != skip:
+                by_disease[d].append(idx[g])
 
     shared: dict[tuple[int, int], int] = collections.Counter()
     for members in by_disease.values():
@@ -213,8 +221,11 @@ def main() -> int:
         half = len(ids) // 2
         seeds, hidden = ids[:half], set(ids[half:])
 
-        s_asym = propagate(w, seeds, n)
-        s_sym = propagate(ws, seeds, n)
+        # Rebuilt per disease so the affinity never contains the disease being predicted.
+        w_d = build(genes, diseases_of, skip=disease)
+        ws_d = (w_d + w_d.T.tocsr()) * 0.5
+        s_asym = propagate(w_d, seeds, n)
+        s_sym = propagate(ws_d, seeds, n)
         exclude = set(seeds)
         a = auprc(s_asym, hidden, exclude)
         b = auprc(s_sym, hidden, exclude)
@@ -268,8 +279,20 @@ def main() -> int:
         rng_d.shuffle(ids)
         half = len(ids) // 2
         seeds, hidden = ids[:half], set(ids[half:])
-        a = auprc(propagate(w_null, seeds, n), hidden, set(seeds))
-        b = auprc(propagate(ws, seeds, n), hidden, set(seeds))
+        w_d = build(genes, diseases_of, skip=r["disease"])
+        wt_d = w_d.T.tocsr()
+        sym_d = (w_d + wt_d) * 0.5
+        anti_d = (w_d - wt_d) * 0.5
+        co = anti_d.tocoo()
+        rr2, cc2, vv2 = [], [], []
+        for r_, c_, v_ in zip(co.row.tolist(), co.col.tolist(), co.data.tolist()):
+            key = (r_, c_) if r_ < c_ else (c_, r_)
+            rr2.append(r_)
+            cc2.append(c_)
+            vv2.append(v_ * sign_of.get(key, 1.0))
+        w_null_d = (sym_d + csr_matrix((vv2, (rr2, cc2)), shape=w.shape)).tocsr()
+        a = auprc(propagate(w_null_d, seeds, n), hidden, set(seeds))
+        b = auprc(propagate(sym_d, seeds, n), hidden, set(seeds))
         if not (math.isnan(a) or math.isnan(b)):
             null_rows.append(a - b)
 
@@ -308,6 +331,11 @@ def main() -> int:
             "produces emergent behaviour is NOT new. What may be his is using the difference "
             "between a system and its own symmetric projection as a quantitative operator for "
             "discovering organisation."),
+        "leave_one_disease_out": (
+            "The affinity IS disease co-membership, so the disease being predicted is removed "
+            "from the affinity before its own genes are predicted. Both arms were inflated "
+            "equally without it, but every score sat near its ceiling and the difference "
+            "between them compressed."),
         "asymmetry_source": (
             "w(i -> j) = |D_i ∩ D_j| / |D_i|, the share of gene i's diseases that gene j also "
             "causes. Asymmetric exactly when two genes have different disease counts, and not "

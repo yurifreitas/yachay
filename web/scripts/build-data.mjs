@@ -412,7 +412,9 @@ emit("figures", figures);
                       // Is there anything to cluster in the first place.
                       "clusterability",
                       // The author's own hypothesis, against his own falsifier.
-                      "nonreciprocal"]) {
+                      "nonreciprocal",
+                      // The author's own constructs, with their falsifiers.
+                      "relational_primacy", "methods"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

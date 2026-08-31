@@ -39,6 +39,8 @@ const ZAudit = lazy(() => import("./components/ZAudit").then((m) => ({ default: 
 const CommunityStability = lazy(() => import("./components/CommunityStability").then((m) => ({ default: m.CommunityStability })));
 const GeneEmbedding = lazy(() => import("./components/GeneEmbedding").then((m) => ({ default: m.GeneEmbedding })));
 const NonReciprocal = lazy(() => import("./components/NonReciprocal").then((m) => ({ default: m.NonReciprocal })));
+const RelationalPrimacy = lazy(() => import("./components/RelationalPrimacy").then((m) => ({ default: m.RelationalPrimacy })));
+const Methods = lazy(() => import("./components/Methods").then((m) => ({ default: m.Methods })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
@@ -358,6 +360,37 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
               also small, and concentrated in a fifth of diseases rather than general.</>,
     view: () => (
       <><NonReciprocal /></>
+    ),
+  },
+  {
+    id: "methods",
+    title: <>Five constructs of the author&rsquo;s, each with the number that would have killed it</>,
+    sub: <>These predate the site. Each is published in the form he asked for them: the
+              statement in his own notation, the nearest published precedent, what public data
+              would test it, and the numerical result that would falsify it. Two of the five
+              are now measured against a null with an interval. Two are specified and not run.
+              One has a half that <strong>no public dataset can kill</strong>, because a term
+              in it has no operational definition — and that verdict is his own, recorded here
+              rather than left for a reader to discover. A theory that survives because it
+              cannot be tested has not survived anything.</>,
+    view: () => (
+      <><Methods /></>
+    ),
+  },
+  {
+    id: "relprim",
+    title: <>Is a gene predicted by what it is, or by what it is connected to?</>,
+    sub: <>The most central of his constructs, in the only form that can be tested: entities
+              should be more predictable from their relations than from their intrinsic
+              attributes. Both arms get the same seed genes and differ only in what they do
+              with them — resemblance to the seeds, or reach from them. Relations win by{" "}
+              <strong>+0.287 AUPRC</strong> [+0.239, +0.339] across 155 diseases, in 83.9 % of
+              them, and by +0.297 over a rewiring with the same degree sequence. The first run
+              returned +0.925 and won 100 % of diseases, which was a leak: the graph is built
+              from disease co-membership, so the disease under test was joining its own seeds
+              to its own answers.</>,
+    view: () => (
+      <><RelationalPrimacy /></>
     ),
   },
   {
