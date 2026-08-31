@@ -157,6 +157,8 @@ METHODS = RARE / "methods.json"
 # Fetched by the browser: half a megabyte of edge list belongs behind a request, not in
 # the bundle every other screen loads.
 NETWORK_LAYOUT = ROOT / "web" / "public" / "data" / "network_layout.json"
+# 21.1 million gene-effect values, seriated and quantised for the browser.
+CRISPR_MATRIX = ROOT / "web" / "public" / "data" / "crispr_matrix.json"
 # The pipeline reporting on itself, so it can never be cached: any other stage
 # running changes the answer.
 PIPELINE_STATE = OUT / "pipeline.json"

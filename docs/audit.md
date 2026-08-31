@@ -2334,3 +2334,44 @@ an index, so it collapses to an ellipsis; anything still carrying a brace afterw
 rather than printed, and a line that survives as *"… genes … … features"* is punctuation rather
 than information and is dropped too. A caption of JavaScript costs a reader their trust in
 everything else on the page.
+
+### A53 — twenty-one million measurements, never drawn · **closed**
+
+*2026-08-31.* `CRISPRGeneEffect.csv` is 1,178 cell lines by 17,916 genes — **21,105,048
+gene-effect values**, the largest object this repository holds. Every view of it here was a
+ranked table or a sampled scatter, and both hide the same three things, all structural:
+
+* the **common-essential band** — the confound Stage 3 removes;
+* the **lineage blocks** — the entire promise of selective targeting;
+* **how little of the matrix is either** — which a ranked table cannot show at all, because it
+  only ever shows the top.
+
+`tools/crispr_matrix.py` seriates both axes by angle in the plane of the first two singular
+vectors — deterministic, no seed, no linkage, no cut — and ships a byte per cell. The new
+`#crispr` route draws it on a canvas at one row per line and one column per 15 genes, with the
+lineage of each row as a strip beside it and the common-essential share of each column as a
+strip beneath.
+
+**The seriation is checkable, and it was checked.** Mean absolute difference between
+neighbouring columns: **0.226 seriated**, 0.287 alphabetical, 0.348 shuffled. Alphabetical is
+also shipped as a control, so a reader can see the blocks dissolve under an ordering that
+carries no biology.
+
+**⚠️ The first render committed this repository's own subject in its own figure.** Each column
+took the MOST EXTREME value of its ~15 genes, on the reasoning that a mean would dilute a
+lethal gene. But the most extreme of fifteen is a **max over fifteen draws** — a selection
+operator whose distribution depends on how many genes are in the bin, which is the winner's
+curse every stage of this library exists to calibrate. Almost every bin of fifteen holds one
+gene with a real dependency, so almost every column saturated: the figure became a map of bin
+size, and the flat majority it promised to show vanished entirely. The median has no such
+dependence, and with it the middle of the matrix is background, as it should be.
+
+**⚠️ And the wheel seriation drew one band as two.** An angle is circular, so cutting it at −π
+is arbitrary — and the cut ran straight through the common-essential band, which appeared as
+two bright stripes at opposite edges with the flat majority between them. One block drawn as
+two is the most misleading thing a heatmap can do. The sequence is now rolled so the seam falls
+in the flattest window on the circle; nothing is reordered, only the arbitrary starting point
+moves.
+
+The essential-share strip lands exactly under the bright band, which is the figure validating
+its own reading.

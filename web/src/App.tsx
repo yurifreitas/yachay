@@ -4,6 +4,7 @@ import { NavProvider } from "./lib/nav";
 import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
 import { DEV } from "./i18n/devices";
+import { CRISPR } from "./i18n/crispr";
 import { FIG } from "./i18n/figures";
 import { DISC } from "./i18n/discovery";
 import { RARE_VIEWS, viewHolding } from "./features/rare/rareViews";
@@ -15,6 +16,7 @@ import { CommandPalette } from "./components/organisms/CommandPalette";
  *  element eagerly is what put all three pages in the entry chunk. A visitor who opens
  *  the explorer should not download the rare-disease dashboard to do it. */
 const RunView = lazy(() => import("./features/run/RunView"));
+const CrisprMatrixPage = lazy(() => import("./features/crispr/CrisprMatrixPage").then((m) => ({ default: m.CrisprMatrixPage })));
 const FiguresPage = lazy(() => import("./features/figures/FiguresPage").then((m) => ({ default: m.FiguresPage })));
 const Docs = lazy(() => import("./features/docs/Docs"));
 const RarePage = lazy(() => import("./features/rare/RarePage"));
@@ -80,6 +82,11 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
     family: "evidence",
     render: () => <RarePage view={v} />,
   })),
+  /* THE WHOLE DEPMAP MATRIX. Every other view of this data here is a ranked table or a
+     sample, and both hide the three things that are structural: the common-essential band,
+     the lineage blocks, and how little of the screen is either. */
+  { id: "crispr", label: CRISPR.wholeTitle, family: "selection",
+    blurb: CRISPR.wholeLoading, render: () => <CrisprMatrixPage /> },
   { id: "obesity", label: DISC.view, family: "selection",
     blurb: DISC.viewBlurb, render: () => <DiscoveryPage /> },
   { id: "devices", label: DEV.view, family: "tech",

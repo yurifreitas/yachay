@@ -55,4 +55,23 @@ export const CRISPR = {
   ),
   eventRules: bi("which null percentile to emphasise",
                  "qual percentil do nulo destacar"),
+
+  /* ---- the whole matrix, drawn ------------------------------------------------------
+     Added beside the run-dashboard strings rather than in a new module: they are the same
+     dataset, and a second file called `crispr` is how one of them gets overwritten. */
+  wholeTitle: bi("The whole screen", "A triagem inteira"),
+  wholeLoading: bi("fetching 21 million measurements…",
+                    "buscando 21 milhões de medições…"),
+  wholeMargin: bi(
+    "share of each column that is a known common-essential gene",
+    "fração de cada coluna que é um gene essencial comum conhecido",
+  ),
+  wholeOrderingK: bi("the ordering, and what it cannot do",
+                      "a ordenação, e o que ela não consegue"),
+  wholeRoughnessK: bi("whether the ordering earns its place",
+                       "se a ordenação merece o lugar dela"),
+  wholeBinningK: bi("what a column is", "o que é uma coluna"),
+  wholeSeriated: bi("seriated", "seriada"),
+  wholeAlpha: bi("alphabetical — the control", "alfabética — o controle"),
+  wholeShuffled: bi("shuffled — no ordering at all", "embaralhada — ordenação nenhuma"),
 } as const;

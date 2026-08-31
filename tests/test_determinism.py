@@ -87,6 +87,11 @@ NOT_TESTED = {
                                  "excluded for runtime, not because it is unverified. This "
                                  "guard caught it the day it was written, which is the "
                                  "behaviour that justifies the guard.",
+    "tools/crispr_matrix.py": "reads a 429 MB matrix and runs two truncated SVDs over 21 "
+                             "million values. Its only randomness is a fixed-seed SVD and a "
+                             "seeded shuffle used for one reported control, and the artefact "
+                             "publishes the roughness figures those produce — a loss of "
+                             "reproducibility would move a published number.",
     "tools/clusterability.py": "twelve null draws, each a full Hopkins, an HDBSCAN and an "
                                "eight-point k-means sweep over 8,890 genes. Minutes. Its "
                                "seeded RNG is used only for the null draws and the samples, "

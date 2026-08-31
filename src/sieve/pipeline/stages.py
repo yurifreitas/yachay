@@ -837,6 +837,16 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="crispr_matrix",
+    summary=("The whole DepMap screen — 1,178 lines by 17,916 genes — seriated on both axes "
+             "and quantised to a byte per cell for the browser."),
+    inputs=(paths.CRISPR_GENE_EFFECT, paths.MODEL, paths.COMMON_ESSENTIAL),
+    outputs=(paths.CRISPR_MATRIX,),
+    code=sources("tools/crispr_matrix.py"),
+    run=lambda: _run_tool("crispr_matrix"),
+))
+
+_add(Stage(
     name="network_layout",
     summary=("Three orderings of the gene graph, solved in Python so the browser draws "
              "38,746 edges and never seriates them."),
