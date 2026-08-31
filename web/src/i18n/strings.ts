@@ -32,6 +32,11 @@ export const S = {
   language: bi("Language", "Idioma"),
   findGene: bi("Find a gene", "Procurar um gene"),
 
+  author: bi("Built and measured by", "Construído e medido por"),
+  licence: bi(
+    "Free to use and build on — attribution required (MIT · CC BY 4.0)",
+    "Livre para usar e construir em cima — atribuição obrigatória (MIT · CC BY 4.0)",
+  ),
   footer: bi(
     "Adapter-driven: every number and document comes from a manifest written by an analysis "
     + "run, converted by npm run data. A new adapter appears here without the UI knowing its "

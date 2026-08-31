@@ -2,9 +2,15 @@ cff-version: 1.2.0
 title: "yachay — null-calibrated shortlisting, and an atlas of where the evidence stops"
 message: "If you use this work, cite it using the metadata below."
 type: software
+license: MIT
+license-url: "https://github.com/yurifreitas/yachay/blob/main/LICENSE"
+url: "https://yurifreitas.github.io/yachay/"
+repository-code: "https://github.com/yurifreitas/yachay"
 authors:
   - given-names: Yuri
     family-names: Freitas
+    name-particle: Bezerra
+    website: "https://www.linkedin.com/in/yuribzfreitas/"
 keywords:
   - selection bias
   - order statistics

@@ -172,8 +172,20 @@ function Shell() {
           <Suspense key={view} fallback={<ViewSkeleton />}>{current.render()}</Suspense>
         </main>
 
+        {/* ATTRIBUTION ON EVERY SCREEN, not only in the repository's LICENSE. Somebody who
+            screenshots a figure or reuses a number takes it from here, and a licence they
+            never see is a licence they cannot follow. The author's name and link travel with
+            the work. */}
         <footer>
           <p>{t(S.footer)}</p>
+          <p className="attribution">
+            {t(S.author)}{" "}
+            <a href="https://www.linkedin.com/in/yuribzfreitas/"
+               target="_blank" rel="noopener noreferrer">Yuri Bezerra Freitas</a>
+            {" · "}
+            <a href="https://github.com/yurifreitas/yachay/blob/main/LICENSE"
+               target="_blank" rel="noopener noreferrer">{t(S.licence)}</a>
+          </p>
         </footer>
       </div>
     </div>

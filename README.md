@@ -21,6 +21,26 @@ large, noisy, confounded screen into a shortlist you can defend.**
 
 **Explorer:** <https://yurifreitas.github.io/yachay/> · English and Portuguese.
 
+**Author:** Yuri Bezerra Freitas — <https://www.linkedin.com/in/yuribzfreitas/>
+
+> ### Attribution is required
+>
+> This work is free to use, modify and build on, **including commercially**, and every use
+> must credit **Yuri Bezerra Freitas** with a link to
+> <https://www.linkedin.com/in/yuribzfreitas/> or to this repository.
+>
+> That applies to the code, the measured artefacts, the figures and the prose alike — to a
+> paper that reuses a number, a dashboard that embeds a figure, a model trained on the
+> artefacts, and a README that copies a paragraph. Code is MIT; documentation, artefacts and
+> figures are CC BY 4.0; the ingested public catalogues keep their own terms and are not
+> relicensed here. Full terms in [`LICENSE`](LICENSE), machine-readable metadata in
+> [`CITATION.cff`](CITATION.cff).
+>
+> ```
+> Freitas, Y. B. (2026). yachay — null-calibrated shortlisting, and an atlas of
+> where the evidence stops. https://github.com/yurifreitas/yachay
+> ```
+
 ---
 
 ## The rule this repository runs on
