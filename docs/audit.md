@@ -1619,10 +1619,15 @@ it and emptied every histogram — found because the output returned zero cluste
 instead of 2,771.
 
 **Still open from this review**, in order of damage: 44 tools have no test, the worst being
-`knowledge_shape`/`knowledge_void` which feed a published z of −270.51; five independent
-Orphanet prevalence readers remain, the configuration that caused A11; and `status.py`'s
-`web_rows()` is the one confirmed super-linear check, scanning the whole web source once per
-artefact.
+`knowledge_shape`/`knowledge_void`; five independent Orphanet prevalence readers remain, the
+configuration that caused A11; and `status.py`'s `web_rows()` is the one confirmed
+super-linear check, scanning the whole web source once per artefact.
+
+*Updated 2026-08-31.* The z of −270.51 named above is no longer the reason to distrust those
+two tools — **A41 explains it**. Their null's spread is 0.95 on a count centred at 575, so the
+z is a statement about a denominator rather than about the world. The underlying shortfall
+(318 occupied cells against 575 expected) stands and is one of the strongest measurements
+here. They still have no test, which is the part that remains open.
 
 ### A39 — the documentation's strongest operational promise was false · **closed**
 
@@ -1835,3 +1840,64 @@ property on a planted-clique graph instead. Building that graph raised `IndexErr
 assumed node labels were array positions, which is true of the CSR file it reads and of nothing
 else. Positions are now computed once. The real artefact is byte-identical after the fix, which
 is the point — the bug was latent, and only a test on a different graph could reach it.
+
+---
+
+## State of the work · 2026-08-31
+
+*This section is a handover, not a finding. It records where the work stands and what the next
+person — including a later version of me — would pick up, because a list that lives only in a
+conversation is a list that does not survive one.*
+
+### What the last two days did
+
+Every entry from A39 to A42 came from the same move, applied five times: **take a number this
+repository already published, ask what it is worth, and let the answer change the artefact.**
+
+| | finding | what changed |
+|---|---|---|
+| A39 | 24 of 64 artefact-writing tools had no pipeline stage | 26 stages registered; the gene chain's run order became an edge instead of a docstring sentence; `gene_facets` was found **missing from disk entirely** — the browse index for 18,140 genes had never been generated |
+| A40 | three artefacts published a z with no interval | all three paid. 34 of 100 propagation reach genes survive; the HIV shortlist's top is at an **assay ceiling**; `signal_energy`'s negative verdict now carries its own fragility |
+| A41 | 3,166 published z values, never audited as a class | `tools/z_audit.py`. Two artefacts have a null whose spread is under 1% of its centre; a z of 2,128 carries ±106 from its own denominator |
+| A42 | 2,408 communities from one seed of one algorithm | ARI 0.901 [0.888, 0.915] across seeds, 0.29 between algorithm families, resolution never chosen, and **83.2% of genes firm** in a consensus |
+
+The pattern worth keeping: **the audits disagreed with each other, which is why they were worth
+running.** The same interval treatment destroyed the propagation artefact's top ten and left
+every arm of `gene_constraint` standing. An audit that confirms everything is measuring nothing.
+
+### Open, in the order I would take them
+
+1. **44 tools have no test.** The largest single risk in the repository. `knowledge_shape` and
+   `knowledge_void` are the worst — not because of the z (A41 explains that) but because they
+   are untested and feed a published headline.
+2. **Five independent Orphanet prevalence readers.** The exact configuration that produced A11.
+   One parser, as `ontology.py` already did for MONDO.
+3. **`capability_math` reads `build_atlas` output with no declared edge** — the last ⚠️ entry in
+   `NOT_A_STAGE`, and the whole of that family's remaining debt.
+4. **`status.py:web_rows()`** scans the whole web source once per artefact; the one confirmed
+   super-linear check.
+5. **`docs/methodology.md` mixes Diátaxis modes** (A4), and **CARE is still not in the
+   standards** (A10, ADR written).
+
+### Two leads that are measured but not built
+
+- **`data/hiv/INSTI_DataSet.txt` is HTML, not data** — a failed download saved under the name of
+  the dataset it was meant to be. `status.py` reports it on every run. The INSTI panel is
+  absent from `analyses/hiv_resistance.py` for that reason and nothing says so in the artefact.
+- **The obesity screen's follow-on.** The 4.47M-pair interaction space and the gate finding
+  (KIF11+NR3C1 scoring 1.1198 as pure synergy between two individually inert genes) need the
+  16.8 GB `TF150.h5ad`, which is not on disk. Stage 1 on the challenge aggregate is built and
+  published; the pair analysis is not started.
+
+### How to verify a change here
+
+```bash
+python -m pytest -q                    # 162 tests
+python tools/index_check.py --check    # nine index families
+python tools/z_audit.py --check        # every loud z has an interval or a reason
+python tools/verify_claims.py          # published numbers against their artefacts
+cd web && npm run check && npm run build
+```
+
+`tasks.py status` says what is stale and why; `tasks.py build` runs it in dependency order.
+The deploy is a GitHub Action on push to `main`.
