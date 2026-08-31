@@ -38,6 +38,7 @@ const SelfAudit = lazy(() => import("./components/SelfAudit").then((m) => ({ def
 const ZAudit = lazy(() => import("./components/ZAudit").then((m) => ({ default: m.ZAudit })));
 const CommunityStability = lazy(() => import("./components/CommunityStability").then((m) => ({ default: m.CommunityStability })));
 const GeneEmbedding = lazy(() => import("./components/GeneEmbedding").then((m) => ({ default: m.GeneEmbedding })));
+const NonReciprocal = lazy(() => import("./components/NonReciprocal").then((m) => ({ default: m.NonReciprocal })));
 const GapPatterns = lazy(() => import("./components/GapPatterns").then((m) => ({ default: m.GapPatterns })));
 const TropicalGap = lazy(() => import("./components/TropicalGap").then((m) => ({ default: m.TropicalGap })));
 const ScaleLoss = lazy(() => import("./components/MeasuredPanels").then((m) => ({ default: m.ScaleLoss })));
@@ -340,6 +341,23 @@ export const RARE_SECTIONS: SectionRegistry<RareCtx> = [
               once.</>,
     view: () => (
       <><GeneEmbedding /></>
+    ),
+  },
+  {
+    id: "nonrec",
+    title: <>A hypothesis of the author&rsquo;s own, run against the falsifier he wrote for it</>,
+    sub: <>Every other section here measures somebody else&rsquo;s catalogue or audits this
+              site&rsquo;s own statistics. This one tests an idea that predates the site: that a
+              relation need not be reciprocal, and that the asymmetry is what generates
+              organisation. It is tested on the terms he set — a number written down in advance
+              that would kill it. Keeping the direction of a gene-to-gene affinity beats
+              discarding it by <strong>+0.033 AUPRC</strong> [+0.018, +0.051] at recovering
+              held-out disease genes, and randomising the direction while keeping its magnitude
+              gives <strong>−0.026</strong>: a wrong direction is worse than no direction, and
+              the true one is better than both. Neither form of the falsifier triggers. It is
+              also small, and concentrated in a fifth of diseases rather than general.</>,
+    view: () => (
+      <><NonReciprocal /></>
     ),
   },
   {

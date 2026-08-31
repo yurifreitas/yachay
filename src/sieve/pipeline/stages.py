@@ -773,6 +773,16 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="nonreciprocal",
+    summary=("Does asymmetry carry information its symmetric projection loses? The author's "
+             "own hypothesis, run against the falsifier he wrote before any number existed."),
+    inputs=src("hpo_genes"),
+    outputs=(paths.NONRECIPROCAL,),
+    code=sources("tools/nonreciprocal.py"),
+    run=lambda: _run_tool("nonreciprocal"),
+))
+
+_add(Stage(
     name="clusterability",
     summary=("Is there anything to cluster? Hopkins, HDBSCAN noise and the k-means silhouette "
              "against a null that shuffles each feature independently."),

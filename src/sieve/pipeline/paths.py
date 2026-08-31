@@ -149,6 +149,8 @@ PARTITION_FLOW = RARE / "partition_flow.json"
 GENE_EMBEDDING = RARE / "gene_embedding.json"
 # The prior question the embedding raised: is there anything in the features to cluster.
 CLUSTERABILITY = RARE / "clusterability.json"
+# Yuri's own non-reciprocity hypothesis, tested against the falsifier he wrote for it.
+NONRECIPROCAL = RARE / "nonreciprocal.json"
 # Fetched by the browser: half a megabyte of edge list belongs behind a request, not in
 # the bundle every other screen loads.
 NETWORK_LAYOUT = ROOT / "web" / "public" / "data" / "network_layout.json"

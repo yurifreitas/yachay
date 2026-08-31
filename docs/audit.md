@@ -2170,3 +2170,51 @@ carry an interval — and the loudest ones come from single-seed disorders that 
 FAHD2B at z = 2,128 passed through untouched. A method demonstrated on output it cannot fully
 see is a demonstration of nothing. It now lives inside `twin_propagation.py`, where the null's
 standard deviation is in hand.
+
+### A49 — the author's own hypothesis, run against the falsifier he wrote for it · **closed**
+
+*2026-08-31.* Every finding above measures somebody else's catalogue or audits this site's own
+statistics. This one tests an idea that predates the site, recovered from the author's notes on
+what he calls symbiotic mathematics — and it is tested on the terms he set, which is the only
+reason it counts as a result at all.
+
+**The statement, in his notation.** A relation `r_ij` need not equal `r_ji`: A may attract B
+while B repels A. The claim is that **non-reciprocity generates organisation**, not merely that
+interaction does. The operator is the system against its own symmetric projection,
+`Δ_sym = Q(R) − Q((R + Rᵀ)/2)`.
+
+**The falsifier, written before any number existed.** The strong form dies if `E[S_NR] ≤ 0`
+with a 95 % interval containing zero over a wide sample of diseases; more strictly, if
+`|S_NR| < 0.01` in at least 80 % of diseases **and** no benefit survives permutation controls.
+
+**The implementation.** No new data. The gene–disease catalogue already carries a naturally
+asymmetric affinity, `w(i → j) = |D_i ∩ D_j| / |D_i|` — the share of gene *i*'s diseases that
+gene *j* also causes, asymmetric exactly when the two genes have different disease counts. Not
+an artefact: a conditional probability, and those are not symmetric. Measured asymmetry
+`‖W − Wᵀ‖_F / ‖W‖_F = 0.705`. Both operators are judged on recovering held-out disease genes —
+half a disease's genes seed a random walk with restart, the other half are hidden — scored by
+AUPRC, because the positives are a handful among thousands and AUROC flatters in that regime.
+
+| | S_NR |
+|---|---|
+| real direction | **+0.0334** [+0.0182, +0.0506] |
+| direction randomised, magnitude kept | **−0.0261** |
+
+**Neither form of the falsifier triggers.** And the control is the more interesting half: a
+wrong direction is *worse than no direction*, while the true one beats both. That is a sharper
+claim than "asymmetry helps".
+
+**What it is not.** Small. Only 22.8 % of the 246 diseases gain at all, and 67.9 % move by less
+than 0.01 — the strict falsifier triggers at 80 %, so this passes and not by much. The effect
+is concentrated in a minority of diseases rather than general, and the honest summary is that
+direction carries real information about a fifth of this catalogue.
+
+**⚠️ The first run falsified the hypothesis, and it was wrong.** It reported
+`S_NR = −0.114 [−0.132, −0.095]` — the symmetric projection winning decisively, the weak
+falsifier triggered. The cause was a direction error in the propagation: `w[i, j]` is the
+affinity *from i to j*, so mass must move along the row-normalised matrix transposed, and the
+first version column-normalised and applied `w @ p`, which walks the reverse edge. For the
+symmetric projection the two are identical, **so the control arm was correct and only the arm
+under test ran backwards**. A falsification of a hypothesis about direction, produced by
+running the direction backwards, would have been worthless — and it would have been published
+as a clean negative result, which is the kind that gets believed.

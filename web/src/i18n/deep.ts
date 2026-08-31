@@ -21,6 +21,7 @@ export const DEEP = {
   sZAudit: bi("What is a z worth here?", "Quanto vale um z aqui?"),
   sCluster: bi("Are the groups real?", "Os grupos são reais?"),
   sEmbed: bi("What is a UMAP worth?", "Quanto vale um UMAP?"),
+  sNonRec: bi("Does direction matter?", "A direção importa?"),
   hivHeading: bi(
     "the positive controls were named before the run, and they came back",
     "os controles positivos foram nomeados antes da execução, e voltaram",
@@ -65,6 +66,22 @@ export const DEEP = {
   csMatrix: bi(
     "38,746 edges, drawn once each — and the ordering you can switch to check them",
     "38.746 arestas, cada uma desenhada uma vez — e a ordenação que dá para trocar e conferir",
+  ),
+  nrHeading: bi(
+    "the gain from keeping the direction of a relation, against dropping it",
+    "o ganho de manter a direção de uma relação, contra descartá-la",
+  ),
+  nrFalsifier: bi(
+    "the number that would have killed the idea, written before the idea was run",
+    "o número que teria matado a ideia, escrito antes de a ideia ser rodada",
+  ),
+  nrSpread: bi(
+    "and the spread behind that mean, because a mean of 246 diseases hides which ones",
+    "e a dispersão por trás dessa média, porque uma média de 246 doenças esconde quais",
+  ),
+  nrPrecedent: bi(
+    "where it came from, and what is genuinely new in it",
+    "de onde veio, e o que nela é genuinamente novo",
   ),
   emHeading: bi(
     "of each gene's fifteen nearest neighbours on the page, that share were neighbours in the data",

@@ -93,6 +93,11 @@ NOT_TESTED = {
                                "and the artefact publishes an interval over those draws - so "
                                "a run that stopped being reproducible would widen a published "
                                "interval rather than hide.",
+    "tools/nonreciprocal.py": "246 diseases, each with two 60-step propagations plus a "
+                              "permutation control, over a 5,524-node affinity matrix. Its "
+                              "seeds are fixed and the artefact publishes a bootstrap "
+                              "interval, so a run that stopped being reproducible would move "
+                              "a published interval rather than hide.",
     "tools/gene_embedding.py": "four UMAP fits over 8,890 genes plus HDBSCAN on both the "
                                "embedding and the raw features - minutes, not seconds. Its "
                                "determinism is not assumed either: the artefact reports "

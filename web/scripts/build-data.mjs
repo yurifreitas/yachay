@@ -410,7 +410,9 @@ emit("figures", figures);
                       // Where the algorithms disagree, gene by gene.
                       "partition_flow",
                       // Is there anything to cluster in the first place.
-                      "clusterability"]) {
+                      "clusterability",
+                      // The author's own hypothesis, against his own falsifier.
+                      "nonreciprocal"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
