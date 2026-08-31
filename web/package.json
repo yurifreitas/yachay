@@ -4,10 +4,10 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "data": "node scripts/build-data.mjs && node scripts/build-points.mjs",
+    "data": "node scripts/build-data.mjs && node scripts/build-points.mjs && node scripts/build-figure-index.mjs",
     "dev": "npm run data && vite",
     "check": "node scripts/check-contrast.mjs && node scripts/check-palette.mjs && node --experimental-strip-types scripts/check-viz.mjs && node --experimental-strip-types scripts/check-shards.mjs && node scripts/check-tokens.mjs && node scripts/check-sections.mjs && node scripts/check-layout.mjs && node scripts/check-artefacts.mjs && node scripts/check-aria.mjs && node scripts/check-i18n.mjs",
-    "build": "npm run check && npm run data && tsc -b && vite build",
+    "build": "node scripts/build-figure-index.mjs && npm run check && npm run data && tsc -b && vite build",
     "preview": "vite preview",
     "build:ci": "npm run check && tsc -b && vite build"
   },

@@ -1,0 +1,51 @@
+.page { display: flex; flex-direction: column; gap: var(--sp-8); max-width: 1100px; }
+
+.head { display: flex; flex-direction: column; gap: var(--sp-3); }
+.head h1 { margin: 0; font-size: 30px; letter-spacing: -0.02em; color: var(--r-text); }
+.sub { margin: 0; max-width: 74ch; font-size: 14.5px; line-height: 1.7; color: var(--r-text-2); }
+.counts { margin: 0; font-size: 12.5px; color: var(--r-text-3); font-variant-numeric: tabular-nums; }
+
+.controls { display: flex; flex-direction: column; gap: var(--sp-4); }
+.search {
+  width: min(420px, 100%); font: inherit; font-size: 14px;
+  padding: 10px 12px; border-radius: var(--r-radius-sm);
+  border: 1px solid var(--r-border); background: var(--r-surface); color: var(--r-text);
+}
+.search:focus-visible { outline: 2px solid var(--r-brand); outline-offset: 2px; }
+
+.forms { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.form, .formOn {
+  font: inherit; font-size: 12.5px; cursor: pointer;
+  padding: 6px 10px; border-radius: 999px;
+  border: 1px solid var(--r-border); background: transparent; color: var(--r-text-2);
+}
+.form:hover { background: var(--r-surface-2); color: var(--r-text); }
+.formOn { composes: form; border-color: var(--r-text-3); color: var(--r-text); font-weight: 500; }
+.n { color: var(--r-text-3); font-variant-numeric: tabular-nums; margin-left: 4px; }
+
+/* One card per figure. minmax(0, 1fr) so a long aria label cannot widen the grid past its
+   container — the trap this repository has a check for. */
+.list {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr));
+  gap: var(--sp-4);
+}
+.item {
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  padding: var(--sp-6); border-radius: var(--r-radius-sm);
+  border: 1px solid var(--r-border); background: var(--r-surface);
+}
+.itemHead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
+.formTag {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase;
+  color: var(--r-text-3);
+}
+.go { font-size: 12.5px; color: var(--r-text); }
+.unplaced { font-size: 11px; color: var(--r-text-3); font-style: italic; }
+.label { margin: 0; font-size: 14px; line-height: 1.55; color: var(--r-text); }
+.answers { margin: 0; font-size: 12.5px; line-height: 1.6; color: var(--r-text-2); }
+.source { margin: 0; font-size: 11.5px; color: var(--r-text-3); }
+
+.empty, .note {
+  margin: 0; max-width: 76ch; font-size: 13px; line-height: 1.7; color: var(--r-text-3);
+}

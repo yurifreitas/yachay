@@ -4,6 +4,7 @@ import { NavProvider } from "./lib/nav";
 import { LangProvider, useT } from "./i18n";
 import { S } from "./i18n/strings";
 import { DEV } from "./i18n/devices";
+import { FIG } from "./i18n/figures";
 import { DISC } from "./i18n/discovery";
 import { RARE_VIEWS, viewHolding } from "./features/rare/rareViews";
 import { RARE_VIEW_LABEL } from "./i18n/rareviews";
@@ -14,6 +15,7 @@ import { CommandPalette } from "./components/organisms/CommandPalette";
  *  element eagerly is what put all three pages in the entry chunk. A visitor who opens
  *  the explorer should not download the rare-disease dashboard to do it. */
 const RunView = lazy(() => import("./features/run/RunView"));
+const FiguresPage = lazy(() => import("./features/figures/FiguresPage").then((m) => ({ default: m.FiguresPage })));
 const Docs = lazy(() => import("./features/docs/Docs"));
 const RarePage = lazy(() => import("./features/rare/RarePage"));
 const CancerPage = lazy(() => import("./features/cancer/CancerPage"));
@@ -82,6 +84,11 @@ const VIEWS: (NavView & { render: () => JSX.Element })[] = [
     blurb: DISC.viewBlurb, render: () => <DiscoveryPage /> },
   { id: "devices", label: DEV.view, family: "tech",
     blurb: DEV.viewBlurb, render: () => <DevicesPage /> },
+  /* THE FIGURE INDEX. Forty-six sections labelled with questions read well and search badly:
+     a reader who remembers a picture has no way back to it. This route is generated from the
+     source, so it cannot drift from what is actually drawn. */
+  { id: "figures", label: FIG.title, family: "method",
+    blurb: FIG.sub, render: () => <FiguresPage /> },
   { id: "docs", label: S.viewDocs, family: "method",
     blurb: S.viewDocsBlurb, render: () => <Docs /> },
 ];

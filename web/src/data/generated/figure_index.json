@@ -1,0 +1,236 @@
+{
+ "generated": "web/scripts/build-figure-index.mjs",
+ "says": "Every figure built from a viz organism, found by scanning the source. Figures drawn with CSS bars are counted but not indexed — an index claiming completeness while missing them would be worse than none.",
+ "counts": {
+  "indexed": 21,
+  "forms": 11,
+  "without_a_label": 2,
+  "css_marks_not_indexed": 34,
+  "unplaced": 6
+ },
+ "by_form": {
+  "RaincloudPlot": 4,
+  "HexbinPlot": 1,
+  "UpSetPlot": 2,
+  "IntervalPlot": 5,
+  "MatrixPlot": 1,
+  "AlluvialPlot": 1,
+  "SweepPlot": 2,
+  "WhiskerScatter": 2,
+  "ScatterPair": 1,
+  "ParallelCoordinates": 1,
+  "NeedlePlot": 1
+ },
+ "figures": [
+  {
+   "form": "AlluvialPlot",
+   "answers": "flow between two or three categorisations",
+   "label": "Genes flowing between the communities found by three clustering algorithms",
+   "source": null,
+   "component": "CommunityStability",
+   "file": "features/rare/components/CommunityStability.tsx",
+   "area": "rare",
+   "section": "cluster"
+  },
+  {
+   "form": "HexbinPlot",
+   "answers": "density where individual points would overplot",
+   "label": "Median dependency against selectivity, drawn as hexagonal density with sparse cells shown as individual genes",
+   "source": null,
+   "component": "Shortlist",
+   "file": "features/run/Substance.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "IntervalPlot",
+   "answers": "an estimate against a threshold, with its interval",
+   "label": "Partition agreement within and between clustering algorithms",
+   "source": null,
+   "component": "CommunityStability",
+   "file": "features/rare/components/CommunityStability.tsx",
+   "area": "rare",
+   "section": "cluster"
+  },
+  {
+   "form": "IntervalPlot",
+   "answers": "an estimate against a threshold, with its interval",
+   "label": "Four measurements of what the embedding is worth",
+   "source": null,
+   "component": "GeneEmbedding",
+   "file": "features/rare/components/GeneEmbedding.tsx",
+   "area": "rare",
+   "section": "embed"
+  },
+  {
+   "form": "IntervalPlot",
+   "answers": "an estimate against a threshold, with its interval",
+   "label": "Fold-resistance with 95% intervals for the top mutations of the … panel",
+   "source": "… isolates · bootstrap over isolates",
+   "component": "HivResistance",
+   "file": "features/rare/components/DeepPanels.tsx",
+   "area": "rare",
+   "section": "hiv"
+  },
+  {
+   "form": "IntervalPlot",
+   "answers": "an estimate against a threshold, with its interval",
+   "label": "Excess mutual information with 95% intervals, one row per Reactome pathway",
+   "source": null,
+   "component": "SignalEnergy",
+   "file": "features/rare/components/SignalEnergy.tsx",
+   "area": "rare",
+   "section": "signalenergy"
+  },
+  {
+   "form": "IntervalPlot",
+   "answers": "an estimate against a threshold, with its interval",
+   "label": "Largest published z per artefact against what its draw count resolves",
+   "source": "… above 10; … of those carry an interval",
+   "component": "ZAudit",
+   "file": "features/rare/components/ZAudit.tsx",
+   "area": "rare",
+   "section": "zaudit"
+  },
+  {
+   "form": "MatrixPlot",
+   "answers": "a graph too dense to draw as nodes and links",
+   "label": "Gene interaction matrix, reordered by consensus community",
+   "source": null,
+   "component": "CommunityStability",
+   "file": "features/rare/components/CommunityStability.tsx",
+   "area": "rare",
+   "section": "cluster"
+  },
+  {
+   "form": "NeedlePlot",
+   "answers": "where along a molecule the damage falls",
+   "label": null,
+   "source": null,
+   "component": "Needle",
+   "file": "features/gene/GeometryPanels.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "ParallelCoordinates",
+   "answers": "many dimensions at once, per entity",
+   "label": null,
+   "source": null,
+   "component": "Attention",
+   "file": "features/gene/Attention.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "RaincloudPlot",
+   "answers": "a distribution, not its summary",
+   "label": "Length-matched null distributions with each observed mean LOEUF marked",
+   "source": null,
+   "component": "HivResistance",
+   "file": "features/rare/components/DeepPanels.tsx",
+   "area": "rare",
+   "section": "hiv"
+  },
+  {
+   "form": "RaincloudPlot",
+   "answers": "a distribution, not its summary",
+   "label": "Per-disease difference between the asymmetric operator and its symmetric projection",
+   "source": null,
+   "component": "NonReciprocal",
+   "file": "features/rare/components/NonReciprocal.tsx",
+   "area": "rare",
+   "section": "nonrec"
+  },
+  {
+   "form": "RaincloudPlot",
+   "answers": "a distribution, not its summary",
+   "label": "Per-disease advantage of relational over attribute prediction",
+   "source": null,
+   "component": "RelationalPrimacy",
+   "file": "features/rare/components/RelationalPrimacy.tsx",
+   "area": "rare",
+   "section": "relprim"
+  },
+  {
+   "form": "RaincloudPlot",
+   "answers": "a distribution, not its summary",
+   "label": "Distribution of calibrated z for candidates, common-essential genes and non-essential controls, drawn as densities with every observation shown",
+   "source": null,
+   "component": "Shortlist",
+   "file": "features/run/Substance.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "ScatterPair",
+   "answers": "the same points twice, on one scale",
+   "label": "The same gene embedding at two random seeds, on a shared scale",
+   "source": null,
+   "component": "GeneEmbedding",
+   "file": "features/rare/components/GeneEmbedding.tsx",
+   "area": "rare",
+   "section": "embed"
+  },
+  {
+   "form": "SweepPlot",
+   "answers": "several quantities against one swept parameter",
+   "label": "Modularity, largest community and community count against resolution",
+   "source": null,
+   "component": "CommunityStability",
+   "file": "features/rare/components/CommunityStability.tsx",
+   "area": "rare",
+   "section": "cluster"
+  },
+  {
+   "form": "SweepPlot",
+   "answers": "several quantities against one swept parameter",
+   "label": "k-means silhouette against k, with the shuffled null marked",
+   "source": null,
+   "component": "GeneEmbedding",
+   "file": "features/rare/components/GeneEmbedding.tsx",
+   "area": "rare",
+   "section": "embed"
+  },
+  {
+   "form": "UpSetPlot",
+   "answers": "overlapping sets, beyond what a Venn can hold",
+   "label": "Sizes of every combination of missing fields across the OMIM-coded rare diseases",
+   "source": null,
+   "component": "GapPatterns",
+   "file": "features/rare/components/GapPatterns.tsx",
+   "area": "rare",
+   "section": "gaps"
+  },
+  {
+   "form": "UpSetPlot",
+   "answers": "overlapping sets, beyond what a Venn can hold",
+   "label": "Sizes of every combination of flags carried by the genes in the shipped sample",
+   "source": null,
+   "component": "Shortlist",
+   "file": "features/run/Substance.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "WhiskerScatter",
+   "answers": "two variables where one carries an interval",
+   "label": "Perturbation score against cell count, with the control null",
+   "source": null,
+   "component": "discoverySections",
+   "file": "features/discovery/discoverySections.tsx",
+   "area": null,
+   "section": null
+  },
+  {
+   "form": "WhiskerScatter",
+   "answers": "two variables where one carries an interval",
+   "label": "Degree against propagation z with 95% intervals, …",
+   "source": null,
+   "component": "HivResistance",
+   "file": "features/rare/components/DeepPanels.tsx",
+   "area": "rare",
+   "section": "hiv"
+  }
+ ]
+}

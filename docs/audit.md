@@ -2303,3 +2303,34 @@ as operators, so a run between them catches `d.driver === pick) ?? drivers[0]` a
 sentence. A counter that counts the wrong things is worse than none, because it produces a
 number somebody quotes. It now rejects runs containing operators and requires 92% of characters
 to be letters, spaces and ordinary punctuation.
+
+### A52 — forty-six sections, and no way to find a picture in them · **closed**
+
+*2026-08-31.* The navigation is four levels deep — family, view, group, section — and the
+section labels are questions: *"Quanto vale um z aqui?"*, *"Os grupos são reais?"*. A question
+is the right label for reading and the wrong one for **finding**. A reader who remembers seeing
+a reordered matrix, or who wants to know whether this site has an alluvial anywhere, had no way
+in but to open sections until one appeared.
+
+`web/scripts/build-figure-index.mjs` scans the feature source for uses of the viz organisms,
+reads each one's `ariaLabel` — which by construction is a sentence saying what the figure shows
+— and maps it back to the section that renders it. **21 figures across 11 forms.** The new
+`#figures` route lists them, filterable by form and searchable by text.
+
+It is generated, not written, for the reason `tools/index_check.py` exists: a hand-maintained
+index of forty-six sections is wrong within a week. A figure added without touching that page
+appears in it; one deleted leaves.
+
+**And it says what it cannot see.** 34 marks on this site are drawn with CSS bars rather than a
+viz organism, and 6 figures sit in registries whose shape this scan cannot resolve to a
+section. Both are counted and neither is guessed at — an index claiming completeness while
+missing a third of the pictures would be worse than none.
+
+**⚠️ It printed source code at the reader, and the reasoning that allowed it was worse than the
+bug.** Aria labels are template literals, so the first version rendered *"the top mutations of
+the ${openPanel} panel"* — and the comment justifying it said keeping the markers was "ugly and
+honest". It is neither. The value depends on what the reader has clicked and is not knowable in
+an index, so it collapses to an ellipsis; anything still carrying a brace afterwards is dropped
+rather than printed, and a line that survives as *"… genes … … features"* is punctuation rather
+than information and is dropped too. A caption of JavaScript costs a reader their trust in
+everything else on the page.
