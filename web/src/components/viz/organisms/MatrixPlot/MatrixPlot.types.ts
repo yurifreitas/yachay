@@ -19,6 +19,14 @@ export type MatrixPlotProps = {
   /** Per gene, in gene-id space; negative means unscored. */
   confidence?: Float32Array;
   labelFor?: (gene: number) => string;
+  /** Called with the community id of the block under the pointer, or null outside one. Only
+   *  fires under the first ordering: the blocks are only contiguous there, so a click under
+   *  `spectral` would select a range that is not a community. */
+  onPickBlock?: (community: number | null) => void;
+  /** The community drawn emphasised. Kept outside the component because the card that shows
+   *  it lives outside too, and two sources of truth for a selection is how a highlight ends
+   *  up describing a different block from the panel beside it. */
+  picked?: number | null;
   size?: number;
   ariaLabel: string;
   readAloud: ReactNode;

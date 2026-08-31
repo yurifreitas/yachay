@@ -1953,3 +1953,54 @@ All three were found by `tests/test_determinism.py`, which failed the moment the
 to it — the same guard that caught `community_stability.py` the day before. A figure that
 reorders itself between reloads while its caption stays the same is the worst kind of defect
 this repository can ship, and nothing but a determinism test finds it.
+
+### A44 — 216 blocks called 0 to 215 · **closed**
+
+*2026-08-31.* A43 drew the graph and A42 measured that its partition is stable. Both describe
+blocks that **had no identity**. A reader could see structure on the matrix and learn nothing
+about biology, which makes a modularity score decoration.
+
+**The enrichment had to come from outside the loop.** The edges of this graph ARE gene–disease
+co-membership: two genes are joined because they cause a disease in common. Asking whether a
+community shares diseases asks whether the thing that built the edges built the edges — it
+returns a spectacular answer and means nothing, and the same holds for HPO phenotype terms,
+which are annotations on those diseases. **Reactome is not in that loop**: curated biochemistry,
+consulted by nothing in the construction. The phenotype profile is still published because a
+reader wants it, and it is labelled `circular_by_construction` so it can never be quoted as
+evidence.
+
+**The control is annotation-matched, not random.** Reactome coverage is wildly uneven — a
+well-studied kinase sits in dozens of pathways — so an unmatched null reports every community
+holding well-studied genes as enriched for everything. Null sets are drawn from the graph's own
+genes in eight quantile bins of annotation count. It is the same argument as the length
+matching in `gene_constraint.py`, where two thirds of the apparent effect turned out to be the
+covariate. 2,987 tests, Benjamini–Hochberg across the whole family.
+
+**22 of the 28 testable communities get a name**, where "a name" means a pathway that both
+survives FDR and covers at least a tenth of the community:
+
+| genes | what most of it is | what is most unusual about it |
+|---|---|---|
+| 208 | Organelle biogenesis and maintenance, 49 % | ARL13B-mediated ciliary trafficking, **28×** |
+| 182 | Immune System, 73 % | TRAF3 deficiency – HSE, **27×** |
+| 165 | Signal Transduction, 47 % | Cohesin loading onto chromatin, **22×** |
+| 154 | Muscle contraction, 36 % | Phase 3 – rapid repolarisation, **18×** |
+| 150 | Sensory Perception, 28 % | Sound processing by outer hair cells, **13×** |
+
+Ciliopathies, cohesinopathies, cardiac channelopathies and a deafness cluster, recovered from
+disease co-membership alone and confirmed against a source that co-membership never saw.
+
+**⚠️ Ranking by significance alone was misleading, and the first version shipped it.** The
+headline for a 482-gene community was "Metabolism of Angiotensinogen to Angiotensins" on the
+strength of **three genes** — a real enrichment, eleven-fold, and not what that community is. A
+pathway covering 0.8 % of a group does not name it, and a figure printing it as the group's
+identity lies with a correct *p* value. Coverage now gates the headline and the specific
+pathway is published beside it, because the two pull opposite ways and choosing one hides half
+the answer.
+
+**⚠️ And the determinism guard fired for the third day running.** `pathways[g]` is a set of
+strings; Python randomises string hashing per process, so the Counter was built in a different
+order every run, ties in the sort broke differently, and the six pathways published as a
+community's identity came out in a different order. The counts never changed — only what was
+printed as the answer. Sets are now iterated sorted, and the sort key ends with the pathway id
+so the order is total.

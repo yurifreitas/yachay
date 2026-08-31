@@ -54,6 +54,11 @@ DETERMINISTIC = [
     # If that ever becomes non-deterministic the figure flips between reloads and the caption
     # keeps claiming the same structure, so this is the exact tool the check exists for.
     ("tools/network_layout.py", "web/public/data/network_layout.json"),
+    # The guard found this one too, on the day it was written. It draws 400 annotation-matched
+    # null sets per community and the result decides what every block on the matrix is CALLED,
+    # so a name that moved between runs would be the most quotable thing on the page and the
+    # least reliable.
+    ("tools/community_identity.py", "out/rare/community_identity.json"),
 ]
 
 # Excluded, by name and with the reason. A determinism suite that quietly omits the awkward

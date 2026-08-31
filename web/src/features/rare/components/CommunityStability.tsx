@@ -1,11 +1,12 @@
 import { useT } from "../../../i18n";
 import { DEEP } from "../../../i18n/deep";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
 import { MatrixPlot } from "../../../components/viz/organisms/MatrixPlot";
 import { useRemoteData } from "../../../lib/useRemoteData";
 import { SweepPlot } from "../../../components/viz/organisms/SweepPlot";
 import raw from "../../../data/generated/community_stability.json";
+import identityRaw from "../../../data/generated/community_identity.json";
 import { fmtInt } from "../../../lib/scale";
 import css from "./MeasuredPanels.module.css";
 
@@ -46,7 +47,68 @@ function f32(b64: string): Float32Array {
  *  out because a caption that prints "undefined%" is worse than one that prints nothing. */
 const pct = (v?: number) => (v == null ? "—" : `${Math.round(v * 100)}%`);
 
+/** What a block IS, once one is picked.
+ *
+ *  THE FIGURE WITHOUT THIS WAS DECORATION. It showed 216 blocks named 0 to 215, and a reader
+ *  could see structure and learn nothing about biology. The identity comes from Reactome,
+ *  which is outside the loop that built the graph — the edges here are gene-disease
+ *  co-membership, so a phenotype enrichment would only prove that the thing that made the
+ *  edges made the edges.
+ *
+ *  BOTH ENDS ARE SHOWN, because coverage and specificity disagree. The broad pathway names
+ *  the group and says little; the specific one says a lot about a handful of genes. Printing
+ *  one would be choosing which half to hide.
+ */
+function IdentityCard({ community }: { community: number | null }) {
+  const rec = useMemo(
+    () => (identityRaw as any).communities?.find((c: any) => c.community === community),
+    [community],
+  );
+  if (community == null) return <p className={css.note}>{(identityRaw as any).says}</p>;
+  if (!rec) {
+    return (
+      <p className={css.note}>
+        Block {community} is below the size this test can reach — under eight genes with a
+        Reactome annotation, where an enrichment is one annotation away from being everything.
+        It is still a stable group; the catalogue cannot say what of.
+      </p>
+    );
+  }
+  const h = rec.headline;
+  const sp = rec.most_specific;
+  return (
+    <div className={css.pair}>
+      <div className={css.stat}>
+        <span className={css.statVal}>{rec.genes}</span>
+        <span className={css.statK}>
+          genes · consensus confidence {rec.mean_confidence ?? "—"} · e.g.{" "}
+          {(rec.examples ?? []).slice(0, 4).join(", ")}
+        </span>
+      </div>
+      <div className={css.stat}>
+        <span className={css.statVal}>
+          {h ? `${Math.round(h.share_of_community * 100)}%` : "—"}
+        </span>
+        <span className={css.statK}>
+          {h ? <>of it is <strong>{h.name}</strong> — {h.genes_in_community} genes against{" "}
+                {h.null_mean} expected under an annotation-matched null</>
+             : "no pathway covers a tenth of this community: real, and heterogeneous"}
+        </span>
+      </div>
+      <div className={css.stat}>
+        <span className={css.statVal}>{sp ? `${sp.fold}×` : "—"}</span>
+        <span className={css.statK}>
+          {sp ? <>enriched for <strong>{sp.name}</strong>, the most unusual thing about it
+                 ({sp.genes_in_community} genes, q {sp.q ?? "—"})</>
+              : "nothing specific clears the null"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 function NetworkMatrix() {
+  const [picked, setPicked] = useState<number | null>(null);
   const net = useRemoteData<any>("data/network_layout.json");
   const model = useMemo(() => {
     if (net.state !== "ready") return null;
@@ -66,6 +128,7 @@ function NetworkMatrix() {
   const { d, edges, confidence, orderings } = model;
 
   return (
+    <>
     <MatrixPlot
       n={d.counts.genes_with_an_edge}
       edges={edges}
@@ -73,6 +136,8 @@ function NetworkMatrix() {
       blocks={d.blocks}
       confidence={confidence}
       labelFor={(g: number) => d.genes[g]}
+      picked={picked}
+      onPickBlock={setPicked}
       ariaLabel="Gene interaction matrix, reordered by consensus community"
       source={`${d.counts.edges.toLocaleString("en-US")} edges · ${d.counts.isolated_dropped.toLocaleString("en-US")} isolated genes dropped`}
       readAloud={
@@ -94,6 +159,11 @@ function NetworkMatrix() {
         </>
       }
     />
+    {/* Beneath the figure, not beside it: the card answers a question the reader asks OF the
+        figure, and putting it alongside would make the matrix narrower on every screen for
+        the sake of a panel that is empty until something is clicked. */}
+    <IdentityCard community={picked} />
+    </>
   );
 }
 

@@ -141,6 +141,8 @@ INTERACTOME_STRING = OUT / "interactome_string_700.json"
 GENE_NETWORK = RARE / "gene_network.json"
 # The partition held to a null and an interval, which the partition itself never was.
 COMMUNITY_STABILITY = RARE / "community_stability.json"
+# What each of those communities is, from a source outside the loop that built the graph.
+COMMUNITY_IDENTITY = RARE / "community_identity.json"
 # Fetched by the browser: half a megabyte of edge list belongs behind a request, not in
 # the bundle every other screen loads.
 NETWORK_LAYOUT = ROOT / "web" / "public" / "data" / "network_layout.json"

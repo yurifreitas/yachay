@@ -762,6 +762,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="community_identity",
+    summary=("Name each community from Reactome - the one annotation the graph's own "
+             "construction never consulted - against an annotation-matched null."),
+    inputs=(paths.COMMUNITY_STABILITY,),
+    outputs=(paths.COMMUNITY_IDENTITY,),
+    needs=("community_stability",),
+    code=sources("tools/community_identity.py", "tools/scale_information.py"),
+    run=lambda: _run_tool("community_identity"),
+))
+
+_add(Stage(
     name="network_layout",
     summary=("Three orderings of the gene graph, solved in Python so the browser draws "
              "38,746 edges and never seriates them."),

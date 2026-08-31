@@ -32,7 +32,7 @@ import type { MatrixPlotProps } from "./MatrixPlot.types";
  */
 export function MatrixPlot({
   n, edges, orderings, blocks = [], confidence, size = 760, ariaLabel, readAloud, source,
-  labelFor,
+  labelFor, onPickBlock, picked,
 }: MatrixPlotProps) {
   const keys = Object.keys(orderings);
   const [which, setWhich] = useState(keys[0]);
@@ -101,15 +101,18 @@ export function MatrixPlot({
       ctx.strokeStyle = (style.getPropertyValue("--matrix-rule") || "#d33").trim();
       ctx.lineWidth = Math.max(1, dpr * 0.5);
       ctx.globalAlpha = 0.5;
-      for (const [start, end] of blocks) {
+      for (const [start, end, id] of blocks) {
         if (end - start < 12) continue;      // rules for blocks too small to see are noise
         const a = (start / n) * px;
         const b = (end / n) * px;
+        const on = picked != null && id === picked;
+        ctx.globalAlpha = on ? 1 : 0.5;
+        ctx.lineWidth = Math.max(1, dpr * (on ? 1.6 : 0.5));
         ctx.strokeRect(a, a, b - a, b - a);
       }
       ctx.globalAlpha = 1;
     }
-  }, [rank, edges, n, size, blocks, which, keys]);
+  }, [rank, edges, n, size, blocks, which, keys, picked]);
 
   return (
     <div className={css.wrap}>
@@ -134,6 +137,17 @@ export function MatrixPlot({
             setHover(i >= 0 && i < n && j >= 0 && j < n ? { i, j } : null);
           }}
           onMouseLeave={() => setHover(null)}
+          onClick={(ev) => {
+            // A block is picked by the diagonal position under the pointer. The matrix is
+            // symmetric, so the row and the column carry the same answer, and taking the
+            // ROW means a click anywhere along a block's band selects it rather than only
+            // the small square where it meets the diagonal.
+            if (!onPickBlock || which !== keys[0]) return;
+            const r = (ev.target as HTMLCanvasElement).getBoundingClientRect();
+            const slot = Math.floor(((ev.clientY - r.top) / r.height) * n);
+            const hit = blocks.find(([a, b]) => slot >= a && slot < b);
+            onPickBlock(hit ? (hit[2] as number) : null);
+          }}
         />
 
         {/* The confidence margin. Each gene's consensus confidence as a strip beside its own

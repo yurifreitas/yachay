@@ -72,6 +72,11 @@ const PROJECT = {
     // Two ranked lists of fifteen are what the view shows; the arms carry the rest.
     head: { most_neglected: 15, most_attended: 15 },
   },
+  community_identity: {
+    // Six pathways and five diseases per community is what the card reads; the full test
+    // list is 2,987 rows and belongs on disk with the analysis.
+    head: { communities: 30 },
+  },
   community_stability: {
     // One confidence per gene for 3,335 genes is the artefact's most useful output and the
     // page renders three summary numbers from it. It stays on disk, where the gene layer can
@@ -398,7 +403,10 @@ emit("figures", figures);
                       "gap_taxonomy", "attention_burden", "autism_convergence",
                       "knowledge_void",
                       // The published partition, held to a null and an interval at last.
-                      "community_stability"]) {
+                      "community_stability",
+                      // What each of those blocks IS, from a source outside the
+                      // loop that built the graph.
+                      "community_identity"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }
