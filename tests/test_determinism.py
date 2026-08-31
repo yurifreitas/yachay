@@ -59,6 +59,11 @@ DETERMINISTIC = [
     # so a name that moved between runs would be the most quotable thing on the page and the
     # least reliable.
     ("tools/community_identity.py", "out/rare/community_identity.json"),
+    # Runs three partitioners and an assignment solve. `linear_sum_assignment` is exact, but
+    # an assignment problem can have several optima of equal cost and which one comes back is
+    # an implementation detail — so the pairing that decides which ribbons count as agreement
+    # is exactly the kind of thing that drifts silently.
+    ("tools/partition_flow.py", "out/rare/partition_flow.json"),
 ]
 
 # Excluded, by name and with the reason. A determinism suite that quietly omits the awkward

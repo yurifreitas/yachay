@@ -773,6 +773,17 @@ _add(Stage(
 ))
 
 _add(Stage(
+    name="partition_flow",
+    summary=("Which genes move between the three algorithms' communities, matched by an "
+             "exact assignment solution and ordered to cut ribbon crossings."),
+    inputs=(paths.GENE_NETWORK, paths.COMMUNITY_IDENTITY),
+    outputs=(paths.PARTITION_FLOW,),
+    needs=("community_identity",),
+    code=sources("tools/partition_flow.py", "tools/community_stability.py"),
+    run=lambda: _run_tool("partition_flow"),
+))
+
+_add(Stage(
     name="network_layout",
     summary=("Three orderings of the gene graph, solved in Python so the browser draws "
              "38,746 edges and never seriates them."),

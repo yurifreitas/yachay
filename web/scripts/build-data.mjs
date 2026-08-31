@@ -406,7 +406,9 @@ emit("figures", figures);
                       "community_stability",
                       // What each of those blocks IS, from a source outside the
                       // loop that built the graph.
-                      "community_identity"]) {
+                      "community_identity",
+                      // Where the algorithms disagree, gene by gene.
+                      "partition_flow"]) {
     const f = join(REPO, "out", "rare", `${name}.json`);
     emit(name, existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : { generated: "" });
   }

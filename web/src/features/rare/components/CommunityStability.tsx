@@ -3,10 +3,12 @@ import { DEEP } from "../../../i18n/deep";
 import { useMemo, useState } from "react";
 import { IntervalPlot } from "../../../components/viz/organisms/IntervalPlot";
 import { MatrixPlot } from "../../../components/viz/organisms/MatrixPlot";
+import { AlluvialPlot } from "../../../components/viz/organisms/AlluvialPlot";
 import { useRemoteData } from "../../../lib/useRemoteData";
 import { SweepPlot } from "../../../components/viz/organisms/SweepPlot";
 import raw from "../../../data/generated/community_stability.json";
 import identityRaw from "../../../data/generated/community_identity.json";
+import flowRaw from "../../../data/generated/partition_flow.json";
 import { fmtInt } from "../../../lib/scale";
 import css from "./MeasuredPanels.module.css";
 
@@ -246,6 +248,38 @@ export function CommunityStability() {
           }
         />
       </div>
+
+      {/* WHERE THE DISAGREEMENT ACTUALLY IS. The figure above gives an ARI of 0.29 between
+          algorithm families, which a reader has to take on faith. This is the same fact as a
+          picture, and it carries what the score throws away: which groups the genes move
+          between, and whether it is a handful of border cases or a re-partition. */}
+      {(flowRaw as any).flows?.length > 0 && (
+        <div className={css.block}>
+          <span className={css.blockK}>{tt(DEEP.csFlow)}</span>
+          <AlluvialPlot
+            axes={(flowRaw as any).axes}
+            flows={(flowRaw as any).flows}
+            order={(flowRaw as any).band_order?.order ?? {}}
+            ariaLabel="Genes flowing between the communities found by three clustering algorithms"
+            source={(flowRaw as any).band_order?.method}
+            readAloud={
+              <>
+                Each column is one algorithm&rsquo;s partition of the same 3,335 genes, split
+                into its communities; a ribbon carries the genes going from one community to
+                another and its thickness is how many. Grey ribbons run between communities the
+                matching paired — that is agreement. Coloured ribbons are genes the two
+                algorithms put in different places. Louvain and Leiden keep{" "}
+                {pct((flowRaw as any).matching?.["louvain->leiden"]?.share_matched)} of genes in
+                matched communities; Leiden and label propagation keep{" "}
+                {pct((flowRaw as any).matching?.["leiden->label_prop"]?.share_matched)}. The
+                communities are matched by an exact assignment solution before anything is
+                drawn, so the crossings are disagreement rather than an accident of labelling.
+              </>
+            }
+          />
+          <p className={css.caveat}>{(flowRaw as any).method}</p>
+        </div>
+      )}
 
       {sweep.length > 1 && (
         <div className={css.block}>

@@ -2004,3 +2004,40 @@ order every run, ties in the sort broke differently, and the six pathways publis
 community's identity came out in a different order. The counts never changed — only what was
 printed as the answer. Sets are now iterated sorted, and the sort key ends with the pathway id
 so the order is total.
+
+### A45 — the 0.29 was a number nobody could check · **closed**
+
+*2026-08-31.* A42 measured that Louvain and Leiden agree at ARI 0.870 and that either agrees
+with label propagation at **0.29**. That is a fact a reader has to take on faith, and it throws
+away everything a user of the communities would want: *which* genes move, *where* they go, and
+whether the disagreement is a handful of border cases or a wholesale re-partition.
+
+**It is the third.** `tools/partition_flow.py`:
+
+| | genes kept in matched communities | communities found |
+|---|---|---|
+| Louvain → Leiden | **92.5 %** | 216 → 213 |
+| Leiden → label propagation | **50.0 %** | 213 → **447** |
+
+Label propagation shatters the graph into twice as many communities and moves half the genes.
+The ARI said the families disagree; this says what the disagreement *is*.
+
+**Two real algorithms sit behind the picture, and neither is decoration.**
+
+Community labels are arbitrary — Louvain's 7 and Leiden's 42 may be the same genes, and nothing
+in either output says so. Comparing partitions therefore needs the communities matched first,
+and the obvious greedy approach (best overlap, remove, repeat) is wrong: one early choice forces
+every later pairing into a worse one. It is an **assignment problem** with an exact solution, so
+`scipy.optimize.linear_sum_assignment` does it over the full overlap matrix. The matching moves
+no gene; it decides which community is drawn opposite which, which is what makes the crossings
+mean disagreement rather than an accident of labelling.
+
+Then the bands have to be ordered or the figure is an unreadable braid. **Barycentre sweeps**
+(Sugiyama's layered drawing) take ribbon crossings from **1,542 to 739**. Minimising them
+exactly is NP-hard, so both counts are published rather than the result being called optimal.
+Both computations are in Python per ADR 0008 — they are decisions about what the figure argues,
+not rendering.
+
+**The form is parallel sets**, chosen because the question is flow between categorisations and
+no bar chart of agreement scores can show it. Matched ribbons are drawn faintly and the moved
+ones carry the only colour in the figure: agreement is context, disagreement is the subject.

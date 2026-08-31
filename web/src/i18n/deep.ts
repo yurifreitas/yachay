@@ -65,6 +65,10 @@ export const DEEP = {
     "38,746 edges, drawn once each — and the ordering you can switch to check them",
     "38.746 arestas, cada uma desenhada uma vez — e a ordenação que dá para trocar e conferir",
   ),
+  csFlow: bi(
+    "half the genes land somewhere else — this is where they go",
+    "metade dos genes vai parar em outro lugar — é para cá que eles vão",
+  ),
   csAgreement: bi(
     "is the grouping in the graph, or in the objective function?",
     "o agrupamento está no grafo ou na função objetivo?",
